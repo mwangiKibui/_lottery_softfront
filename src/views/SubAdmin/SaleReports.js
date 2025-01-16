@@ -137,7 +137,8 @@ const SaleReports = () => {
           colorMode={colorMode}
         />
         
-        <CardBody pb="15px" background="#C7C7F1">
+        <div className="custom-card-body">
+        <CardBody>
           <Table variant="striped" color="black">
             <Thead>
               <Tr>
@@ -187,6 +188,7 @@ const SaleReports = () => {
             }
           </Table>
         </CardBody>
+        </div>
       </Card>
     </Flex>
   );

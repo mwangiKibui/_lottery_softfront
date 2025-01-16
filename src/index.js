@@ -22,16 +22,18 @@ import { HashRouter, Route, Switch, Redirect, BrowserRouter } from "react-router
 
 import AuthLayout from "layouts/Auth.js";
 import AdminLayout from "layouts/Admin.js";
+import HomeLayout from "layouts/Home";
 // import SubAdminLayout from "layouts/SubAdmin.js";
 import "./index.css";
 
 ReactDOM.render(
   <BrowserRouter>
     <Switch>
+      <Route exact path={'/'} component={HomeLayout} />
       <Route path={`/auth`} component={AuthLayout} />
       <Route path={`/admin`} component={AdminLayout} />
       <Route path={`/subadmin`} component={AdminLayout} />
-      <Redirect from={`/`} to='/auth/signin' />
+      {/* <Redirect from={`/`} to='/auth/signin' /> */}
     </Switch>
   </BrowserRouter>,
   document.getElementById("root")

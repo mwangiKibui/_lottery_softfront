@@ -1,7 +1,6 @@
 html{
-    /*background-color: rgb(194, 191, 191);*/
-    background: linear-gradient(to right top, #051937, #003455, #00526f, #007086, #239099) !important;
     min-height: 100vh;
+    background: "#adcceb" !important;
 }
 select,
 input {
@@ -198,6 +197,12 @@ button[type="submit"]{
 
 .css-bb8cw7{
     margin-bottom: 0px !important;
+}
+
+.custom-card-body{
+    padding-bottom: 15px;
+    background: rgba(132, 165, 190, 0.904);
+    min-height: 48vh;
 }
 
 @keyframes rotation {

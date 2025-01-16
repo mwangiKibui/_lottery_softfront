@@ -23,7 +23,7 @@ export const globalStyles = {
       body: {
         fontFamily: "Plus Jakarta Display",
         backgroundColor: 
-          "linear-gradient(159.02deg, #0F123B 14.25%, #090D2E 56.45%, #020515 86.14%)",
+          "#adcceb",
       },
       "*::placeholder": {
         color: "gray.400",
@@ -31,7 +31,7 @@ export const globalStyles = {
       html: {
         fontFamily: "Plus Jakarta Display",
         background:
-          "linear-gradient(159.02deg, #0F123B 14.25%, #090D2E 56.45%, #020515 86.14%)"
+          "#adcceb"
       },
     }),
   },

@@ -94,47 +94,50 @@ const WinNumber = () => {
           colorMode={colorMode}
         />
 
-        <CardBody pb="15px" background="#C7C7F1">
-          <Flex
-            flexWrap="wrap"
-            flexDirection={{ base: "column", sm: "row" }}
-            justifyContent="flex-start"
-            width="100%"
-          >
-            <Table variant="striped" color="black">
-              <Thead>
-                <Tr>
-                  <Th color="black">Date</Th>
-                  <Th color="black">Lottery</Th>
-                  <Th color="black">L3C</Th>
-                  <Th color="black">Second</Th>
-                  <Th color="black">Third</Th>
-                </Tr>
-              </Thead>
-              {
-                loading ?
-                <Tbody>
+       <div className="custom-card-body">
+          <CardBody>
+            <Flex
+              flexWrap="wrap"
+              flexDirection={{ base: "column", sm: "row" }}
+              justifyContent="flex-start"
+              width="100%"
+            >
+              <Table variant="striped" color="black">
+                <Thead>
                   <Tr>
-                    <Td colSpan={5}>
-                      <Loading />
-                    </Td>
+                    <Th color="black">Date</Th>
+                    <Th color="black">Lottery</Th>
+                    <Th color="black">L3C</Th>
+                    <Th color="black">Second</Th>
+                    <Th color="black">Third</Th>
                   </Tr>
-                </Tbody> :
-                <Tbody>
-                  {winningNumbers?.map((game, gameIndex) => (
-                    <Tr key={gameIndex}>
-                      <Td><pre>{formatDate(game?.date.substr(0, 10))}</pre></Td>
-                      <Td><pre>{game.lotteryName}</pre></Td>
-                      <Td><pre>{game.numbers.l3c}</pre></Td>
-                      <Td><pre>{game.numbers.second}</pre></Td>
-                      <Td><pre>{game.numbers.third}</pre></Td>
+                </Thead>
+                {
+                  loading ?
+                  <Tbody>
+                    <Tr>
+                      <Td colSpan={5}>
+                        <Loading />
+                      </Td>
                     </Tr>
-                  ))}
-                </Tbody>
-              }
-            </Table>
-          </Flex>
-        </CardBody>
+                  </Tbody> :
+                  <Tbody>
+                    {winningNumbers?.map((game, gameIndex) => (
+                      <Tr key={gameIndex}>
+                        <Td><pre>{formatDate(game?.date.substr(0, 10))}</pre></Td>
+                        <Td><pre>{game.lotteryName}</pre></Td>
+                        <Td><pre>{game.numbers.l3c}</pre></Td>
+                        <Td><pre>{game.numbers.second}</pre></Td>
+                        <Td><pre>{game.numbers.third}</pre></Td>
+                      </Tr>
+                    ))}
+                  </Tbody>
+                }
+              </Table>
+            </Flex>
+          </CardBody>
+        </div>
+
       </Card>
     </Flex>
   );

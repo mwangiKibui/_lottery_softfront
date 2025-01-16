@@ -153,8 +153,8 @@ const WinnerTickets = () => {
           handleSearch={fetchWinnerTickets}
           colorMode={colorMode}
         />
-
-        <CardBody pb="15px" background="#C7C7F1">
+      <div className="custom-card-body">
+        <CardBody>
           <Flex
             flexWrap="wrap"
             flexDirection={{ base: "column", sm: "row" }}
@@ -219,6 +219,7 @@ const WinnerTickets = () => {
             </VStack>
           </Flex>
         </CardBody>
+      </div>
       </Card>
       <Modal
         isOpen={isOpen}

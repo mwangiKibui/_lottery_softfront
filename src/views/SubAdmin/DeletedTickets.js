@@ -178,85 +178,87 @@ const DeleteTickets = () => {
           colorMode={colorMode}
         />
 
-        
-        <CardBody pb="15px" background="#C7C7F1">
-          <Flex
-            flexWrap="wrap"
-            flexDirection={{ base: "column", sm: "row" }}
-            justifyContent="flex-start"
-            width="100%"
-          >
-            <Stack
-              spacing={1}
-              borderRadius="3px"
-              m="5px"
-              boxShadow="0px 0px 2px white"
+        <div className="custom-card-body">
+          <CardBody>
+            <Flex
+              flexWrap="wrap"
+              flexDirection={{ base: "column", sm: "row" }}
+              justifyContent="flex-start"
               width="100%"
             >
-              <VStack spacing={3} align="stretch">
-                <Table variant="striped">
-                  <Thead>
-                    <Tr>
-                      <Th>Ticket ID</Th>
-                      <Th>Date</Th>
-                      <Th>Lottery</Th>
-                      <Th>Seller</Th>
-                      <Th>Action</Th>
-                    </Tr>
-                  </Thead>
-                  <Tbody>
-                    {deletedTickets.map((item) => {
-                      return (
-                        <Tr key={item._id}>
-                          <Td>
-                            <Button
-                              className="tableInterBtn"
-                              size="sm"
-                              width="100%"
-                              backgroundColor={"#edf2f7"}
-                              onClick={() =>
-                                handleGetTicketNumbers(item.numbers)
+              <Stack
+                spacing={1}
+                borderRadius="3px"
+                m="5px"
+                boxShadow="0px 0px 2px white"
+                width="100%"
+              >
+                <VStack spacing={3} align="stretch">
+                  <Table variant="striped">
+                    <Thead>
+                      <Tr>
+                        <Th>Ticket ID</Th>
+                        <Th>Date</Th>
+                        <Th>Lottery</Th>
+                        <Th>Seller</Th>
+                        <Th>Action</Th>
+                      </Tr>
+                    </Thead>
+                    <Tbody>
+                      {deletedTickets.map((item) => {
+                        return (
+                          <Tr key={item._id}>
+                            <Td>
+                              <Button
+                                className="tableInterBtn"
+                                size="sm"
+                                width="100%"
+                                backgroundColor={"#edf2f7"}
+                                onClick={() =>
+                                  handleGetTicketNumbers(item.numbers)
+                                }
+                              >
+                                {item.ticketId}
+                              </Button>
+                            </Td>
+                            <Td><pre>{formatDate(item.date.substr(0, 10))}</pre></Td>
+                            <Td><pre>{item.lotteryCategoryName}</pre></Td>
+                            <Td><pre>
+                              {
+                                sellerInfo.find(
+                                  (sitem) => sitem._id === item.seller
+                                )?.userName
                               }
-                            >
-                              {item.ticketId}
-                            </Button>
-                          </Td>
-                          <Td><pre>{formatDate(item.date.substr(0, 10))}</pre></Td>
-                          <Td><pre>{item.lotteryCategoryName}</pre></Td>
-                          <Td><pre>
-                            {
-                              sellerInfo.find(
-                                (sitem) => sitem._id === item.seller
-                              )?.userName
-                            }
-                          </pre></Td>
-                          <Td>
-                            <Button
-                              className="tableInterBtn"
-                              size="sm"
-                              onClick={() => deleteTicket(item._id)}
-                              bg={
-                                colorMode === "light" ? "red.600" : "blue.300"
-                              }
-                              _hover={{
-                                bg:
-                                  colorMode === "light"
-                                    ? "red.300"
-                                    : "blue.200",
-                              }}
-                            >
-                              <RiDeleteBinLine size={14} color="white" />
-                            </Button>
-                          </Td>
-                        </Tr>
-                      );
-                    })}
-                  </Tbody>
-                </Table>
-              </VStack>
-            </Stack>
-          </Flex>
-        </CardBody>
+                            </pre></Td>
+                            <Td>
+                              <Button
+                                className="tableInterBtn"
+                                size="sm"
+                                onClick={() => deleteTicket(item._id)}
+                                bg={
+                                  colorMode === "light" ? "red.600" : "blue.300"
+                                }
+                                _hover={{
+                                  bg:
+                                    colorMode === "light"
+                                      ? "red.300"
+                                      : "blue.200",
+                                }}
+                              >
+                                <RiDeleteBinLine size={14} color="white" />
+                              </Button>
+                            </Td>
+                          </Tr>
+                        );
+                      })}
+                    </Tbody>
+                  </Table>
+                </VStack>
+              </Stack>
+            </Flex>
+          </CardBody>
+        </div>
+        
       </Card>
 
       <Modal

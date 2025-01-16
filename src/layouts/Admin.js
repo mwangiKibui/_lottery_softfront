@@ -119,7 +119,7 @@ export default function Dashboard(props) {
   document.documentElement.dir = "ltr";
   // Chakra Color Mode
   return (
-    <ChakraProvider theme={theme} resetCss={false}>
+    <ChakraProvider theme={theme} resetCss={true}>
       {
         !isSubAdmin && (
           <Sidebar

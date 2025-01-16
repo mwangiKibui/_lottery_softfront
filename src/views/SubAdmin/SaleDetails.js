@@ -206,119 +206,120 @@ const SaleDetails = () => {
           colorMode={colorMode}
           showToDate={false}
         />
-
-        <CardBody pb="15px" background="#C7C7F1">
-          {
-            loading ?
-            <Loading /> :
-            <HStack alignItems={"flex-start"}>
-              <VStack width="45%">
-                <Table variant="striped">
-                  <Thead>
-                    <Tr>
-                      <Th color="black">Game</Th>
-                      <Th color="black">Number</Th>
-                      <Th color="black">Amount</Th>
-                      <Th color="black">Price</Th>
-                    </Tr>
-                  </Thead>
-                  <Tbody>
-                    {saleDatails.map((item, index) => ( 
-                      <Tr key={index}>
-                        <Td><pre>{item._id.gameCategory}</pre></Td>
-                        <Td>
-                          <Button
-                            className="tableInterBtn"
-                            size="sm"
-                            width="100%"
-                            backgroundColor={"#edf2f7"}
-                            onClick={() =>
-                              fetchSellGameNumberDetails(
-                                item._id.lotteryCategoryName,
-                                item._id.gameCategory,
-                                item._id.number,
-                                item._id.date,
-                                selectedSellerId
-                              )
-                            }
-                          >
-                            {item._id.number}
-                          </Button>
-                        </Td>
-                        <Td><pre>{item.count}</pre></Td>
-                        <Td><pre>{item.totalAmount}</pre></Td>
-                      </Tr> 
-                    ))}
-                  </Tbody>
-                  <Thead>
-                    <Th></Th>
-                    <Th>Total</Th>
-                    <Th>HTG</Th>
-                    <Th>
-                      {saleDatails.reduce(
-                        (total, value) => total + value.totalAmount,
-                        0
-                      )}
-                    </Th>
-                  </Thead>
-                </Table>
-              </VStack>
-              <VStack width="55%">
-                <VStack width="100%" border={"1px solid gray"} padding={"10px"}>
-                  <h4 style={{marginBottom: "3px"}}>{gameCategoryDetail[0]?._id?.lotteryCategoryName}</h4>
-                  {gameCategoryDetail?.map((item, index) => (
-                    <Flex
-                      width="70%"
-                      justifyContent={"space-between"}
-                      key={index}
-                      mt="0px !important"
-                    >
-                      <h5>{item?._id?.gameCategory}</h5>
-                      <h5>{item?.totalAmount}</h5>
-                    </Flex>
-                  ))}
-                  <Flex width="70%" justifyContent={"space-between"} color="red" mt="0px !important">
-                    <h5>total</h5>
-                    <h5>
-                      {gameCategoryDetail?.reduce(
-                        (acc, detail) => acc + detail.totalAmount,
-                        0
-                      )}
-                    </h5>
-                  </Flex>
-                </VStack>
-                <VStack marginTop="0px !important" width="100%">
-                  <Table variant="striped">
-                    <Thead>
-                      <Tr>
-                        <Th color="black">Lottery</Th>
-                        <Th color="black">Total</Th>
-                        <Th color="black">Paid</Th>
-                        <Th color="black">Profit</Th>
-                      </Tr>
-                    </Thead>
-                    <Tbody>
-                      {Object.values(lotteryDetail).map((data) => (
-                        <Tr key={data.name}>
-                          <Td><pre>{data.name}</pre></Td>
-                          <Td><pre>{data.sum}</pre></Td>
-                          <Td><pre>{data.paid}</pre></Td>
-                          <Td><pre>{data.sum - data.paid}</pre></Td>
+         <div className="custom-card-body">
+            <CardBody>
+              {
+                loading ?
+                <Loading /> :
+                <HStack alignItems={"flex-start"}>
+                  <VStack width="45%">
+                    <Table variant="striped">
+                      <Thead>
+                        <Tr>
+                          <Th color="black">Game</Th>
+                          <Th color="black">Number</Th>
+                          <Th color="black">Amount</Th>
+                          <Th color="black">Price</Th>
                         </Tr>
+                      </Thead>
+                      <Tbody>
+                        {saleDatails.map((item, index) => ( 
+                          <Tr key={index}>
+                            <Td><pre>{item._id.gameCategory}</pre></Td>
+                            <Td>
+                              <Button
+                                className="tableInterBtn"
+                                size="sm"
+                                width="100%"
+                                backgroundColor={"#edf2f7"}
+                                onClick={() =>
+                                  fetchSellGameNumberDetails(
+                                    item._id.lotteryCategoryName,
+                                    item._id.gameCategory,
+                                    item._id.number,
+                                    item._id.date,
+                                    selectedSellerId
+                                  )
+                                }
+                              >
+                                {item._id.number}
+                              </Button>
+                            </Td>
+                            <Td><pre>{item.count}</pre></Td>
+                            <Td><pre>{item.totalAmount}</pre></Td>
+                          </Tr> 
+                        ))}
+                      </Tbody>
+                      <Thead>
+                        <Th></Th>
+                        <Th>Total</Th>
+                        <Th>HTG</Th>
+                        <Th>
+                          {saleDatails.reduce(
+                            (total, value) => total + value.totalAmount,
+                            0
+                          )}
+                        </Th>
+                      </Thead>
+                    </Table>
+                  </VStack>
+                  <VStack width="55%">
+                    <VStack width="100%" border={"1px solid gray"} padding={"10px"}>
+                      <h4 style={{marginBottom: "3px"}}>{gameCategoryDetail[0]?._id?.lotteryCategoryName}</h4>
+                      {gameCategoryDetail?.map((item, index) => (
+                        <Flex
+                          width="70%"
+                          justifyContent={"space-between"}
+                          key={index}
+                          mt="0px !important"
+                        >
+                          <h5>{item?._id?.gameCategory}</h5>
+                          <h5>{item?.totalAmount}</h5>
+                        </Flex>
                       ))}
-                    </Tbody>
-                    <Thead>
-                      <Th>Total</Th>
-                      <Th>{sumAmount}</Th>
-                      <Th>{paidAmount}</Th>
-                      <Th>{sumAmount - paidAmount}</Th>
-                    </Thead>
-                  </Table>
-                </VStack>
-              </VStack>
-            </HStack>
-          }
-        </CardBody>
+                      <Flex width="70%" justifyContent={"space-between"} color="red" mt="0px !important">
+                        <h5>total</h5>
+                        <h5>
+                          {gameCategoryDetail?.reduce(
+                            (acc, detail) => acc + detail.totalAmount,
+                            0
+                          )}
+                        </h5>
+                      </Flex>
+                    </VStack>
+                    <VStack marginTop="0px !important" width="100%">
+                      <Table variant="striped">
+                        <Thead>
+                          <Tr>
+                            <Th color="black">Lottery</Th>
+                            <Th color="black">Total</Th>
+                            <Th color="black">Paid</Th>
+                            <Th color="black">Profit</Th>
+                          </Tr>
+                        </Thead>
+                        <Tbody>
+                          {Object.values(lotteryDetail).map((data) => (
+                            <Tr key={data.name}>
+                              <Td><pre>{data.name}</pre></Td>
+                              <Td><pre>{data.sum}</pre></Td>
+                              <Td><pre>{data.paid}</pre></Td>
+                              <Td><pre>{data.sum - data.paid}</pre></Td>
+                            </Tr>
+                          ))}
+                        </Tbody>
+                        <Thead>
+                          <Th>Total</Th>
+                          <Th>{sumAmount}</Th>
+                          <Th>{paidAmount}</Th>
+                          <Th>{sumAmount - paidAmount}</Th>
+                        </Thead>
+                      </Table>
+                    </VStack>
+                  </VStack>
+                </HStack>
+              }
+            </CardBody>
+        </div>
       </Card>
 
       <Modal isOpen={isOpen} onClose={handleCancel} colorMode={colorMode}>

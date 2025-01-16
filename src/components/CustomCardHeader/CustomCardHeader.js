@@ -8,149 +8,145 @@ const CustomCardHeader = (
    props
 ) => {
     return (
-        <CardHeader
-                  p="0px 0px 22px 0px"
-                  display="block"
-                  width="100%"
-                  background="#67B8B8"
-                >
-                  <Flex
-                    flexWrap="wrap"
-                    flexDirection={{ base: "column", sm: "row" }}
-                    background="#287979"
-                    width="100%"
-                    padding="10px"
-                    marginBottom="5px"
-                  >
-                    <Text fontSize="lg" color="#FFECCD" font="Weight:bold">
-                      {props.title}
-                    </Text>
-        
-                  </Flex>
-                    <Flex
-                      color="black"
-                      flexWrap="wrap"
-                      flexDirection={{ base: "column", sm: "row" }}
-                      justifyContent="left"
-                      alignContent="left"
-                      width="50%"
-                      mx="auto"
-                      alignItems="left"
-                      background="#62ACAB"
-                    >
+        <div className='cch-parent-form-card'>
+            <div className='cch-form-card'>
+                <div className='cch-title'>
+                    {
+                        props.title
+                    }
+                </div>
+
+                <form className='cch-form' onSubmit={props.handleSearch}>
                         {
                             props.showSellerField && (
-                                <FormControl id="lotteryCategoryName" isRequired px="7px" mt="0px"> 
+                                // <FormControl id="lotteryCategoryName" isRequired px="7px" mt="0px"> 
                    
-                                    <FormLabel mt="0px">Choose Seller</FormLabel>
-                                    <Select
-                                        onChange={(event) =>
-                                        props.setSelectedSellerId(event.target.value)
+                                //     <FormLabel mt="0px">Choose Seller</FormLabel>
+                                //     <Select
+                                //         onChange={(event) =>
+                                //         props.setSelectedSellerId(event.target.value)
+                                //         }
+                                //         width="100%"
+                                //         background="#649F9F"
+                                //     >
+                                //         <option value={""} style={{ backgroundColor: "#e3e2e2" }}>
+                                //         Choose Seller
+                                //         </option>
+                                //         {props.sellerInfo.map((info) => (
+                                //         <option
+                                //             key={info._id}
+                                //             value={info._id}
+                                //             style={{ backgroundColor: "#e3e2e2" }}
+                                //         >
+                                //             {info.userName}
+                                //         </option>
+                                //         ))}
+                                //     </Select>
+                                // </FormControl>
+                                <>
+                                    <label htmlFor="seller">Choose seller</label>
+                                    <select name="seller" id="seller" onChange={e => props.setSelectedSellerId(e.target.value)}>
+                                        <option value=""> Choose seller</option>
+                                        {
+                                            props.sellerInfo.map((info) => (
+                                                <option value={info._id}>{info.userName}</option>
+                                            ))
                                         }
-                                        width="100%"
-                                        background="#649F9F"
-                                    >
-                                        <option value={""} style={{ backgroundColor: "#e3e2e2" }}>
-                                        Choose Seller
-                                        </option>
-                                        {props.sellerInfo.map((info) => (
-                                        <option
-                                            key={info._id}
-                                            value={info._id}
-                                            style={{ backgroundColor: "#e3e2e2" }}
-                                        >
-                                            {info.userName}
-                                        </option>
-                                        ))}
-                                    </Select>
-                                </FormControl>
+                                        
+                                    </select>
+                                </>
                             )
                         }
 
-                        {
+{
                             props.showLotteryField && (
-                                <FormControl id="lotteryCategoryName" isRequired px="7px" mt="0px">
-                                    <FormLabel mt="0px">
-                                        Lottery
-                                    </FormLabel>
-                                    <Select
-                                        onChange={(event) =>
-                                        props.setLotteryCategoryName(event.target.value)
-                                        }
-                                        width="100%"
-                                        background="#649F9F"
-                                    >
-                                        <option value={""} style={{ backgroundColor: "#e3e2e2" }}>
-                                        Choose Lottery
-                                        </option>
-                                        {props.lotteryCategories.map((category) => (
-                                        <option
-                                            key={category._id}
-                                            value={category.lotteryName}
-                                            style={{ backgroundColor: "#e3e2e2" }}
-                                        >
-                                            {category.lotteryName}
-                                        </option>
-                                        ))}
-                                    </Select>
-                                </FormControl>
+                                // <FormControl id="lotteryCategoryName" isRequired px="7px" mt="0px">
+                                //     <FormLabel mt="0px">
+                                //         Lottery
+                                //     </FormLabel>
+                                //     <Select
+                                //         onChange={(event) =>
+                                //         props.setLotteryCategoryName(event.target.value)
+                                //         }
+                                //         width="100%"
+                                //         background="#649F9F"
+                                //     >
+                                //         <option value={""} style={{ backgroundColor: "#e3e2e2" }}>
+                                //         Choose Lottery
+                                //         </option>
+                                //         {props.lotteryCategories.map((category) => (
+                                //         <option
+                                //             key={category._id}
+                                //             value={category.lotteryName}
+                                //             style={{ backgroundColor: "#e3e2e2" }}
+                                //         >
+                                //             {category.lotteryName}
+                                //         </option>
+                                //         ))}
+                                //     </Select>
+                                // </FormControl>
+                                <>
+                                <label htmlFor="lotteryCategoryName">Lottery</label>
+                                <select name='lotteryCategoryName' id="lotteryCategoryName" onChange={e => props.setLotteryCategoryName(e.target.value)}>
+                                    <option value=""> Choose Lottery</option>
+                                    {
+                                        props.lotteryCategories.map((category) => (
+                                            <option value={category.lotteryName}>{category.lotteryName}</option>
+                                        ))
+                                    }
+                                </select>
+                                </>
                             )
                         }
-
                         {
                             props.showFromField && (
-                                <FormControl id="fromDate" isRequired  px="7px" mt="0px">
-                                    <FormLabel mt="0px">
-                                        From
-                                    </FormLabel>
-                                    <Input
-                                        type="date"
-                                        value={props.fromDate}
-                                        onChange={(event) => props.setFromDate(event.target.value)}
-                                        width="100%"
-                                        minWidth="100%"
-                                        background="#649F9F"
-                                    />
-                                </FormControl>
+                                // <FormControl id="fromDate" isRequired  px="7px" mt="0px">
+                                //     <FormLabel mt="0px">
+                                //         From
+                                //     </FormLabel>
+                                //     <Input
+                                //         type="date"
+                                //         value={props.fromDate}
+                                //         onChange={(event) => props.setFromDate(event.target.value)}
+                                //         width="100%"
+                                //         minWidth="100%"
+                                //         background="#649F9F"
+                                //     />
+                                // </FormControl>
+                                <>
+                                    <label htmlFor="from">From</label>
+                                    <input name="from" type="date" value={props.fromDate} onChange={e => props.setFromDate(e.target.value)} id="from" />
+                                </>
                             )
                         }
                         {
                             props.showToDate && (
-                                <FormControl id="toDate" isRequired px="7px" mt="0px">
-                                    <FormLabel mt="0px">
-                                        To
-                                    </FormLabel>
-                                    <Input
-                                        type="date"
-                                        value={props.toDate}
-                                        onChange={(event) => props.setToDate(event.target.value)}
-                                        width="100%"
-                                        minWidth="100%"
-                                        background="#649F9F"
-                                    />
-                                </FormControl>
+                                // <FormControl id="toDate" isRequired px="7px" mt="0px">
+                                //     <FormLabel mt="0px">
+                                //         To
+                                //     </FormLabel>
+                                //     <Input
+                                //         type="date"
+                                //         value={props.toDate}
+                                //         onChange={(event) => props.setToDate(event.target.value)}
+                                //         width="100%"
+                                //         minWidth="100%"
+                                //         background="#649F9F"
+                                //     />
+                                // </FormControl>
+                                <>
+                                 <label htmlFor="to">to</label>
+                                 <input name="to" type="date" id="to" value={props.toDate} onChange={e => props.setToDate(e.target.value)}/>
+                                </>
                             )   
                         }
 
-                        <Button
-                            size="sm"
-                            onClick={props.handleSearch}
-                            bg={props.colorMode === "light" ? "#FF4500" : "#FF4500"}
-                            _hover={{
-                            bg: props.colorMode === "light" ? "#FF4500" : "#FF4500",
-                            }}
-                            mt="10px"
-                            mx={"10px"}
-                            color="white"
-                            mb="10px"
-                            alignSelf="left"
-                            borderRadius="4px"
-                        >
-                            {/* <CgSearch size={20} color={"white"} /> */}
-                            Search
-                        </Button>
-                    </Flex>
-                </CardHeader>
+                        <button type="submit" className="cc-form-submit">Search</button>
+
+
+                </form>
+            </div>
+        </div>
     )
 };
 
