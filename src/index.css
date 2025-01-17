@@ -205,6 +205,10 @@ button[type="submit"]{
     min-height: 48vh;
 }
 
+.css-9fovtj,.css-6le2l9,.css-zg2xyz,.css-x44vc,.css-yc5low,.css-4ka8jd{
+    margin-top: 10px !important;
+}
+
 @keyframes rotation {
     0% {
         transform: rotate(0deg);

@@ -135,7 +135,7 @@ const CustomCardHeader = (
                                 //     />
                                 // </FormControl>
                                 <>
-                                 <label htmlFor="to">to</label>
+                                 <label htmlFor="to">To</label>
                                  <input name="to" type="date" id="to" value={props.toDate} onChange={e => props.setToDate(e.target.value)}/>
                                 </>
                             )   
