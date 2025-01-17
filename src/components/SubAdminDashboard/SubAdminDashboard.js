@@ -81,7 +81,7 @@ const SubAdminDashboard = () => {
 
     return (
        <>
-        <CustomStats />
+        {/* <CustomStats /> */}
         <MainMenuLinks links={menuLinks}/>
        </>
     )

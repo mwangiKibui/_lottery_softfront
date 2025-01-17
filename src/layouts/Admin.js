@@ -135,11 +135,20 @@ export default function Dashboard(props) {
       {
         isSubAdmin && (
           <CustomNavbar
-          links={
+          centerLinks={
+            [
+              {
+                text:"Main Menu",
+                url:"/admin/main-menu",
+                redirect:true
+              }
+            ]
+          }
+          rightLinks={
             [
               {
                 text:"Logout",
-                url:"/signout"
+                url:"/auth/signout"
               }
             ]
           } navbarBrand="LOTTERY SOFT" navbarBrandUrl="#"
