@@ -25,6 +25,7 @@
     font-size: 30px; 
     color: #007BFF;
     text-align: center;
+    font-weight: bold;
 }
 
 /* Input Group Styles */
@@ -129,13 +130,13 @@
     text-decoration: underline;
 }
 
+
 /** responsive design **/
 
 @media (max-width: 600px) {
     .login-container {
         margin-top: 20px;
         width: 90%; /* Slightly wider on smaller screens */
-        height: auto; /* Adjust height to fit content */
         padding: 10px;
         height: 80vh;
         background-color: #adcceb;
