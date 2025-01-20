@@ -95,6 +95,7 @@ const LimitNumber = () => {
 
   const handleGetLimit = async (viewType) => {
     setActiveView(viewType);
+    setLotteryCategoryName("");
     if (viewType === "all") {
       setShowSearchForm(false);
       try {
@@ -124,19 +125,22 @@ const LimitNumber = () => {
     try {
       if (
         !activeView ||
-        (activeView !== "supervisor" && activeView !== "seller")
+        (activeView !== "supervisor" && activeView !== "seller" && activeView !== "all")
       ) {
         throw new Error("Invalid view type");
       }
-      const endpoint = `/subadmin/getLimitBut${
+      const endpoint = activeView == 'supervisor' || activeView == 'seller' ?  `/subadmin/getLimitBut${
         activeView === "supervisor" ? "SuperVisor" : "Seller"
-      }`;
+      }` : `/subadmin/getLimitButAll`;
       const params = {
         seller: selectedSellerId,
         superVisor: selectedSupervisorId,
         lotteryCategoryName,
       };
+
+      console.log("the params here ",params);
       const response = await api().get(endpoint, { params });
+      console.log("the response received is ", response.data);
       setLimitNumbers(response.data);
       toast({
         title: "Limits fetched successfully",
@@ -345,15 +349,17 @@ const LimitNumber = () => {
             <HStack>
             <FormControl flex={1} flexDirection="row">
               <FormLabel>Lottery: </FormLabel>
-  
-              <Input
-  
-                type="text"
-                placeholder="Lottery Name"
-                value={lotteryName}
-                onChange={(e) => setLotteryName(e.target.value)}
-  
-              />
+                <Select
+                  value={lotteryCategoryName}
+                  onChange={(e) => setLotteryCategoryName(e.target.value)}
+                >
+                  <option value="">All</option>
+                  {lotteryCategories.map((category) => (
+                    <option key={category._id} value={category.lotteryName}>
+                      {category.lotteryName}
+                    </option>
+                  ))}
+                </Select>
               
             </FormControl>
   
@@ -446,7 +452,7 @@ const LimitNumber = () => {
         )}
 
         <CardBody>
-          <Flex wrap="wrap" justifyContent="space-between" gap={4}>
+          <Flex wrap="wrap" justifyContent="space-between" gap={3}>
             {limitNumbers.map((limit) => (
               <VStack
                 key={limit._id}

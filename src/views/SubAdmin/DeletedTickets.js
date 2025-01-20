@@ -82,7 +82,8 @@ const DeleteTickets = () => {
     fetchSeller();
   }, []);
 
-  const fetchDeleteTickets = async () => {
+  const fetchDeleteTickets = async (e) => {
+    e.preventDefault();
     try {
       const response = await api().get(
         `/subadmin/getdeletedtickets?seller=${selectedSellerId}&fromDate=${fromDate}&toDate=${toDate}&lotteryCategoryName=${lotteryCategoryName.trim()}`
@@ -176,6 +177,8 @@ const DeleteTickets = () => {
           setToDate={setToDate}
           handleSearch={fetchDeleteTickets}
           colorMode={colorMode}
+          showAllInSellerField={true}
+          showAllInLotteryField={true}
         />
 
         <div className="custom-card-body">

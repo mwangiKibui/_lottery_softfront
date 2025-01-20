@@ -201,9 +201,13 @@ function BlockNumber() {
   };
 
   return (
-    <Flex direction="column" pt={{ base: "120px", md: "75px" }}>
+    <Flex direction="column" pt={{ base: "120px", md: "75px" }} justifyContent="center" alignItems="center" width="100%">
       {/* Authors Table */}
-      <Card overflowX={{ sm: "scroll", xl: "hidden" }} p={{ base: "5px", md: "20px"}} width="100%" border={{base: "none", md: "1px solid gray"}}>
+      <Card overflowX={{ sm: "scroll", xl: "hidden" }}
+        p={{ base: "5px", md: "20px" }}
+        width="60%"
+        border={{ base: "none", md: "1px solid gray" }}
+        borderRadius="none">
         <CardHeader
           p="6px 0px 22px 0px"
           display="flex"
@@ -315,6 +319,7 @@ function BlockNumber() {
             <Input
               type="text"
               value={newBlockNumber}
+              background="none"
               onChange={handleChangeBlockNumber}
             />
           </FormControl>

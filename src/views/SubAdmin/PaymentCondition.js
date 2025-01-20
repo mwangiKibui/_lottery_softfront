@@ -280,60 +280,64 @@ const PaymentCondition = () => {
   };
 
   return (
-    <Flex direction="column" pt={{ base: "120px", md: "75px" }}>
+    <Flex direction="column" pt={{ base: "120px", md: "75px" }} mx="auto" justifyContent="center" alignItems="center" width="100%"> 
       <Card
-        overflowX={{ md: "scroll", xl: "hidden" }}
+        overflowX={{ sm: "scroll", xl: "hidden" }}
         p={{ base: "5px", md: "20px" }}
-        width="100%"
+        width="60%"
         border={{ base: "none", md: "1px solid gray" }}
+        borderRadius="none"
+        bg="gray"
       >
         <CardHeader
-          p="6px 0px 22px 0px"
           display="flex"
           justifyContent="space-between"
+          alignItems="center"
+          bg="#92CCDC"
         >
-          <Text fontSize="lg" color="black" font="Weight:bold">
+          <Text fontSize="lg" color="black">
             Payment Condition
           </Text>
           <Button
-            size="md"
+            // size="md"
             onClick={() => {
               setLotteryCategoryName(lotteryCategories[0]?.lotteryName);
               onOpen();
             }}
-            bg={colorMode === "light" ? "blue.500" : "blue.300"}
-            _hover={{
-              bg: colorMode === "light" ? "blue.600" : "blue.200",
-            }}
+            // bg={colorMode === "light" ? "blue.500" : "blue.300"}
+            // _hover={{
+            //   bg: colorMode === "light" ? "blue.600" : "blue.200",
+            // }}
+            bg="green.800"
+            color="white"
           >
-            <FaPlus size={24} color="white" />
+            {/* <FaPlus size={24} color="white" /> */}
+            ADD
           </Button>
         </CardHeader>
-        <CardBody pb="15px">
+        <CardBody>
           <Flex
-            flexWrap="wrap"
-            flexDirection={{ base: "column", sm: "row" }}
-            justifyContent="flex-start"
-            width="100%"
+            wrap="wrap"
+            justifyContent="space-between"
+            gap={3}
           >
             {allConditions?.map((condition, index) => (
-              <Stack
-                key={index}
-                spacing={1}
-                width="350px"
-                borderRadius="3px"
-                p="5px"
-                m="10px"
-                border={"1px solid gray"}
-                boxShadow="0px 0px 2px white"
-              >
-                <VStack spacing={3} align="stretch" color="black">
+              // <Stack
+              //   key={index}
+              //   spacing={1}
+              //   width="350px"
+              //   borderRadius="3px"
+              //   p="5px"
+              //   m="10px"
+              //   border={"1px solid gray"}
+              //   boxShadow="0px 0px 2px white"
+              // >
+                <VStack key={index} border="1px solid gray" p={4} w={{ base: "100%", md: "350px" }} color="black">
                   <FormControl id="lotteryCategoryName" isRequired>
-                    <HStack justifyContent="space-between">
-                      <Box>
-                        <FormLabel>Lottery Category Name</FormLabel>
+                    <Flex justifyContent="space-between" width="100%" bg="#92CCDC" padding="5px"> 
+                      {/* <Box> */}
                         <FormLabel>{condition.lotteryCategoryName}</FormLabel>
-                      </Box>
+                      {/* </Box> */}
                       <Box>
                         <Button
                           size="sm"
@@ -362,12 +366,18 @@ const PaymentCondition = () => {
                           <RiDeleteBinLine size={20} color="white" />
                         </Button> */}
                       </Box>
-                    </HStack>
+                    </Flex>
                   </FormControl>
                   <FormControl id="conditions" isRequired>
-                    <FormLabel>Payment Condition</FormLabel>
-                    <Stack p="5px">
+                    <Stack>
                       <Flex
+                        // wrap="wrap"
+                        // padding="10px"
+                        gap={2}
+                        w="full"
+                        marginTop="1px"
+                        background="#D9E6F1"
+                        paddingBottom="5px"
                         // flexWrap="wrap"
                         // flexDirection={{ base: "column", md: "row" }}
                         justifyContent="space-between"
@@ -384,6 +394,8 @@ const PaymentCondition = () => {
                             <Input
                               placeholder="First"
                               maxLength={2}
+                              borderRadius="none"
+                              background="#B8CBE5"
                               isReadOnly={true}
                               value={condition.conditions[0].condition}
                               onChange={(event) =>
@@ -397,6 +409,8 @@ const PaymentCondition = () => {
                             </FormLabel>
                             <Input
                               placeholder="Second"
+                              borderRadius="none"
+                              background="#B8CBE5"
                               maxLength={2}
                               isReadOnly={true}
                               value={condition.conditions[1].condition}
@@ -411,6 +425,8 @@ const PaymentCondition = () => {
                             </FormLabel>
                             <Input
                               placeholder="Third"
+                              borderRadius="none"
+                              background="#B8CBE5"
                               maxLength={2}
                               isReadOnly={true}
                               value={condition.conditions[2].condition}
@@ -425,6 +441,8 @@ const PaymentCondition = () => {
                             </FormLabel>
                             <Input
                               placeholder="L3C"
+                              borderRadius="none"
+                              background="#B8CBE5"
                               maxLength={3}
                               isReadOnly={true}
                               value={condition.conditions[3].condition}
@@ -446,6 +464,8 @@ const PaymentCondition = () => {
                             </FormLabel>
                             <Input
                               placeholder="L4C"
+                              borderRadius="none"
+                              background="#B8CBE5"
                               isReadOnly={true}
                               value={condition.conditions[4].condition}
                             />
@@ -457,6 +477,8 @@ const PaymentCondition = () => {
                             </FormLabel>
                             <Input
                               placeholder="L5C"
+                              borderRadius="none"
+                              background="#B8CBE5"
                               isReadOnly={true}
                               value={condition.conditions[7].condition}
                             />
@@ -468,6 +490,8 @@ const PaymentCondition = () => {
                             </FormLabel>
                             <Input
                               placeholder="MRG"
+                              borderRadius="none"
+                              background="#B8CBE5"
                               isReadOnly={true}
                               value={condition.conditions[10].condition}
                               type="number"
@@ -597,7 +621,7 @@ const PaymentCondition = () => {
                     </Stack>
                   </FormControl>
                 </VStack>
-              </Stack>
+              // </Stack>
             ))}
           </Flex>
         </CardBody>
@@ -633,23 +657,25 @@ const PaymentCondition = () => {
               </FormControl>
               <FormControl id="Conditions" isRequired>
                 <FormLabel>Payment Conditions</FormLabel>
-                <Stack p="5px">
+                {/* <Stack p="5px"> */}
                   <Flex
+                    wrap="wrap"
                     // flexWrap="wrap"
                     // flexDirection={{ base: "column", md: "row" }}
                     justifyContent="space-between"
                   >
-                    <VStack
+                    {/* <VStack
                       mx="3px"
                       flexBasis={{ base: "100%", md: "50%" }}
                       color="black"
-                    >
-                      <Box>
+                    > */}
+                      <Box mt="2px" width="30%">
                         <FormLabel fontSize={14} mb="0" mx="2px">
                           1st (First)
                         </FormLabel>
                         <Input
                           placeholder="First"
+                          background="none"
                           value={conditions[0].condition}
                           onChange={(event) =>
                             handleNumberChange(0, event.target.value)
@@ -657,12 +683,13 @@ const PaymentCondition = () => {
                           type="number"
                         />
                       </Box>
-                      <Box>
+                      <Box mt="2px" width="30%">
                         <FormLabel fontSize={14} mb="0" mx="2px">
                           2nd (Second)
                         </FormLabel>
                         <Input
                           placeholder="Second"
+                          background="none"
                           value={conditions[1].condition}
                           onChange={(event) =>
                             handleNumberChange(1, event.target.value)
@@ -670,12 +697,13 @@ const PaymentCondition = () => {
                           type="number"
                         />
                       </Box>
-                      <Box>
+                      <Box mt="2px" width="30%">
                         <FormLabel fontSize={14} mb="0" mx="2px">
                           3rd (Third)
                         </FormLabel>
                         <Input
                           placeholder="Third"
+                          background="none"
                           value={conditions[2].condition}
                           onChange={(event) =>
                             handleNumberChange(2, event.target.value)
@@ -683,12 +711,13 @@ const PaymentCondition = () => {
                           type="number"
                         />
                       </Box>
-                      <Box>
+                      <Box mt="2px" width="30%">
                         <FormLabel fontSize={14} mb="0" mx="2px">
                           L3C
                         </FormLabel>
                         <Input
                           placeholder="L3C"
+                          background="none"
                           value={conditions[3].condition}
                           onChange={(event) =>
                             handleNumberChange(3, event.target.value)
@@ -696,19 +725,20 @@ const PaymentCondition = () => {
                           type="number"
                         />
                       </Box>
-                    </VStack>
+                    {/* </VStack> */}
 
-                    <VStack
+                    {/* <VStack
                       mx="3px"
                       flexBasis={{ base: "100%", md: "50%" }}
                       color="black"
-                    >
-                      <Box>
+                    > */}
+                      <Box mt="2px" width="30%">
                         <FormLabel fontSize={14} mb="0" mx="2px">
                           L4C
                         </FormLabel>
                         <Input
                           placeholder="L4C"
+                          background="none"
                           value={conditions[4].condition}
                           onChange={(event) => {
                             handleNumberChange(4, event.target.value);
@@ -719,12 +749,13 @@ const PaymentCondition = () => {
                         />
                       </Box>
 
-                      <Box>
+                      <Box mt="2px" width="30%">
                         <FormLabel fontSize={14} mb="0" mx="2px">
                           L5C
                         </FormLabel>
                         <Input
                           placeholder="L5C"
+                          background="none"
                           value={conditions[7].condition}
                           onChange={(event) => {
                             handleNumberChange(7, event.target.value);
@@ -735,12 +766,13 @@ const PaymentCondition = () => {
                         />
                       </Box>
 
-                      <Box>
+                      <Box mt="2px" width="30%">
                         <FormLabel fontSize={14} mb="0" mx="2px">
                           MRG
                         </FormLabel>
                         <Input
                           placeholder="MRG"
+                          background="none"
                           value={conditions[10].condition}
                           onChange={(event) => {
                             handleNumberChange(10, event.target.value);
@@ -753,98 +785,7 @@ const PaymentCondition = () => {
                           type="number"
                         />
                       </Box>
-                      {/* <Box>
-                        <FormLabel fontSize={14} mb="0" mx="2px">
-                          MRG1
-                        </FormLabel>
-                        <Input
-                          placeholder="MRG1"
-                          value={conditions[9].condition}
-                          onChange={(event) =>
-                            handleNumberChange(9, event.target.value)
-                          }
-                          type="number"
-                        />
-                      </Box>
-                      <Box>
-                        <FormLabel fontSize={14} mb="0" mx="2px">
-                          MRG1
-                        </FormLabel>
-                        <Input
-                          placeholder="MRG1"
-                          value={conditions[9].condition}
-                          onChange={(event) =>
-                            handleNumberChange(9, event.target.value)
-                          }
-                          type="number"
-                        />
-                      </Box>
-                      <Box>
-                        <FormLabel fontSize={14} mb="0" mx="2px">
-                          MRG2
-                        </FormLabel>
-                        <Input
-                          placeholder="MRG2"
-                          value={conditions[10].condition}
-                          onChange={(event) =>
-                            handleNumberChange(10, event.target.value)
-                          }
-                          type="number"
-                        />
-                      </Box>
-                      <Box>
-                        <FormLabel fontSize={14} mb="0" mx="2px">
-                          MRG3
-                        </FormLabel>
-                        <Input
-                          placeholder="MRG3"
-                          value={conditions[11].condition}
-                          onChange={(event) =>
-                            handleNumberChange(11, event.target.value)
-                          }
-                          type="number"
-                        />
-                      </Box>
-                      <Box>
-                        <FormLabel fontSize={14} mb="0" mx="2px">
-                          MRG4
-                        </FormLabel>
-                        <Input
-                          placeholder="MRG4"
-                          value={conditions[12].condition}
-                          onChange={(event) =>
-                            handleNumberChange(12, event.target.value)
-                          }
-                          type="number"
-                        />
-                      </Box>
-                      <Box>
-                        <FormLabel fontSize={14} mb="0" mx="2px">
-                          MRG5
-                        </FormLabel>
-                        <Input
-                          placeholder="MRG5"
-                          value={conditions[13].condition}
-                          onChange={(event) =>
-                            handleNumberChange(13, event.target.value)
-                          }
-                          type="number"
-                        />
-                      </Box>
-                      <Box>
-                        <FormLabel fontSize={14} mb="0" mx="2px">
-                          MRG6
-                        </FormLabel>
-                        <Input
-                          placeholder="MRG5"
-                          value={conditions[14].condition}
-                          onChange={(event) =>
-                            handleNumberChange(14, event.target.value)
-                          }
-                          type="number"
-                        />
-                      </Box> */}
-                    </VStack>
+                    {/* </VStack> */}
 
                     {/* <VStack
                       mx="3px"
@@ -918,7 +859,7 @@ const PaymentCondition = () => {
                       </Box>
                     </VStack> */}
                   </Flex>
-                </Stack>
+                {/* </Stack> */}
               </FormControl>
             </VStack>
           </form>

@@ -45,7 +45,8 @@ const WinNumber = () => {
 
   const [loading, setLoading] = useState(false);
 
-  const fetchWinningNumbers = async () => {
+  const fetchWinningNumbers = async (e) => {
+    e.preventDefault();
     try {
       setLoading(true);
       const response = await api().post("/subadmin/getwiningnumber", {

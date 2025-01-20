@@ -65,8 +65,8 @@ const SaleDetails = () => {
 
   const [loading, setLoading] = useState(false);
 
-  const fetchSellDetails = async () => {
-   
+  const fetchSellDetails = async (e) => {
+    e.preventDefault();
     try {
       setLoading(true);
       const responseAllNumber = await api().get(
@@ -205,6 +205,7 @@ const SaleDetails = () => {
           handleSearch={fetchSellDetails}
           colorMode={colorMode}
           showToDate={false}
+          showAllInSellerField={true}
         />
          <div className="custom-card-body">
             <CardBody>

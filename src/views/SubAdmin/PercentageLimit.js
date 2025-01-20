@@ -206,13 +206,21 @@ const PercentageLimit = () => {
   };
 
   return (
-    <Flex direction="column" pt="1px"  mx="auto"
+    <Flex 
+    direction="column"
+    pt={{ base: "120px", md: "75px" }}
+    mx="auto"
     justifyContent="center"
-    alignItems="center" width="60%">
+    alignItems="center" // Add this to center children horizontally
+    width="100%"
+    >
       <Card
-        overflowX={{ md: "scroll", xl: "hidden" }}
-        width="100%"
+        overflowX={{ sm: "scroll", xl: "hidden" }}
+        p={{ base: "5px", md: "20px" }}
+        width="60%"
         border={{ base: "none", md: "1px solid gray" }}
+        borderRadius="none"
+        bg="gray"
       >
         <CardHeader bg="#92CCDC" display="flex" justifyContent="space-between">
           <Text fontSize="lg" color="black" font="Weight:bold">
@@ -235,24 +243,26 @@ const PercentageLimit = () => {
             ADD
           </Button>
         </CardHeader>
-        <CardBody  p={{ base: "4px", md: "15px" }} pb="15px">
+        <CardBody  p={{ base: "4px", md: "8px" }} pb="15px">
           <Flex
-            flexWrap="wrap"
-            flexDirection={{ base: "column", sm: "row" }}
-            justifyContent="flex-start"
+            wrap="wrap"
+            gap={3}
+            justifyContent="space-between"
             width="100%"
           >
             {allConditions?.map((condition, index) => (
-              <Stack
-                key={index}
-                spacing={1}
-                width="30%"
-                p="5px"
-                marginLeft='3%'
-                bg="#4AADC6"
-                // border={"1px solid gray"}
-              >
-                <VStack spacing={3} align="stretch" color="black">
+              // <Stack
+              //   key={index}
+              //   spacing={1}
+              //   w={{ base: "100%", md: "350px" }}
+              //   p={4}
+              //   bg="#4AADC6"
+              //   // border={"1px solid gray"}
+              // >
+                <VStack spacing={3} align="stretch" color="black" bg="#4AADC6"  key={index}
+                border="1px solid gray"
+                p={4}
+                w={{ base: "100%", md: "350px" }}>
                 <FormControl id="user" >
                     <HStack justifyContent="space-between" bg="#92CCDC">
                       <Box>
@@ -369,7 +379,7 @@ const PercentageLimit = () => {
                     </Stack> */}
                   </FormControl>
                 </VStack>
-              </Stack>
+              // </Stack>
             ))}
           </Flex>
         </CardBody>
@@ -399,15 +409,16 @@ const PercentageLimit = () => {
             </FormControl>
             <FormControl id="Conditions" isRequired>
               <FormLabel>Payment Conditions</FormLabel>
-              <Flex justifyContent="space-between">
-                <VStack color="black">
+              <Flex wrap="wrap" gap={2}>
+                {/* <VStack color="black"> */}
                   {conditions.map((condition, index) => (
-                    <Box key={index}>
+                    <Box key={index} w="30%">
                       <FormLabel fontSize={14}>
                         {condition.gameCategory}
                       </FormLabel>
                       <Input
                         value={condition.limitPercent}
+                        bg="none"
                         onChange={(e) =>
                           handleNumberChange(index, e.target.value)
                         }
@@ -415,7 +426,7 @@ const PercentageLimit = () => {
                       />
                     </Box>
                   ))}
-                </VStack>
+                {/* </VStack> */}
               </Flex>
             </FormControl>
           </VStack>

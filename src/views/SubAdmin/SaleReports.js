@@ -85,7 +85,8 @@ const SaleReports = () => {
     fetchSeller();
   }, []);
 
-  const fetchReports = async () => {
+  const fetchReports = async (e) => {
+    e.preventDefault();
     try {
       setLoading(true);
       const response = await api().get(
@@ -135,6 +136,8 @@ const SaleReports = () => {
           setToDate={setToDate}
           handleSearch={fetchReports}
           colorMode={colorMode}
+          showAllInSellerField={true}
+          showAllInLotteryField={true}
         />
         
         <div className="custom-card-body">

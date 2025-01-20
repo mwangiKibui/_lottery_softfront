@@ -11,9 +11,20 @@ const CustomCardHeader = (
         <div className='cch-parent-form-card'>
             <div className='cch-form-card'>
                 <div className='cch-title'>
+                    <div className='cch-title-content'>
+                        {
+                            props.title
+                        }
+                    </div>
+                    <div class="cch-title-actions">
                     {
-                        props.title
+                        props.showHeaderAction && (
+                            <button type="button" className="header-action-btn" onClick={props.handleHeaderAction}>
+                                <i className='fa fa-plus' />
+                            </button>
+                        )
                     }
+                    </div>
                 </div>
 
                 <form className='cch-form' onSubmit={props.handleSearch}>
@@ -47,6 +58,11 @@ const CustomCardHeader = (
                                     <label htmlFor="seller">Choose seller</label>
                                     <select name="seller" id="seller" onChange={e => props.setSelectedSellerId(e.target.value)}>
                                         <option value=""> Choose seller</option>
+                                        {
+                                            props.showAllInSellerField && (
+                                                <option value="">All</option>
+                                            )
+                                        }
                                         {
                                             props.sellerInfo.map((info) => (
                                                 <option value={info._id}>{info.userName}</option>
@@ -89,6 +105,11 @@ const CustomCardHeader = (
                                 <label htmlFor="lotteryCategoryName">Lottery</label>
                                 <select name='lotteryCategoryName' id="lotteryCategoryName" onChange={e => props.setLotteryCategoryName(e.target.value)}>
                                     <option value=""> Choose Lottery</option>
+                                    {
+                                        props.showAllInLotteryField && (
+                                            <option value="">All</option>
+                                        )
+                                    }
                                     {
                                         props.lotteryCategories.map((category) => (
                                             <option value={category.lotteryName}>{category.lotteryName}</option>
@@ -152,10 +173,10 @@ const CustomCardHeader = (
 
 CustomCardHeader.propTypes = {
     title: PropTypes.string.isRequired,
-    setSelectedSellerId: PropTypes.func.isRequired,
-    sellerInfo: PropTypes.arrayOf(PropTypes.object).isRequired,
-    setLotteryCategoryName: PropTypes.func.isRequired,
-    lotteryCategories: PropTypes.arrayOf(PropTypes.object).isRequired,
+    setSelectedSellerId: PropTypes.func,
+    sellerInfo: PropTypes.arrayOf(PropTypes.object),
+    setLotteryCategoryName: PropTypes.func,
+    lotteryCategories: PropTypes.arrayOf(PropTypes.object),
     fromDate: PropTypes.string,
     setFromDate: PropTypes.func.isRequired,
     toDate: PropTypes.string,
@@ -163,16 +184,23 @@ CustomCardHeader.propTypes = {
     showToDate: PropTypes.bool,
     showSellerField: PropTypes.bool,
     showLotteryField: PropTypes.bool,
+    showAllInLotteryField: PropTypes.bool,
+    showAllInSellerField: PropTypes.bool,
     showFromField: PropTypes.bool,
     handleSearch: PropTypes.func.isRequired,
-    colorMode: PropTypes.string.isRequired
+    colorMode: PropTypes.string.isRequired,
+    showHeaderAction: PropTypes.bool,
+    handleHeaderAction: PropTypes.func
 };
 
 CustomCardHeader.defaultProps = {
     showToDate: true,
     showSellerField:true,
     showLotteryField:true,
-    showFromField:true
+    showFromField:true,
+    showHeaderAction:false,
+    showAllInLotteryField: false,
+    showAllInSellerField: false
 }
 
 export default CustomCardHeader;

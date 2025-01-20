@@ -30,6 +30,7 @@ import Card from "components/Card/Card.js";
 import CardHeader from "components/Card/CardHeader.js";
 import CardBody from "components/Card/CardBody.js";
 import Modal from "components/Modal/Modal.js";
+import CustomCardHeader from "components/CustomCardHeader/CustomCardHeader.js";
 
 const initWinNumbers = [
   {
@@ -154,14 +155,15 @@ const WinningNumbersManagement = () => {
     fetchLotteryCategories();
   }, []);
 
-  const fetchWinningNumbers = async () => {
+  const fetchWinningNumbers = async (e) => {
+    e.preventDefault();
     try {
       const response = await api().post("/admin/getwiningnumber", {
         lotteryCategoryName: "",
         fromDate,
         toDate,
       });
-      console.log(response.data.data);
+      console.log("the response is ",response);
       setWinningNumbers(response.data.data);
     } catch (error) {
       console.error(error);
@@ -325,78 +327,29 @@ const WinningNumbersManagement = () => {
     return dateString;
   };
 
+  const handleAddWinNumbers = () => {
+    setLotteryCategoryName(lotteryCategories[0]?.lotteryName);
+    onOpen();
+  }
+
   return (
-    <Flex direction="column" pt={{ base: "120px", md: "75px" }}>
+    <Flex direction="column" pt={{ base: "120px", md: "75px" }} width="96%" mx="auto" mt="0px">
       <Card overflowX={{ sm: "scroll", xl: "hidden" }} p={{ base: "5px", md: "20px"}} width="100%" border={{base: "none", md: "1px solid gray"}}>
-        <CardHeader
-          p="6px 0px 22px 0px"
-          display="flex"
-          justifyContent="space-between"
-        >
-          <Flex
-            flexWrap="wrap"
-            flexDirection="column"
-            justifyContent="flex-start"
-            width="100%"
-          >
-            <Text fontSize="lg"  font="Weight:bold">
-              Winning Numbers
-            </Text>
-            <Flex
-              flexWrap="wrap"
-              justifyContent="space-start"
-              alignItems={"center"}
-            >
-              <FormControl id="fromDate" width="320px" py="10px" isRequired>
-                <HStack justifyContent="space-between">
-                  <FormLabel>From</FormLabel>
-                  <Input
-                    type="date"
-                    value={fromDate}
-                    onChange={(event) => setFromDate(event.target.value)}
-                    width="200px"
-                  />
-                </HStack>
-              </FormControl>
-              <FormControl id="toDate" width="320px" py="10px" isRequired>
-                <HStack justifyContent="space-between">
-                  <FormLabel>To</FormLabel>
-                  <Input
-                    type="date"
-                    value={toDate}
-                    onChange={(event) => setToDate(event.target.value)}
-                    width="200px"
-                  />
-                </HStack>
-              </FormControl>
-              <HStack ml="10px" pt={{md: "0px", sm: "10px"}}>
-                <Button
-                  size="sm"
-                  onClick={fetchWinningNumbers}
-                  bg={colorMode === "light" ? "red.600" : "blue.300"}
-                  _hover={{
-                    bg: colorMode === "light" ? "red.500" : "blue.200",
-                  }}
-                >
-                  <CgSearch size={20} color={"white"}/>
-                </Button>
-                <Button
-                  size="sm"
-                  onClick={() => {
-                    setLotteryCategoryName(lotteryCategories[0]?.lotteryName);
-                    onOpen();
-                  }}
-                  bg={colorMode === "light" ? "blue.500" : "blue.300"}
-                  _hover={{
-                    bg: colorMode === "light" ? "blue.600" : "blue.200",
-                  }}
-                >
-                  <FaPlus size={24} color="white" />
-                </Button>
-              </HStack>
-            </Flex>
-          </Flex>
-        </CardHeader>
+        
+        <CustomCardHeader 
+            title = "Winning Numbers"
+            showSellerField={false}
+            showLotteryField={false}
+            fromDate={fromDate}
+            setFromDate={setFromDate}
+            toDate={toDate}
+            setToDate={setToDate}
+            handleSearch={fetchWinningNumbers}
+            showHeaderAction={true}
+            handleHeaderAction={handleAddWinNumbers}
+        />
+        
+        <div className="custom-card-body">
         <CardBody>
           <Flex
             flexWrap="wrap"
@@ -657,6 +610,7 @@ const WinningNumbersManagement = () => {
             ))}
           </Flex>
         </CardBody>
+        </div>
       </Card>
       {/* Create/Edit User Modal */}
       <Modal

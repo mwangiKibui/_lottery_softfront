@@ -86,7 +86,8 @@ const WinnerTickets = () => {
     fetchSeller();
   }, []);
 
-  const fetchWinnerTickets = async () => {
+  const fetchWinnerTickets = async (e) => {
+    e.preventDefault();
     try {
       setLoading(true);
       const response = await api().get(
@@ -152,6 +153,8 @@ const WinnerTickets = () => {
           setToDate={setToDate}
           handleSearch={fetchWinnerTickets}
           colorMode={colorMode}
+          showAllInSellerField={true}
+          showAllInLotteryField={true}
         />
       <div className="custom-card-body">
         <CardBody>

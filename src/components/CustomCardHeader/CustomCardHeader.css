@@ -15,19 +15,36 @@
     border-top-right-radius: 5px;
 }
 
-.cch-title {
+.cch-title{
+    display: flex;
+    justify-content: space-between;
     width: 100%;
     height: 50px;
     background-color: rgb(111, 168, 212) !important;
     border-top-left-radius: 5px;
     border-top-right-radius: 5px;
+    border-bottom: 1px solid wheat;
+    margin-bottom: 5px;
+}
+
+.cch-title-content {
     padding-top: 15px;
+    padding-left: 20px;
+    padding-right: 20px;
     color: black;
     font-size: 20px;
     text-align: left;
-    padding-left: 20px;
-    border-bottom: 1px solid wheat;
-    margin-bottom: 5px;
+}
+
+.cch-title-actions{
+    padding-right:10px;
+    padding-top:5px;
+}
+
+.header-action-btn{
+    padding:4px 10px;
+    font-size: 22px !important;
+    background-color: none;
 }
 
 .cch-form-card form{
@@ -83,6 +100,19 @@
     padding-left: 15px;
 }
 
+.header-action-btn{
+    background-color: green;
+    /* width: 60px; */
+    border: 1px solid green;
+    /* padding:4px; */
+    padding-top: 2px;
+    color: antiquewhite;
+    border-radius: 5px;
+    font-size: 20px;
+    font-weight: bold;
+    margin-bottom:10px;
+}
+
 /* Responsive Design */
 @media (max-width: 420px){
     .cch-form-card {
@@ -96,19 +126,23 @@
         border-top-left-radius: 5px;
         border-top-right-radius: 5px;
     }
-    .cch-form-card .cch-title {
+
+    .cch-form-card .cch-title{
         width: 100%;
         height: 30px;
         background-color: rgb(111, 168, 212);
         border-top-left-radius: 2px;
         border-top-right-radius: 2px;
+      
+        border-bottom: 1px solid wheat;
+        margin-bottom: 5px;
+    }
+    .cch-form-card .cch-title .cch-title-content {
         padding-top: 2px;
+        padding-left: 20px;
         color: black;
         font-size: 15px;
         text-align: left;
-        padding-left: 20px;
-        border-bottom: 1px solid wheat;
-        margin-bottom: 5px;
     }
 
     .cch-form-card form{
