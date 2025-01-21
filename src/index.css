@@ -373,8 +373,8 @@ button[type="submit"]{
         width: 95% !important;
         margin: 0px auto !important;
     }
-    .css-hboir5{
-        margin-left: 8px !important;
+    .sale-details-container{
+        margin-left: 8px;
     }
 }
 
@@ -398,7 +398,7 @@ button[type="submit"]{
     .css-6le2l9 {
         padding-top: 4px !important;
     }
-    .css-hboir5{
-        margin-left: 30px !important;
+    .sale-details-container{
+        margin-left: 30px;
     }
 }

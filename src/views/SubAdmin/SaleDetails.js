@@ -212,7 +212,7 @@ const SaleDetails = () => {
               {
                 loading ?
                 <Loading /> :
-                <HStack alignItems={"flex-start"}>
+                <HStack alignItems={"flex-start"} className="sale-details-container">
                   <VStack width="45%">
                     <Table variant="striped">
                       <Thead>
