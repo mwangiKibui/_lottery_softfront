@@ -212,8 +212,8 @@ const SaleDetails = () => {
               {
                 loading ?
                 <Loading /> :
-                <HStack alignItems={"flex-start"}>
-                  <VStack width="45%">
+                <HStack alignItems={"flex-start"} className="sale-details-stack">
+                  <VStack width="50%">
                     <Table variant="striped">
                       <Thead>
                         <Tr>
@@ -266,7 +266,7 @@ const SaleDetails = () => {
                       </Thead>
                     </Table>
                   </VStack>
-                  <VStack width="60%">
+                  <VStack width="50%">
                     <VStack width="100%" border={"1px solid gray"} padding={"10px"}>
                       <h4 style={{marginBottom: "3px"}}>{gameCategoryDetail[0]?._id?.lotteryCategoryName}</h4>
                       {gameCategoryDetail?.map((item, index) => (

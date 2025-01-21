@@ -453,45 +453,49 @@ const LimitNumber = () => {
 
         <CardBody>
           <Flex wrap="wrap" justifyContent="space-between" gap={0}>
-            {limitNumbers.map((limit) => (
-              <VStack
-                key={limit._id}
-                border="1px solid gray"
-                w={{ base: "100%", md: "350px" }}
-              >
+            {limitNumbers.map((limit) => {
+              return (
+              <div style={{marginTop:"10px"}}> 
+                  <VStack
+                        key={limit._id}
+                        border="1px solid gray"
+                        w={{ base: "100%", md: "350px" }}
+                      >
 
-                  <Flex justifyContent="space-between" width="100%"  bg="#92CCDC" padding="5px" marginBottom="1px">
-                    <FormLabel>
-                      {limit.seller?.userName ||
-                        limit.superVisor?.userName ||
-                        "All"}
-                    </FormLabel>
-                    <FaTimesCircle cursor="pointer" className="limit-number-icon"  color="red" onClick={() => handleDelete(limit._id)}/>
-                  </Flex>
-
-                  <Flex justifyContent="space-between" width="100%"  bg="#92CCDC" padding="5px" >
-
-                    <FormLabel >{limit.lotteryCategoryName}</FormLabel>
-                    <FaEdit cursor="pointer" onClick={() => handleEdit(limit)} className="limit-number-icon" color="yellow"/>
-                  
-                  </Flex>
-                 
-                <Flex background="#D9E6F1" padding="10px" wrap="wrap" gap={2} w="full" marginTop="1px">
-                  {limit.limits.map((limitItem) => (
-                    <Box key={limitItem.gameCategory} w="45%">
-                      <FormLabel fontSize="sm">
-                        {limitItem.gameCategory}
+                    <Flex justifyContent="space-between" width="100%"  bg="#92CCDC" padding="5px" marginBottom="1px">
+                      <FormLabel>
+                        {limit.seller?.userName ||
+                          limit.superVisor?.userName ||
+                          "All"}
                       </FormLabel>
-                      <Input
-                        value={limitItem.limitsButs}
-                        isReadOnly
-                        size="sm"
-                      />
-                    </Box>
-                  ))}
-                </Flex>
-              </VStack>
-            ))}
+                      <FaTimesCircle cursor="pointer" className="limit-number-icon"  color="red" onClick={() => handleDelete(limit._id)}/>
+                    </Flex>
+
+                    <Flex justifyContent="space-between" width="100%"  bg="#92CCDC" padding="5px" >
+
+                      <FormLabel >{limit.lotteryCategoryName}</FormLabel>
+                      <FaEdit cursor="pointer" onClick={() => handleEdit(limit)} className="limit-number-icon" color="yellow"/>
+                    
+                    </Flex>
+                  
+                  <Flex background="#D9E6F1" padding="10px" wrap="wrap" gap={2} w="full" marginTop="1px">
+                    {limit.limits.map((limitItem) => (
+                      <Box key={limitItem.gameCategory} w="45%">
+                        <FormLabel fontSize="sm">
+                          {limitItem.gameCategory}
+                        </FormLabel>
+                        <Input
+                          value={limitItem.limitsButs}
+                          isReadOnly
+                          size="sm"
+                        />
+                      </Box>
+                    ))}
+                  </Flex>
+                </VStack>
+              </div>
+              )
+            })}
           </Flex>
         </CardBody>
       </Card>

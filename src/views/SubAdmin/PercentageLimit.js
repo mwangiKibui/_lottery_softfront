@@ -259,6 +259,7 @@ const PercentageLimit = () => {
               //   bg="#4AADC6"
               //   // border={"1px solid gray"}
               // >
+              <div style={{marginTop:"10px"}}> 
                 <VStack spacing={3} align="stretch" color="black" bg="#4AADC6"  key={index}
                 border="1px solid gray"
                 w={{ base: "100%", md: "350px" }}>
@@ -378,6 +379,7 @@ const PercentageLimit = () => {
                     </Stack> */}
                   </FormControl>
                 </VStack>
+              </div>
               // </Stack>
             ))}
           </Flex>
@@ -410,8 +412,23 @@ const PercentageLimit = () => {
               <FormLabel>Payment Conditions</FormLabel>
               <Flex wrap="wrap" gap={2}>
                 {/* <VStack color="black"> */}
-                  {currentCondition?.limits?.map((condition, index) => {
-                    console.log("the condition we have is ",condition);
+                  { currentCondition != null ? currentCondition.limits.map((condition, index) => {
+                    return (
+                      <Box key={index} w="30%">
+                        <FormLabel fontSize={14}>
+                          {condition.gameCategory}
+                        </FormLabel>
+                        <Input
+                          value={condition.limitPercent}
+                          bg="none"
+                          onChange={(e) =>
+                            handleNumberChange(index, e.target.value)
+                          }
+                          type="number"
+                        />
+                      </Box>
+                    )
+                  }) : conditions.map((condition, index) => {
                     return (
                       <Box key={index} w="30%">
                         <FormLabel fontSize={14}>
