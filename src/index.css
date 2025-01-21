@@ -222,10 +222,6 @@ button[type="submit"]{
     margin-top: 0px !important;
 }
 
-.sale-details-container{
-    margin-left: 8px;
-}
-
 @keyframes rotation {
     0% {
         transform: rotate(0deg);
@@ -376,6 +372,9 @@ button[type="submit"]{
         width: 95% !important;
         margin: 0px auto !important;
     }
+    .sale-details-container{
+        margin:0px 8px !important;
+    }
 }
 
 @media screen and (min-width: 768px) {
@@ -398,7 +397,7 @@ button[type="submit"]{
     .css-6le2l9 {
         padding-top: 4px !important;
     }
-    /* .sale-details-container{
+    .sale-details-container{
         margin-left: 30px;
-    } */
+    }
 }

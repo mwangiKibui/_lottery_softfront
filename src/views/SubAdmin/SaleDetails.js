@@ -208,11 +208,11 @@ const SaleDetails = () => {
           showAllInSellerField={true}
         />
          <div className="custom-card-body">
-            <CardBody>
+            <CardBody className="sale-details-container">
               {
                 loading ?
                 <Loading /> :
-                <HStack alignItems={"flex-start"} className="sale-details-container">
+                <HStack alignItems={"flex-start"}>
                   <VStack width="45%">
                     <Table variant="striped">
                       <Thead>
