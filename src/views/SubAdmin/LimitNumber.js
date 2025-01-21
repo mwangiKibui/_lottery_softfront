@@ -460,7 +460,7 @@ const LimitNumber = () => {
                 w={{ base: "100%", md: "350px" }}
               >
 
-                  <Flex justifyContent="space-between" width="100%"  bg="#92CCDC" padding="5px">
+                  <Flex justifyContent="space-between" width="100%"  bg="#92CCDC" padding="5px" marginBottom="1px">
                     <FormLabel>
                       {limit.seller?.userName ||
                         limit.superVisor?.userName ||
@@ -469,7 +469,7 @@ const LimitNumber = () => {
                     <FaTimesCircle cursor="pointer" className="limit-number-icon"  color="red" onClick={() => handleDelete(limit._id)}/>
                   </Flex>
 
-                  <Flex justifyContent="space-between" width="100%"  bg="#92CCDC" padding="5px">
+                  <Flex justifyContent="space-between" width="100%"  bg="#92CCDC" padding="5px" >
 
                     <FormLabel >{limit.lotteryCategoryName}</FormLabel>
                     <FaEdit cursor="pointer" onClick={() => handleEdit(limit)} className="limit-number-icon" color="yellow"/>
