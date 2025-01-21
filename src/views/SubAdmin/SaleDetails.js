@@ -208,7 +208,7 @@ const SaleDetails = () => {
           showAllInSellerField={true}
         />
          <div className="custom-card-body">
-            <CardBody className="sale-details-container" mx="0px">
+            <CardBody className="sale-details-container">
               {
                 loading ?
                 <Loading /> :
