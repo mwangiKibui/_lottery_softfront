@@ -209,6 +209,11 @@ button[type="submit"]{
     margin-top: 10px !important;
 }
 
+.custom-h5{
+    background-color: transparent !important;
+    color: #000 !important;
+}
+
 
 @keyframes rotation {
     0% {

@@ -230,8 +230,10 @@ const SoldTickets = () => {
                               <Button
                                 className="tableInterBtn"
                                 size="sm"
-                                width="100%"
-                                backgroundColor={"#edf2f7"}
+                                color="white"
+                                backgroundColor={"green"}
+                                borderRadius="5px"
+                                padding="0px"
                                 onClick={() =>
                                   handleGetTicketNumbers(item.numbers)
                                 }

@@ -213,7 +213,7 @@ const SaleDetails = () => {
                 loading ?
                 <Loading /> :
                 <HStack alignItems={"flex-start"}>
-                  <VStack width="45%">
+                  <VStack width="45%" ml={{base:"10px",md:"30px"}}>
                     <Table variant="striped">
                       <Thead>
                         <Tr>
@@ -231,8 +231,10 @@ const SaleDetails = () => {
                               <Button
                                 className="tableInterBtn"
                                 size="sm"
-                                width="100%"
-                                backgroundColor={"#edf2f7"}
+                                color="white"
+                                backgroundColor={"green"}
+                                borderRadius="5px"
+                                padding="0px"
                                 onClick={() =>
                                   fetchSellGameNumberDetails(
                                     item._id.lotteryCategoryName,
@@ -264,7 +266,7 @@ const SaleDetails = () => {
                       </Thead>
                     </Table>
                   </VStack>
-                  <VStack width="55%">
+                  <VStack width="60%">
                     <VStack width="100%" border={"1px solid gray"} padding={"10px"}>
                       <h4 style={{marginBottom: "3px"}}>{gameCategoryDetail[0]?._id?.lotteryCategoryName}</h4>
                       {gameCategoryDetail?.map((item, index) => (
@@ -278,9 +280,9 @@ const SaleDetails = () => {
                           <h5>{item?.totalAmount}</h5>
                         </Flex>
                       ))}
-                      <Flex width="70%" justifyContent={"space-between"} color="red" mt="0px !important">
-                        <h5>total</h5>
-                        <h5>
+                      <Flex width="70%" justifyContent={"space-between"} mt="0px !important">
+                        <h5 className="custom-h5">Total</h5>
+                        <h5 className="custom-h5">
                           {gameCategoryDetail?.reduce(
                             (acc, detail) => acc + detail.totalAmount,
                             0

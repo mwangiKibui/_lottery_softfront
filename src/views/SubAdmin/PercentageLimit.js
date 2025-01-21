@@ -246,7 +246,7 @@ const PercentageLimit = () => {
         <CardBody  p={{ base: "4px", md: "8px" }} pb="15px">
           <Flex
             wrap="wrap"
-            gap={3}
+            gap={0}
             justifyContent="space-between"
             width="100%"
           >
@@ -261,7 +261,6 @@ const PercentageLimit = () => {
               // >
                 <VStack spacing={3} align="stretch" color="black" bg="#4AADC6"  key={index}
                 border="1px solid gray"
-                p={4}
                 w={{ base: "100%", md: "350px" }}>
                 <FormControl id="user" >
                     <HStack justifyContent="space-between" bg="#92CCDC">
@@ -276,7 +275,7 @@ const PercentageLimit = () => {
                             colorMode === "light" ? "red.500" : "red.300"
                           }
                         >
-                          <FaTimesCircle size={20} color="white" />
+                          <FaTimesCircle cursor="pointer" onClick={() => handleDelete(condition._id)} size={20} color="white" />
                         </Button>
                       </Box>
                     </HStack>
@@ -299,7 +298,7 @@ const PercentageLimit = () => {
                       </Box>
                     </HStack>
                   </FormControl>
-                  <FormControl id="conditions">
+                  <FormControl id="conditions" p={4}>
                     {/* <FormLabel>Percentage Limit</FormLabel> */}
                     <Flex justifyContent="space-between">
                           <FormLabel fontSize={14}>L3C</FormLabel>
@@ -411,21 +410,24 @@ const PercentageLimit = () => {
               <FormLabel>Payment Conditions</FormLabel>
               <Flex wrap="wrap" gap={2}>
                 {/* <VStack color="black"> */}
-                  {conditions.map((condition, index) => (
-                    <Box key={index} w="30%">
-                      <FormLabel fontSize={14}>
-                        {condition.gameCategory}
-                      </FormLabel>
-                      <Input
-                        value={condition.limitPercent}
-                        bg="none"
-                        onChange={(e) =>
-                          handleNumberChange(index, e.target.value)
-                        }
-                        type="number"
-                      />
-                    </Box>
-                  ))}
+                  {currentCondition?.limits?.map((condition, index) => {
+                    console.log("the condition we have is ",condition);
+                    return (
+                      <Box key={index} w="30%">
+                        <FormLabel fontSize={14}>
+                          {condition.gameCategory}
+                        </FormLabel>
+                        <Input
+                          value={condition.limitPercent}
+                          bg="none"
+                          onChange={(e) =>
+                            handleNumberChange(index, e.target.value)
+                          }
+                          type="number"
+                        />
+                      </Box>
+                    )
+                  })}
                 {/* </VStack> */}
               </Flex>
             </FormControl>

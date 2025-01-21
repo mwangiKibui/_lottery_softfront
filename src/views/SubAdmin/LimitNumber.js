@@ -452,12 +452,11 @@ const LimitNumber = () => {
         )}
 
         <CardBody>
-          <Flex wrap="wrap" justifyContent="space-between" gap={3}>
+          <Flex wrap="wrap" justifyContent="space-between" gap={0}>
             {limitNumbers.map((limit) => (
               <VStack
                 key={limit._id}
                 border="1px solid gray"
-                p={4}
                 w={{ base: "100%", md: "350px" }}
               >
 
@@ -467,13 +466,13 @@ const LimitNumber = () => {
                         limit.superVisor?.userName ||
                         "All"}
                     </FormLabel>
-                    <FaTimesCircle className="limit-number-icon"  color="red"/>
+                    <FaTimesCircle cursor="pointer" className="limit-number-icon"  color="red" onClick={() => handleDelete(limit._id)}/>
                   </Flex>
 
                   <Flex justifyContent="space-between" width="100%"  bg="#92CCDC" padding="5px">
 
                     <FormLabel >{limit.lotteryCategoryName}</FormLabel>
-                    <FaEdit className="limit-number-icon" color="yellow"/>
+                    <FaEdit cursor="pointer" onClick={() => handleEdit(limit)} className="limit-number-icon" color="yellow"/>
                   
                   </Flex>
                  

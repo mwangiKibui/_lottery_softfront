@@ -57,10 +57,12 @@ const CustomCardHeader = (
                                 <>
                                     <label htmlFor="seller">Choose seller</label>
                                     <select name="seller" id="seller" onChange={e => props.setSelectedSellerId(e.target.value)}>
-                                        <option value=""> Choose seller</option>
+                                        
                                         {
-                                            props.showAllInSellerField && (
+                                            props.showAllInSellerField ? (
                                                 <option value="">All</option>
+                                            ) : (
+                                                <option value=""> Choose seller</option>
                                             )
                                         }
                                         {
@@ -104,10 +106,12 @@ const CustomCardHeader = (
                                 <>
                                 <label htmlFor="lotteryCategoryName">Lottery</label>
                                 <select name='lotteryCategoryName' id="lotteryCategoryName" onChange={e => props.setLotteryCategoryName(e.target.value)}>
-                                    <option value=""> Choose Lottery</option>
+                                    
                                     {
-                                        props.showAllInLotteryField && (
+                                        props.showAllInLotteryField ? (
                                             <option value="">All</option>
+                                        ):(
+                                            <option value=""> Choose Lottery</option>
                                         )
                                     }
                                     {
