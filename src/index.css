@@ -378,6 +378,9 @@ button[type="submit"]{
     .sale-details-stack{
         width: 100% !important;
     }
+    .chakra-modal__content{
+        width:95% !important;
+    }
 }
 
 @media screen and (min-width: 768px) {
