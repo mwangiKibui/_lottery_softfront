@@ -213,7 +213,7 @@ const SaleDetails = () => {
                 loading ?
                 <Loading /> :
                 <HStack alignItems={"flex-start"}>
-                  <VStack width="45%" ml={{base:"10px",md:"30px"}}>
+                  <VStack width="45%" ml={{base:"0px",md:"30px"}}>
                     <Table variant="striped">
                       <Thead>
                         <Tr>
@@ -276,8 +276,8 @@ const SaleDetails = () => {
                           key={index}
                           mt="0px !important"
                         >
-                          <h5>{item?._id?.gameCategory}</h5>
-                          <h5>{item?.totalAmount}</h5>
+                          <h5 className="custom-h5">{item?._id?.gameCategory}</h5>
+                          <h5 className="custom-h5">{item?.totalAmount}</h5>
                         </Flex>
                       ))}
                       <Flex width="70%" justifyContent={"space-between"} mt="0px !important">
