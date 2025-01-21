@@ -259,7 +259,7 @@ const PercentageLimit = () => {
               //   bg="#4AADC6"
               //   // border={"1px solid gray"}
               // >
-              <div style={{marginTop:"10px"}}> 
+              <div  style={{marginTop:"10px",width:"100%"}}> 
                 <VStack spacing={3} align="stretch" color="black" bg="#4AADC6"  key={index}
                 border="1px solid gray"
                 w={{ base: "100%", md: "350px" }}>

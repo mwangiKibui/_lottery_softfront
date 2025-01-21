@@ -455,7 +455,7 @@ const LimitNumber = () => {
           <Flex wrap="wrap" justifyContent="space-between" gap={0}>
             {limitNumbers.map((limit) => {
               return (
-              <div style={{marginTop:"10px"}}> 
+              <div style={{marginTop:"10px",width:"100%"}}> 
                   <VStack
                         key={limit._id}
                         border="1px solid gray"

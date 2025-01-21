@@ -332,7 +332,7 @@ const PaymentCondition = () => {
               //   border={"1px solid gray"}
               //   boxShadow="0px 0px 2px white"
               // >
-              <div style={{marginTop:"10px"}}> 
+              <div style={{marginTop:"10px",width:"100%"}}> 
                 <VStack key={index} border="1px solid gray" w={{ base: "100%", md: "350px" }} color="black">
                   <FormControl id="lotteryCategoryName" isRequired>
                     <Flex justifyContent="space-between" width="100%" bg="#92CCDC" padding="5px"> 
