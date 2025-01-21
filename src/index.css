@@ -222,6 +222,9 @@ button[type="submit"]{
     margin-top: 0px !important;
 }
 
+.sale-details-container{
+    margin-left: 8px;
+}
 
 @keyframes rotation {
     0% {
@@ -372,9 +375,6 @@ button[type="submit"]{
     .css-snbr68{
         width: 95% !important;
         margin: 0px auto !important;
-    }
-    .sale-details-container{
-        margin-left: 8px;
     }
 }
 
