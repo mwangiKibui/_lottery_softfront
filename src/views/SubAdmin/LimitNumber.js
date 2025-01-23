@@ -27,6 +27,7 @@ import Card from "components/Card/Card.js";
 import CardHeader from "components/Card/CardHeader.js";
 import CardBody from "components/Card/CardBody.js";
 import Modal from "components/Modal/Modal.js";
+import { AxiosError } from "axios";
 
 const LimitNumber = () => {
   const [editing, setEditing] = useState(false);
@@ -208,8 +209,14 @@ const LimitNumber = () => {
         isClosable: true,
       });
     } catch (error) {
+      let errorMessage  = "";
+      if(error instanceof AxiosError){
+        errorMessage = error.response?.data?.message || `Error ${editing ? "updating" : "creating"} limit`;
+      }else{
+        errorMessage = `Error ${editing ? "updating" : "creating"} limit`;
+      }
       toast({
-        title: `Error ${editing ? "updating" : "creating"} limit`,
+        title: errorMessage,
         status: "error",
         duration: 3000,
         isClosable: true,
@@ -452,10 +459,10 @@ const LimitNumber = () => {
         )}
 
         <CardBody>
-          <Flex wrap="wrap" justifyContent="space-between" gap={0}>
+          <Flex wrap="wrap" justifyContent="space-between" gap={0} width="100%">
             {limitNumbers.map((limit) => {
               return (
-              <div style={{marginTop:"10px",width:"100%"}}> 
+              <div className="loop-content-holder">
                   <VStack
                         key={limit._id}
                         border="1px solid gray"

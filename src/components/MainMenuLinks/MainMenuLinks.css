@@ -46,6 +46,16 @@ h3{
     padding-top: 5px;
 }
 
+.flex-box-admin{
+    width: 40%;
+    height: 70px;
+    margin-right: 20px;
+    margin-bottom: 15px;
+    text-align: center;
+    color: #fdf9bc;
+    padding-top: 5px;
+}
+
 .icon-box{
     display: flex;
     /*background-color: #fdf9bc;*/

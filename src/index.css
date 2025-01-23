@@ -221,7 +221,9 @@ button[type="submit"]{
 .css-1poc34z>*:not(style)~*:not(style){
     margin-top: 0px !important;
 }
-
+.loop-content-holder{
+    margin-top: 10px;
+}
 @keyframes rotation {
     0% {
         transform: rotate(0deg);
@@ -381,6 +383,15 @@ button[type="submit"]{
     .chakra-modal__content{
         width:95% !important;
     }
+    .loop-content-holder{
+        width: 100%;
+    }
+    .css-qt6qyu, .css-1brcgre{
+        padding-top: 20px !important;
+    }
+    .header-action-btn {
+        font-size: 15px;
+    }
 }
 
 @media screen and (min-width: 768px) {
@@ -403,7 +414,11 @@ button[type="submit"]{
     .css-6le2l9 {
         padding-top: 4px !important;
     }
-    .sale-details-container{
-        margin-left: 30px;
+    .sale-details-container .sale-details-stack{
+        width: 90%;
+        margin: 0px auto;
+    }
+    .css-qt6qyu, .css-1brcgre{
+        padding-top: 20px !important;
     }
 }

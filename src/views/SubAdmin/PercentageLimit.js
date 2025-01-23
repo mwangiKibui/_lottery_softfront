@@ -49,7 +49,10 @@ const PercentageLimit = () => {
   const [currentCondition, setCurrentCondition] = useState();
 
   useEffect(() => {
-    if (lotteryCategoryName) setConditions(initConditions);
+    if (lotteryCategoryName) {
+      conditions.length == 0 &&
+      setConditions(initConditions);
+    }
   }, [lotteryCategoryName]);
 
   useEffect(() => {
@@ -101,6 +104,7 @@ const PercentageLimit = () => {
 
   const handleCancel = () => {
     setEditing(false);
+    setConditions(initConditions);
     onClose();
   };
 
@@ -259,7 +263,7 @@ const PercentageLimit = () => {
               //   bg="#4AADC6"
               //   // border={"1px solid gray"}
               // >
-              <div  style={{marginTop:"10px",width:"100%"}}> 
+              <div className="loop-content-holder"> 
                 <VStack spacing={3} align="stretch" color="black" bg="#4AADC6"  key={index}
                 border="1px solid gray"
                 w={{ base: "100%", md: "350px" }}>
@@ -412,23 +416,27 @@ const PercentageLimit = () => {
               <FormLabel>Payment Conditions</FormLabel>
               <Flex wrap="wrap" gap={2}>
                 {/* <VStack color="black"> */}
-                  { currentCondition != null ? currentCondition.limits.map((condition, index) => {
-                    return (
-                      <Box key={index} w="30%">
-                        <FormLabel fontSize={14}>
-                          {condition.gameCategory}
-                        </FormLabel>
-                        <Input
-                          value={condition.limitPercent}
-                          bg="none"
-                          onChange={(e) =>
-                            handleNumberChange(index, e.target.value)
-                          }
-                          type="number"
-                        />
-                      </Box>
-                    )
-                  }) : conditions.map((condition, index) => {
+                  { 
+                  // currentCondition != null ? currentCondition.limits.map((condition, index) => {
+                  //   console.log("this is current condition");
+                  //   return (
+                  //     <Box key={index} w="30%">
+                  //       <FormLabel fontSize={14}>
+                  //         {condition.gameCategory}
+                  //       </FormLabel>
+                  //       <Input
+                  //         value={condition.limitPercent}
+                  //         bg="none"
+                  //         onChange={(e) =>
+                  //           handleNumberChange(index, e.target.value)
+                  //         }
+                  //         type="number"
+                  //       />
+                  //     </Box>
+                  //   )
+                
+                  conditions.map((condition, index) => {
+                    console.log("this is all the conditions");
                     return (
                       <Box key={index} w="30%">
                         <FormLabel fontSize={14}>

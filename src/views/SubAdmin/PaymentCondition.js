@@ -320,6 +320,7 @@ const PaymentCondition = () => {
             wrap="wrap"
             justifyContent="space-between"
             gap={0}
+            width="100%"
           >
             {allConditions?.map((condition, index) => (
               // <Stack
@@ -332,8 +333,8 @@ const PaymentCondition = () => {
               //   border={"1px solid gray"}
               //   boxShadow="0px 0px 2px white"
               // >
-              <div style={{marginTop:"10px",width:"100%"}}> 
-                <VStack key={index} border="1px solid gray" w={{ base: "100%", md: "350px" }} color="black">
+              <div className="loop-content-holder"> 
+                <VStack key={index} align="stretch" spacing={3} border="1px solid gray" w={{ base: "100%", md: "350px" }} color="black">
                   <FormControl id="lotteryCategoryName" isRequired>
                     <Flex justifyContent="space-between" width="100%" bg="#92CCDC" padding="5px"> 
                       {/* <Box> */}

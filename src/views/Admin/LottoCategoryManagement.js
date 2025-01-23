@@ -173,9 +173,17 @@ function LotteryCategoryManagement() {
   };
 
   return (
-    <Flex direction="column" pt={{ base: "120px", md: "75px" }}>
+    <Flex direction="column" pt={{ base: "120px", md: "75px" }} justifyContent="center"
+    alignItems="center"
+    width="100%">
       {/* Lottery Categories Table */}
-      <Card overflowX={{ sm: "scroll", xl: "hidden" }} p={{ base: "5px", md: "20px"}} width="100%" border={{base: "none", md: "1px solid gray"}}>
+      <Card 
+       overflowX={{ sm: "scroll", xl: "hidden" }}
+       p={{ base: "5px", md: "20px" }}
+       width="60%"
+       border={{ base: "none", md: "1px solid gray" }}
+       borderRadius="none"
+      >
         <CardHeader
           p="6px 0px 22px 0px"
           display="flex"

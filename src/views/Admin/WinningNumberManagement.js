@@ -177,6 +177,8 @@ const WinningNumbersManagement = () => {
   };
 
   const handleNumberChange = (index1, value) => {
+
+    console.log("the value is " + value,"the index is " + index1);
     const newNumbers = [...numbers];
     newNumbers[index1].number = value;
     // L4C
@@ -333,7 +335,7 @@ const WinningNumbersManagement = () => {
   }
 
   return (
-    <Flex direction="column" pt={{ base: "120px", md: "75px" }} width="96%" mx="auto" mt="0px">
+ <Flex direction="column" justifyContent="center" alignItems="center" width="60%" mx="auto" pt={{ base: "120px", md: "75px" }}>
       <Card overflowX={{ sm: "scroll", xl: "hidden" }} p={{ base: "5px", md: "20px"}} width="100%" border={{base: "none", md: "1px solid gray"}}>
         
         <CustomCardHeader 
@@ -632,6 +634,8 @@ const WinningNumbersManagement = () => {
                 <Input
                   type="date"
                   value={date}
+                  background="none"
+                  width="100%"
                   onChange={(event) => setDate(event.target.value)}
                 />
               </FormControl>
@@ -670,6 +674,7 @@ const WinningNumbersManagement = () => {
                           placeholder="First"
                           maxLength={2}
                           value={numbers[0].number}
+                          background="none"
                           onChange={(event) =>
                             handleNumberChange(0, event.target.value)
                           }
@@ -682,6 +687,7 @@ const WinningNumbersManagement = () => {
                         <Input
                           placeholder="Second"
                           maxLength={2}
+                          background="none"
                           value={numbers[1].number}
                           onChange={(event) =>
                             handleNumberChange(1, event.target.value)
@@ -695,6 +701,7 @@ const WinningNumbersManagement = () => {
                         <Input
                           placeholder="Third"
                           maxLength={2}
+                          background="none"
                           value={numbers[2].number}
                           onChange={(event) =>
                             handleNumberChange(2, event.target.value)
@@ -708,6 +715,7 @@ const WinningNumbersManagement = () => {
                         <Input
                           placeholder="L3C"
                           maxLength={3}
+                          background="none"
                           value={numbers[3].number}
                           onChange={(event) =>
                             handleNumberChange(3, event.target.value)
@@ -726,6 +734,7 @@ const WinningNumbersManagement = () => {
                         </FormLabel>
                         <Input
                           placeholder="MRG1"
+                          background="none"
                           /*isReadOnly={true}*/
                           value={numbers[10].number}
                           onChange={(event) =>
@@ -739,6 +748,7 @@ const WinningNumbersManagement = () => {
                         </FormLabel>
                         <Input
                           placeholder="MRG2"
+                          background="none"
                           /*isReadOnly={true}*/
                           value={numbers[11].number}
                           onChange={(event) =>
@@ -752,7 +762,8 @@ const WinningNumbersManagement = () => {
                         </FormLabel>
                         <Input
                           placeholder="MRG3"
-                          /*isReadOnly={true}*/
+                          background="none"
+                          // isReadOnly={false}
                           value={numbers[12].number}
                           onChange={(event) =>
                             handleNumberChange(12, event.target.value)
@@ -765,6 +776,7 @@ const WinningNumbersManagement = () => {
                         </FormLabel>
                         <Input
                           placeholder="MRG4"
+                          background="none"
                           /*isReadOnly={true}*/
                           value={numbers[13].number}
                           onChange={(event) =>
@@ -778,6 +790,7 @@ const WinningNumbersManagement = () => {
                         </FormLabel>
                         <Input
                           placeholder="MRG5"
+                          background="none"
                           /*isReadOnly={true}*/
                           value={numbers[14].number}
                           onChange={(event) =>
@@ -791,6 +804,7 @@ const WinningNumbersManagement = () => {
                         </FormLabel>
                         <Input
                           placeholder="MRG5"
+                          background="none"
                           /*isReadOnly={true}*/
                           value={numbers[15].number}
                           onChange={(event) =>
@@ -810,7 +824,8 @@ const WinningNumbersManagement = () => {
                         </FormLabel>
                         <Input
                           placeholder="L4C1"
-                          isReadOnly={true}
+                          background="none"
+                          // isReadOnly={true}
                           value={numbers[4].number}
                         />
                       </Box>
@@ -820,7 +835,8 @@ const WinningNumbersManagement = () => {
                         </FormLabel>
                         <Input
                           placeholder="L4C2"
-                          isReadOnly={true}
+                          background="none"
+                          // isReadOnly={true}
                           value={numbers[5].number}
                         />
                       </Box>
@@ -830,7 +846,8 @@ const WinningNumbersManagement = () => {
                         </FormLabel>
                         <Input
                           placeholder="L4C3"
-                          isReadOnly={true}
+                          background="none"
+                          // isReadOnly={true}
                           value={numbers[6].number}
                         />
                       </Box>
@@ -840,7 +857,8 @@ const WinningNumbersManagement = () => {
                         </FormLabel>
                         <Input
                           placeholder="L5C1"
-                          isReadOnly={true}
+                          background="none"
+                          // isReadOnly={true}
                           value={numbers[7].number}
                         />
                       </Box>
@@ -850,7 +868,8 @@ const WinningNumbersManagement = () => {
                         </FormLabel>
                         <Input
                           placeholder="L5C2"
-                          isReadOnly={true}
+                          background="none"
+                          // isReadOnly={true}
                           value={numbers[8].number}
                         />
                       </Box>
@@ -860,7 +879,8 @@ const WinningNumbersManagement = () => {
                         </FormLabel>
                         <Input
                           placeholder="L5C3"
-                          isReadOnly={true}
+                          background="none"
+                          // isReadOnly={true}
                           value={numbers[9].number}
                         />
                       </Box>

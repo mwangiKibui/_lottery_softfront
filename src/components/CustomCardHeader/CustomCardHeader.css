@@ -41,11 +41,7 @@
     padding-top:5px;
 }
 
-.header-action-btn{
-    padding:4px 10px;
-    font-size: 22px !important;
-    background-color: none;
-}
+
 
 .cch-form-card form{
     width: 400px;
@@ -105,7 +101,7 @@
     /* width: 60px; */
     border: 1px solid green;
     /* padding:4px; */
-    padding-top: 2px;
+    padding: 4px 8px;
     color: antiquewhite;
     border-radius: 5px;
     font-size: 20px;
@@ -196,6 +192,15 @@
         background-color: rgb(111, 172, 219);
         color: rgb(83, 82, 82);
         padding-left: 15px;
+    }
+
+    .cch-title-actions{
+        padding-top: 0px;
+    }
+
+    .header-action-btn{
+        display: inline-block;
+        padding: 1px 12px;
     }
     
     .cch-form-card form button {

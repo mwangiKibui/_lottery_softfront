@@ -120,7 +120,7 @@ export default function Dashboard(props) {
   // Chakra Color Mode
   return (
     <ChakraProvider theme={theme} resetCss={true}>
-      {
+      {/* {
         !isSubAdmin && (
           <Sidebar
             routes={matchRoutes}
@@ -130,7 +130,7 @@ export default function Dashboard(props) {
             {...rest}
           />
         )
-      }
+      } */}
 
       {
         isSubAdmin && (
@@ -160,21 +160,44 @@ export default function Dashboard(props) {
         ref={mainPanel}
         w={{
           base: "100%",
-          xl: !isSubAdmin && "calc(100% - 275px)",
+          // xl: !isSubAdmin && "calc(100% - 275px)",
+          xl: "100%",
         }}>
 
           {
             !isSubAdmin && (
-              <Portal>
-                <AdminNavbar
-                  onOpen={onOpen}
-                  logoText={"LOTTERY"}
-                  brandText={getActiveRoute(matchRoutes)}
-                  secondary={getActiveNavbar(matchRoutes)}
-                  fixed={fixed}
-                  {...rest}
-                />
-              </Portal>
+              // <Portal>
+              //   <AdminNavbar
+              //     onOpen={onOpen}
+              //     logoText={"LOTTERY"}
+              //     brandText={getActiveRoute(matchRoutes)}
+              //     secondary={getActiveNavbar(matchRoutes)}
+              //     fixed={fixed}
+              //     {...rest}
+              //   />
+              // </Portal>
+
+            <CustomNavbar
+                rightLinks={
+                  [
+                    {
+                      text:"Sign Out",
+                      url:"/auth/signout"
+                    }
+                  ]
+                }
+                centerLinks={
+                  [
+                    {
+                      text:"Main Menu",
+                      url:"/admin/main-menu",
+                      redirect:true
+                    }
+                  ]
+                }
+                navbarBrand="LOTTERY SOFT" navbarBrandUrl="#"
+            />
+              
             )
           }
         
