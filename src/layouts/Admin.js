@@ -180,6 +180,7 @@ export default function Dashboard(props) {
             <CustomNavbar
                 rightLinks={
                   [
+                   
                     {
                       text:"Sign Out",
                       url:"/auth/signout"
@@ -189,7 +190,7 @@ export default function Dashboard(props) {
                 centerLinks={
                   [
                     {
-                      text:"Main Menu",
+                      text:"Menu",
                       url:"/admin/main-menu",
                       redirect:true
                     }

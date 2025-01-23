@@ -228,6 +228,7 @@ const WinnerTickets = () => {
       </Card>
       <Modal
         isOpen={isOpen}
+        onCancel={handleCancel}
         onClose={handleCancel}
         colorMode={colorMode}
         title={"Game Numbers"}

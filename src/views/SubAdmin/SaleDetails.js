@@ -325,7 +325,7 @@ const SaleDetails = () => {
         </div>
       </Card>
 
-      <Modal isOpen={isOpen} onClose={handleCancel} colorMode={colorMode}>
+      <Modal isOpen={isOpen} onClose={handleCancel} onCancel={handleCancel} colorMode={colorMode}>
         <Stack spacing={2} mt="30px">
           <Flex>
             <Table variant="striped" mr="5px">

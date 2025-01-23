@@ -284,6 +284,7 @@ const SoldTickets = () => {
       <Modal
         isOpen={isOpen}
         onClose={handleCancel}
+        onCancel={handleCancel}
         colorMode={colorMode}
         title={"Game Numbers"}
         submitButtonText={"Ok"}

@@ -395,6 +395,7 @@ const PercentageLimit = () => {
         title={editing ? "Edit Condition" : "Create Condition"}
         submitButtonText={editing ? "Update" : "Create"}
         onSubmit={handleSubmit}
+        onCancel={handleCancel}
         cancelButtonText="Cancel"
       >
         <form onSubmit={handleSubmit}>
@@ -436,7 +437,6 @@ const PercentageLimit = () => {
                   //   )
                 
                   conditions.map((condition, index) => {
-                    console.log("this is all the conditions");
                     return (
                       <Box key={index} w="30%">
                         <FormLabel fontSize={14}>
