@@ -190,9 +190,9 @@ const PercentageLimit = () => {
   };
 
   const handleDelete = async (id) => {
-    if (window.confirm("Are you sure you want to delete this condition?")) {
+    if (window.confirm("Are you sure you want to delete this percentage limit?")) {
       try {
-        await api().delete(`/subadmin/deletepaymentterm/${id}`);
+        await api().delete(`/subadmin/deletePercentageLimit/${id}`);
         setAllConditions(
           allConditions.filter((condition) => condition._id !== id)
         );
