@@ -266,7 +266,7 @@ const PercentageLimit = () => {
               <div className="loop-content-holder"> 
                 <VStack spacing={3} align="stretch" color="black" bg="#4AADC6"  key={index}
                 border="1px solid gray"
-                w={{ base: "100%", md: "350px" }}>
+                w={{ base: "100%", md: "100%" }}>
                 <FormControl id="user" >
                     <HStack justifyContent="space-between" bg="#92CCDC">
                       <Box>

@@ -466,7 +466,7 @@ const LimitNumber = () => {
                   <VStack
                         key={limit._id}
                         border="1px solid gray"
-                        w={{ base: "100%", md: "350px" }}
+                        w={{ base: "100%", md: "100%" }}
                       >
 
                     <Flex justifyContent="space-between" width="100%"  bg="#92CCDC" padding="5px" marginBottom="1px">
