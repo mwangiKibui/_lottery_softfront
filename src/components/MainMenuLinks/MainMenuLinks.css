@@ -107,7 +107,8 @@ span {
 }
 
 .main-container{
-    background-image: linear-gradient(to bottom, #051937, #003f60, #006884, #247c88, #239099);
+    /* background-image: linear-gradient(to bottom, #051937, #003f60, #006884, #247c88, #239099); */
+    background: rgb(111, 168, 212);
     /*linear-gradient(145deg, #5e8387, #4f6e71);*/
     width: 40%;
     height: 500px;
@@ -124,7 +125,8 @@ span {
     height: 40px;
     padding-top: 8px;
     padding-bottom: 5px;
-    background-image: linear-gradient(to bottom, #051937, #003455, #00526f, #007086, #239099);
+    /* background-image: linear-gradient(to bottom, #051937, #003455, #00526f, #007086, #239099); */
+    background: rgb(111, 168, 212);
     text-align: center;
     color:whitesmoke;
     /*border: 1px solid whitesmoke;*/
