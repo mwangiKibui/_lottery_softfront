@@ -178,27 +178,29 @@ const WinningNumbersManagement = () => {
 
   const handleNumberChange = (index1, value) => {
 
-    console.log("the value is " + value,"the index is " + index1);
     const newNumbers = [...numbers];
-    newNumbers[index1].number = value;
-    // L4C
-    newNumbers[4].number = `${numbers[1].number}${numbers[2].number}`;
-    newNumbers[5].number = `${numbers[0].number}${numbers[1].number}`;
-    newNumbers[6].number = `${numbers[0].number}${numbers[2].number}`;
+    if(index1 <= 3){
+      newNumbers[index1].number = value;
+      // L4C
+      newNumbers[4].number = `${numbers[1].number}${numbers[2].number}`;
+      newNumbers[5].number = `${numbers[0].number}${numbers[1].number}`;
+      newNumbers[6].number = `${numbers[0].number}${numbers[2].number}`;
 
-    // L5C
-    newNumbers[7].number = `${numbers[3].number}${numbers[2].number}`;
-    newNumbers[8].number = `${numbers[3].number}${numbers[1].number}`;
-    newNumbers[9].number = `${numbers[3].number}${numbers[0].number}`;
+      // L5C
+      newNumbers[7].number = `${numbers[3].number}${numbers[2].number}`;
+      newNumbers[8].number = `${numbers[3].number}${numbers[1].number}`;
+      newNumbers[9].number = `${numbers[3].number}${numbers[0].number}`;
 
-    // MRG
-    newNumbers[10].number = `${numbers[0].number}×${numbers[1].number}`;
-    newNumbers[11].number = `${numbers[0].number}×${numbers[2].number}`;
-    newNumbers[12].number = `${numbers[1].number}×${numbers[2].number}`;
-    newNumbers[13].number = `${numbers[1].number}×${numbers[0].number}`;
-    newNumbers[14].number = `${numbers[2].number}×${numbers[0].number}`;
-    newNumbers[15].number = `${numbers[2].number}×${numbers[1].number}`;
-
+      // MRG
+      newNumbers[10].number = `${numbers[0].number}×${numbers[1].number}`;
+      newNumbers[11].number = `${numbers[0].number}×${numbers[2].number}`;
+      newNumbers[12].number = `${numbers[1].number}×${numbers[2].number}`;
+      newNumbers[13].number = `${numbers[1].number}×${numbers[0].number}`;
+      newNumbers[14].number = `${numbers[2].number}×${numbers[0].number}`;
+      newNumbers[15].number = `${numbers[2].number}×${numbers[1].number}`;
+    }else{
+      newNumbers[index1].number = value;
+    }
     setNumbers([...newNumbers]);
   };
 
@@ -827,6 +829,9 @@ const WinningNumbersManagement = () => {
                           background="none"
                           // isReadOnly={true}
                           value={numbers[4].number}
+                          onChange={(event) =>
+                            handleNumberChange(4, event.target.value)
+                          }
                         />
                       </Box>
                       <Box>
@@ -838,6 +843,9 @@ const WinningNumbersManagement = () => {
                           background="none"
                           // isReadOnly={true}
                           value={numbers[5].number}
+                          onChange={(event) =>
+                            handleNumberChange(5, event.target.value)
+                          }
                         />
                       </Box>
                       <Box>
@@ -849,6 +857,9 @@ const WinningNumbersManagement = () => {
                           background="none"
                           // isReadOnly={true}
                           value={numbers[6].number}
+                          onChange={(event) =>
+                            handleNumberChange(6, event.target.value)
+                          }
                         />
                       </Box>
                       <Box>
@@ -860,6 +871,9 @@ const WinningNumbersManagement = () => {
                           background="none"
                           // isReadOnly={true}
                           value={numbers[7].number}
+                          onChange={(event) =>
+                            handleNumberChange(7, event.target.value)
+                          }
                         />
                       </Box>
                       <Box>
@@ -871,6 +885,9 @@ const WinningNumbersManagement = () => {
                           background="none"
                           // isReadOnly={true}
                           value={numbers[8].number}
+                          onChange={(event) =>
+                            handleNumberChange(8, event.target.value)
+                          }
                         />
                       </Box>
                       <Box>
@@ -882,6 +899,9 @@ const WinningNumbersManagement = () => {
                           background="none"
                           // isReadOnly={true}
                           value={numbers[9].number}
+                          onChange={(event) =>
+                            handleNumberChange(9, event.target.value)
+                          }
                         />
                       </Box>
                     </VStack>
