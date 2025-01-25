@@ -225,12 +225,12 @@ const MainMenu = () => {
       icon: <MdFactCheck color='inherit' size={18}/>
     },
     {
-      text:"deleted Tickets",
+      text:"dltdTickets",
       url:"/subadmin/deleteticket",
       icon: <RiDeleteBin5Fill color='inherit' size={18}/>
     },
     {
-      text:"winning Tickets",
+      text:"winTicket",
       url:"/subadmin/winningtickets",
       icon: <FaFortAwesome color='inherit' size={18}/>
     },

@@ -273,8 +273,8 @@ const LimitNumber = () => {
     >
       <Card
         overflowX={{ sm: "scroll", xl: "hidden" }}
-        p={{ base: "5px", md: "20px" }}
-        width="60%"
+        p={{ base: "0px", md: "0px" }}
+        width="42%"
         border={{ base: "none", md: "1px solid gray" }}
         borderRadius="none"
         bg="gray"

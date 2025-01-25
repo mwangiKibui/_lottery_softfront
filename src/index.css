@@ -392,6 +392,9 @@ button[type="submit"]{
     .header-action-btn {
         font-size: 15px;
     }
+    .css-1gvan98,.css-11uaiiy,.css-1xw2s2z {
+        width: 95% !important;
+    }
 }
 
 @media screen and (min-width: 768px) {
