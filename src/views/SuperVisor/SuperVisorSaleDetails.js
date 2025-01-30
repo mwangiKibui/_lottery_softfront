@@ -301,8 +301,8 @@ const SaleDetails = () => {
                         key={index}
                         mt="0px !important"
                       >
-                        <h5>{item?._id?.gameCategory}</h5>
-                        <h5>{item?.totalAmount}</h5>
+                        <h5 className="custom-h5">{item?._id?.gameCategory}</h5>
+                        <h5 className="custom-h5">{item?.totalAmount}</h5>
                       </Flex>
                     ))}
                     <Flex
@@ -311,8 +311,8 @@ const SaleDetails = () => {
                       color="red"
                       mt="0px !important"
                     >
-                      <h5>Total</h5>
-                      <h5>
+                      <h5 className="custom-h5">Total</h5>
+                      <h5 className="custom-h5">
                         { Array.isArray(gameCategoryDetail)&&  gameCategoryDetail?.reduce(
                           (acc, detail) => acc + detail.totalAmount,
                           0
