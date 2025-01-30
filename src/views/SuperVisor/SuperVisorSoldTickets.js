@@ -235,13 +235,15 @@ const SoldTickets = () => {
                             <Tr key={item._id}>
                               <Td>
                                 <Button
-                                  className="tableInterBtn"
-                                  size="sm"
-                                  width="100%"
-                                  backgroundColor={"#edf2f7"}
-                                  onClick={() =>
-                                    handleGetTicketNumbers(item.numbers)
-                                  }
+                                   className="tableInterBtn"
+                                   size="sm"
+                                   color="white"
+                                   backgroundColor={"green"}
+                                   borderRadius="5px"
+                                   padding="0px"
+                                   onClick={() =>
+                                     handleGetTicketNumbers(item.numbers)
+                                   }
                                 >
                                   {item.ticketId}
                                 </Button>

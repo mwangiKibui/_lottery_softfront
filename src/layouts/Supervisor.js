@@ -105,6 +105,16 @@ export default function Dashboard(props) {
   const matchRoutes = routes.filter((route) => (route.layout == {...rest}.match.path) || route.category == "account");
   let userRole = sessionStorage.getItem("userRole");
   let isSupervisor = userRole && userRole.toLowerCase() == "supervisor";
+  let supervisorCompanyName = sessionStorage.getItem("company") != "undefined" ? sessionStorage.getItem("company") : "";
+  let supervisorUserName = sessionStorage.getItem("userName") != "undefined" ? sessionStorage.getItem("userName") : "";
+  let navbarBrand = "";
+  if(supervisorCompanyName && supervisorUserName){
+    navbarBrand = `${supervisorCompanyName}(${supervisorUserName})`;
+  }else if(!supervisorCompanyName && supervisorUserName){
+    navbarBrand = `(${supervisorUserName})`;
+  }else{
+    navbarBrand = "LOTTERY SOFT";
+  }
   document.documentElement.dir = "ltr";
   // Chakra Color Mode
   return (
@@ -129,7 +139,7 @@ export default function Dashboard(props) {
                 url:"/auth/signout"
               }
             ]
-          } navbarBrand="LOTTERY SOFT" navbarBrandUrl="#"
+          } navbarBrand={`${navbarBrand}`} navbarBrandUrl="#"
           />
         )
       }
