@@ -35,6 +35,13 @@ import WinnerTickets from "views/SubAdmin/WinnerTickets.js";
 import SaleDetails from "views/SubAdmin/SaleDetails.js";
 import SaleReports from "views/SubAdmin/SaleReports.js";
 
+// supervisor components.
+import SupervisorSellerManagement from "views/SuperVisor/SuperVisorSellerManagement.js";
+import SupervisorSaleDetails from "views/SuperVisor/SuperVisorSaleDetails";
+import SuperVisorSaleReports from "views/SuperVisor/SuperVisorSaleReports";
+import SupervisorSoldTickets from "views/SuperVisor/SuperVisorSoldTickets";
+import SupervisorWinNumber from "views/SuperVisor/SuperVisorWinNumber.js";
+
 
 import SignIn from "views/Pages/SignIn.js";
 
@@ -166,6 +173,41 @@ var dashRoutes = [
     icon: <FaInfoCircle color='inherit' size={22}/>,
     component: SaleReports,
     layout: "/subadmin",
+  },
+  {
+    path: "/sellerManagement",
+    name: "Seller",
+    icon: <FaInfoCircle color='inherit' size={22}/>,
+    component: SupervisorSellerManagement,
+    layout: "/supervisor",
+  },
+  {
+    path: "/saleDetails",
+    name: "Sale Details",
+    icon: <FaInfoCircle color='inherit' size={22}/>,
+    component: SupervisorSaleDetails,
+    layout: "/supervisor",
+  },
+  {
+    path: "/saleReports",
+    name: "Sale Reports",
+    icon: <FaInfoCircle color='inherit' size={22}/>,
+    component: SuperVisorSaleReports,
+    layout: "/supervisor",
+  },
+  {
+    path: "/soldTickets",
+    name: "Sold Tickets",
+    icon: <FaInfoCircle color='inherit' size={22}/>,
+    component: SupervisorSoldTickets,
+    layout: "/supervisor",
+  },
+  {
+    path: "/winNumber",
+    name: "Win Number",
+    icon: <FaInfoCircle color='inherit' size={22}/>,
+    component: SupervisorWinNumber,
+    layout: "/supervisor",
   },
   // {
   //   path: "/dashboard",

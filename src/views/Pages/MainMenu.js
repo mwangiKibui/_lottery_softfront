@@ -270,27 +270,27 @@ const MainMenu = () => {
   const superVisorMenuLinks=[
     {
       text:"Seller",
-      url:"/superVisor/SuperVisorSellerManagement",
+      url:"/supervisor/sellerManagement",
       icon:<FaUserTie color='white' size={18}/>,
     },
     {
       text:"Sale Details",
-      url:"/superVisor/SuperVisorSaleDetails",
+      url:"/supervisor/saleDetails",
       icon:<BsTicketDetailedFill color='white' size={18}/>,
     },
     {
       text:"Win Number",
-      url:"/superVisor/SuperVisorWinNumber",
+      url:"/supervisor/winNumber",
       icon:<FaFortAwesome color='white' size={18}/>,
     },
     {
       text:"Sold Tickets",
-      url:"/superVisor/SuperVisorSoldTickets",
+      url:"/supervisor/soldTickets",
       icon:<MdFactCheck color='white' size={18}/>,
     },
     {
       text:"Sale Reports",
-      url:"/superVisor/SuperVisorSaleReports",
+      url:"/supervisor/saleReports",
       icon:<FaInfoCircle color='white' size={18}/>,
     }
   ];

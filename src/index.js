@@ -22,6 +22,7 @@ import { HashRouter, Route, Switch, Redirect, BrowserRouter } from "react-router
 
 import AuthLayout from "layouts/Auth.js";
 import AdminLayout from "layouts/Admin.js";
+import SupervisorLayout from "layouts/Supervisor.js";
 import HomeLayout from "layouts/Home";
 // import SubAdminLayout from "layouts/SubAdmin.js";
 import "./index.css";
@@ -33,6 +34,7 @@ ReactDOM.render(
       <Route path={`/auth`} component={AuthLayout} />
       <Route path={`/admin`} component={AdminLayout} />
       <Route path={`/subadmin`} component={AdminLayout} />
+      <Route path={`/supervisor`} component={SupervisorLayout} />
       {/* <Redirect from={`/`} to='/auth/signin' /> */}
     </Switch>
   </BrowserRouter>,
