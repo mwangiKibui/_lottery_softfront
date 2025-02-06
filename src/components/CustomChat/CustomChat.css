@@ -1,0 +1,269 @@
+
+/* Header */
+header {
+    /* background-color: #4a90e2; */
+    background-color: #007BFF;
+    color: white;
+    height: 40px;
+    text-align: center;
+    font-weight: bold;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: space-between; /* Space between h4 and button */
+    padding: 0 10px; /* Add padding to the sides */
+}
+
+.headerText {
+    margin: 0; /* Remove default margin from h4 */
+    padding: 0; /* Remove default padding from h4 */
+    flex: 1; /* Allow h4 to take up remaining space */
+    text-align: center; /* Center the text inside h4 */
+}
+
+header button {
+    /* background-color: #357abd; */
+    background-color: #007BFF;
+    color: white;
+    border: none;
+    padding: 6px 10px; /* Reduced padding */
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 12px; /* Reduced font size */
+}
+
+header button:hover {
+    /* background-color: #2a5f8a; */
+    background-color: #007BFF;
+}
+
+/* Admin Dashboard */
+#dashboard-page {
+    width: 90%;
+    max-width: 1200px;
+    margin: 20px auto;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+}
+
+/* Broadcast Section */
+.broadcast-section {
+    margin-bottom: 20px;
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.broadcast-section input[type="text"] {
+    flex: 1;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+.broadcast-section input[type="file"] {
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+.broadcast-section button {
+    /* background-color: #4a90e2; */
+    background-color: #007BFF;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.broadcast-section button:hover {
+    /* background-color: #357abd; */
+    background-color: #007BFF;
+}
+
+/* Sellers Table */
+#sellersTable {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+}
+
+#sellersTable th, #sellersTable td {
+    padding: 12px;
+    text-align: center;
+    border-bottom: 1px solid #ddd;
+}
+
+#sellersTable th {
+    /* background-color: #4a90e2; */
+    background-color: #007BFF;
+    color: white !important;
+}
+
+#sellersTable tr:hover {
+    background-color: #f1f1f1;
+}
+
+#sellersTable td button {
+    /* background-color: #4a90e2; */
+    background-color: #007BFF;
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+#sellersTable td button:hover {
+    /* background-color: #357abd; */
+    background-color: #007BFF;
+}
+
+/* Chat Page */
+#chat-page {
+    width: 90%;
+    max-width: 1200px;
+    margin: 20px auto;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+}
+
+/* Chat Container */
+.chat-container {
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    overflow: hidden;
+    background: white;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    margin-top: 20px;
+}
+
+.chat-messages {
+    height: 300px;
+    padding: 15px;
+    overflow-y: auto;
+    background: #f9f9f9;
+    border-bottom: 1px solid #ddd;
+}
+
+/* Chat Messages */
+.message {
+    margin-bottom: 10px;
+    padding: 10px;
+    border-radius: 8px;
+    max-width: 70%;
+}
+
+/* Admin's message */
+.message.admin {
+    background: #808080; /* Gray background */
+    color: white; /* White text */
+    margin-right: auto; /* Align to the left */
+}
+
+/* Seller's message */
+.message.seller {
+    /* background: #4a90e2; */
+    background: #007BFF;
+    color: white; /* White text */
+    margin-left: auto; /* Align to the right */
+}
+
+.voice-message {
+    /* color: #4a90e2; */
+    color: #007BFF;
+    cursor: pointer;
+    text-decoration: underline;
+}
+
+.voice-message:hover {
+    /* color: #357abd; */
+    color: #007BFF;
+}
+
+/* Chat Input */
+.chat-input {
+    display: flex;
+    gap: 10px;
+    padding: 10px;
+    background: #f9f9f9;
+}
+
+.chat-input input[type="text"] {
+    flex: 1;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+.chat-input input[type="file"] {
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+.chat-input button {
+    /* background-color: #4a90e2; */
+    background-color: #007BFF;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.chat-input button:hover {
+    /* background-color: #357abd; */
+    background-color: #007BFF;
+}
+
+/* Mic Icon for Voice Recording */
+button#recordButton,
+button#recordBroadcastButton {
+    /* background-color: #4a90e2; */
+    background-color: #007BFF;
+    color: white;
+    border: none;
+    padding: 10px;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    transition: background-color 0.3s ease;
+}
+
+button#recordButton:hover,
+button#recordBroadcastButton:hover {
+    /* background-color: #357abd; */
+    background-color: #007BFF;
+}
+
+/* Use Font Awesome for the mic icon */
+button#recordButton::before,
+button#recordBroadcastButton::before {
+    font-family: "Font Awesome 5 Free"; /* Use Font Awesome */
+    font-weight: 900; /* Solid style */
+    content: "\f130"; /* Unicode for microphone icon */
+}

@@ -153,6 +153,11 @@ export default function Dashboard(props) {
                 text:"Main Menu",
                 url:"/admin/main-menu",
                 redirect:true
+              },
+              {
+                text:"Chat",
+                url:"/subadmin/chat",
+                redirect:true
               }
             ]
           }

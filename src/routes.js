@@ -34,6 +34,7 @@ import DeletedTickets from "views/SubAdmin/DeletedTickets";
 import WinnerTickets from "views/SubAdmin/WinnerTickets.js";
 import SaleDetails from "views/SubAdmin/SaleDetails.js";
 import SaleReports from "views/SubAdmin/SaleReports.js";
+import SubAdminChat from "views/SubAdmin/Chat";
 
 // supervisor components.
 import SupervisorSellerManagement from "views/SuperVisor/SuperVisorSellerManagement.js";
@@ -58,6 +59,7 @@ import { FaUserTie } from "react-icons/fa";
 import { SiAdblock } from "react-icons/si";
 import { RiNumbersFill } from "react-icons/ri";
 import { FaInfoCircle } from "react-icons/fa";
+import { FaFacebookMessenger} from "react-icons/fa";
 import { BsTicketDetailedFill } from "react-icons/bs";
 import { RiDeleteBin5Fill } from "react-icons/ri";
 
@@ -208,6 +210,13 @@ var dashRoutes = [
     icon: <FaInfoCircle color='inherit' size={22}/>,
     component: SupervisorWinNumber,
     layout: "/supervisor",
+  },
+  {
+    path: "/chat",
+    name: "Chat",
+    icon: <FaFacebookMessenger color='inherit' size={22}/>,
+    component: SubAdminChat,
+    layout: "/subadmin",
   },
   // {
   //   path: "/dashboard",
