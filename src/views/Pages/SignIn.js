@@ -212,6 +212,7 @@ function SignIn() {
         sessionStorage.setItem("userRole", user.role);
         sessionStorage.setItem("userName", user.userName);
         sessionStorage.setItem("company", user.companyName);
+        sessionStorage.setItem("userId", user._id);
 
         handleShowToast(`Welcome Mr.${user.userName}`, "success");
         history.push("/admin/main-menu");
