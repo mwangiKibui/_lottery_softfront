@@ -25,7 +25,7 @@ const Chat = () => {
     },[]);
     
     return (
-        <CustomChat sellers={sellers}/>
+        <CustomChat sellers={sellers} backToDashboardUrl="/subadmin/chat"/>
     )
 };
 
