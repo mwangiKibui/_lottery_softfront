@@ -298,8 +298,10 @@ const CustomChat = (props) => {
                 <div className="broadcast-section">
                     <input type="text" id="broadcastMessage" value={broadcastMessage} placeholder="Type a broadcast message" onChange={(e) => setBroadcastMessage(e.target.value)}/>
                     <input type="file" id="broadcastFile" ref={broadcastFileInputRef} onChange={(e) => setBroadcastFile(e.target.files[0])}/>
-                    <button id="recordBroadcastButton" title="Record Voice" onClick={toggleBroadcastRecording}></button>
-                    <button onClick={() => handleBroadCastMessage()}>{broadcastMessageBtnTitle}</button>
+                    <div className="broadcast-section-btns">
+                        <button id="recordBroadcastButton" title="Record Voice" onClick={toggleBroadcastRecording}></button>
+                        <button onClick={() => handleBroadCastMessage()}>{broadcastMessageBtnTitle}</button>
+                    </div>
                 </div>
 
                 <table id="sellersTable">
@@ -355,8 +357,10 @@ const CustomChat = (props) => {
                 <div className="chat-input">
                     <input type="text" id="chatInput"  value={composeMessage} placeholder="Type a message" onChange={e => setComposeMessage(e.target.value)} />
                     <input type="file" id="fileUpload" name="file" ref={composeFileInputRef} onChange={e => setComposeFile(e.target.files[0])}/>
-                    <button id="recordButton" title="Record Voice" onClick={() => toggleRecording()}></button>
-                    <button onClick={() => sendMessage()}>{composeMessageBtnTitle}</button>
+                    <div className="chat-input-btns">
+                        <button id="recordButton" title="Record Voice" onClick={() => toggleRecording()}></button>
+                        <button onClick={() => sendMessage()}>{composeMessageBtnTitle}</button>
+                    </div>
                 </div>
             </div>
         </div>
