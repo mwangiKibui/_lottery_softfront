@@ -5,3 +5,5 @@ dist
 .env
 front-end.zip
 build.zip
+.DS_Store
+src/.DS_Store
