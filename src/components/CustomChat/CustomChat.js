@@ -236,7 +236,6 @@ const CustomChat = (props) => {
       
 
     const playVoiceMessage = (url) => {
-        console.log("the url shared is " + url);
         if(url){
             const audio = new Audio(url);
             audio.volume = 1;
@@ -284,6 +283,28 @@ const CustomChat = (props) => {
         // Switch to the chat page
         document.getElementById('dashboard-page').style.display = 'none';
         document.getElementById('chat-page').style.display = 'block';
+    }
+
+    const formatDateToCustom = (dateStr) => {
+        const date = new Date(dateStr);
+      
+        const day = String(date.getDate()).padStart(2, '0');
+        const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are 0-indexed
+        const year = date.getFullYear();
+      
+        let hours = date.getHours();
+        const minutes = String(date.getMinutes()).padStart(2, '0');
+      
+        const ampm = hours >= 12 ? 'PM' : 'AM';
+        hours = hours % 12 || 12; // Convert 0 -> 12 for AM
+      
+        const formattedTime = `${String(hours).padStart(2, '0')}:${minutes} ${ampm}`;
+      
+        return `${day}/${month}/${year} ${formattedTime}`;
+    }
+    
+    const hasPreview = (fileUrl) => {
+        return fileUrl.includes("png") || fileUrl.includes("jpg") || fileUrl.includes("jpeg") || fileUrl.includes("gif") || fileUrl.includes("webp");
     }
 
     return (
@@ -340,15 +361,36 @@ const CustomChat = (props) => {
                     <div className="chat-messages" id="chatMessages">
                         {
                             messages.map((msg) => {
-
                                 if(!msg.voiceUrl && !msg.fileUrl){
-                                    return <div key={msg._id} className={`message ${msg.senderId === currentLoggedInUserId ? 'user' : 'other'}`}>{msg.sender.name}: {msg.message} </div>;
+                                    return <div key={msg._id} className={`message ${msg.senderId === currentLoggedInUserId ? 'user' : 'other'}`}>
+                                        {msg.sender.name}: {msg.message}
+                                        <span className='message-date'>{formatDateToCustom(msg.timestamp)}</span>
+                                    </div>;
                                 } else if (msg.fileUrl) {
                                     let downloadUrl = msg.cache ? msg.fileUrl : process.env.REACT_APP_BACKEND_URL + "/" + msg.fileUrl;
-                                    return <div key={msg._id}  className={`message ${msg.senderId === currentLoggedInUserId ? 'user' : 'other'}`}>{msg.sender.name}: <a href={downloadUrl} target="_blank">Download File</a></div>
+                                    return <div key={msg._id}  className={`message ${msg.senderId === currentLoggedInUserId ? 'user' : 'other'}`}>
+
+                                        {msg.sender.name}:
+                                        
+                                        {
+                                            hasPreview(downloadUrl) ? (
+                                                <img src={downloadUrl} height="200px" width="200px" alt="Chat">
+                                                </img>
+                                            ) : (
+                                                <a href={downloadUrl} target="_blank">Download File</a>
+                                            )
+                                        }
+                                         
+
+
+                                        <span className='message-date'>{formatDateToCustom(msg.timestamp)}</span>
+                                    </div>
                                 } else if (msg.voiceUrl) {
                                     let downloadUrl = msg.cache? msg.voiceUrl : process.env.REACT_APP_BACKEND_URL + "/" + msg.voiceUrl;
-                                    return <div key={msg._id}  className={`message ${msg.senderId === currentLoggedInUserId ? 'user' : 'other'}`}>{msg.sender.name}: <span className="voice-message" onClick={() => playVoiceMessage(downloadUrl)}>Play Voice Message</span></div>
+                                    return <div key={msg._id}  className={`message ${msg.senderId === currentLoggedInUserId ? 'user' : 'other'}`}>
+                                        {msg.sender.name}: <span className="voice-message" onClick={() => playVoiceMessage(downloadUrl)}>Play Voice Message</span>
+                                        <span className='message-date'>{formatDateToCustom(msg.timestamp)}</span>
+                                    </div>
                                 }
                             })
                         }

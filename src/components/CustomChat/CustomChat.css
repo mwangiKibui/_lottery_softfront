@@ -274,6 +274,11 @@ button#recordBroadcastButton::before {
     margin: 0px;
     padding: 0px;
 }
+.message-date{
+    font-size: 10px; 
+    margin-left: 5px;
+    color: #808080;
+}
 
 @media (max-width: 480px) {
     .broadcast-section{
