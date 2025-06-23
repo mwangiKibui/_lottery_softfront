@@ -245,7 +245,7 @@ function SignIn() {
           url:"/",
           redirect:true
         }
-      ]} rightLinks={[]} navbarBrand="LOTTERY SOFT2" navbarBrandUrl="#"/>
+      ]} rightLinks={[]} navbarBrand="LOTTERY SOFT" navbarBrandUrl="#"/>
       <Flex align="center" justify="center" minH="100vh" bg={COLORS.bodyBg}>
         <Flex w="100%" maxW={{ base: "90%", sm: "450px" }} mx="auto" p={5}>
           <SigninComponent
