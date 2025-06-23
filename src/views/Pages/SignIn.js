@@ -128,7 +128,7 @@ const LoginForm = ({ name, setName, password, setPassword, handleSubmit }) => (
         textColor={COLORS.title}
         fontWeight="600"
       >
-        LOGIN2
+        LOGIN
       </Heading>
       {[
         { label: "Login Name", value: name, onChange: setName },
@@ -245,7 +245,7 @@ function SignIn() {
           url:"/",
           redirect:true
         }
-      ]} rightLinks={[]} navbarBrand="LOTTERY SOFT" navbarBrandUrl="#"/>
+      ]} rightLinks={[]} navbarBrand="LOTTERY SOFT2" navbarBrandUrl="#"/>
       <Flex align="center" justify="center" minH="100vh" bg={COLORS.bodyBg}>
         <Flex w="100%" maxW={{ base: "90%", sm: "450px" }} mx="auto" p={5}>
           <SigninComponent
