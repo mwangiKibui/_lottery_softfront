@@ -128,7 +128,7 @@ const LoginForm = ({ name, setName, password, setPassword, handleSubmit }) => (
         textColor={COLORS.title}
         fontWeight="600"
       >
-        LOGIN
+        LOGIN2
       </Heading>
       {[
         { label: "Login Name", value: name, onChange: setName },
