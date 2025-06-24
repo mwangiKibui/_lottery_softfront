@@ -22,6 +22,7 @@ import MainMenuComponent from "views/Pages/MainMenu.js";
 import PercentageLimitComponent from "views/SubAdmin/PercentageLimit.js";
 import LotteryCategoryManagement from "views/Admin/LottoCategoryManagement.js";
 import WinningNumberManagement from "views/Admin/WinningNumberManagement.js";
+import PaymentAlertManagement from "views/Admin/PaymentAlertManagement";
 
 import SellerManagement from "views/SubAdmin/SellerManagement.js";
 import SupervisorManagement from "views/SubAdmin/SupervisorManagement.js";
@@ -50,7 +51,7 @@ import { ImUsers } from "react-icons/im";
 import { GiPodium } from "react-icons/gi";
 import { GoSignOut } from "react-icons/go";
 import { HiViewGridAdd } from "react-icons/hi";
-import { FaUserSecret } from "react-icons/fa";
+import { FaMoneyBill, FaUserSecret } from "react-icons/fa";
 import { FaFortAwesome } from "react-icons/fa";
 import { MdFactCheck } from "react-icons/md";
 import { MdPayments } from "react-icons/md";
@@ -83,6 +84,13 @@ var dashRoutes = [
     name: "Sub Admin",
     icon: <ImUsers color='inherit' size={22}/>,
     component: SubAdminManagement,
+    layout: "/admin",
+  },
+  {
+    path: "/PaymentAlert",
+    name: "Payment Alerts",
+    icon: <FaMoneyBill color='inherit' size={22}/>,
+    component: PaymentAlertManagement,
     layout: "/admin",
   },
   {

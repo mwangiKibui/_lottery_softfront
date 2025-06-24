@@ -19,6 +19,7 @@ import {
   FaFortAwesome,
   FaUserTie,
   FaInfoCircle,
+  FaMoneyBill
 } from "react-icons/fa";
 import {
   MdFactCheck,
@@ -91,6 +92,11 @@ const MainMenu = () => {
         name: "Sales Report",
         icon: FaInfoCircle,
       },
+      {
+        path: "/admin/PaymentAlert",
+        name: "Payment Alert",
+        icon: FaMoneyBill,
+      }
     ],
     subAdmin: [
       {
@@ -265,6 +271,11 @@ const MainMenu = () => {
       text:"Sales Report",
       url:"/admin/SubAdminSaleReport",
       icon:<FaInfoCircle color='white' size={18}/>,
+    },
+    {
+      text:"Payment Alert",
+      url:"/admin/PaymentAlert",
+      icon:<FaMoneyBill color='white' size={18}/>,
     },
   ];
   const superVisorMenuLinks=[
