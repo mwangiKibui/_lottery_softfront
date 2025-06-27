@@ -1,27 +1,101 @@
 
-import { Flex,Stack,VStack,Table,Thead,Tbody,Tr,Th,Td,Button,useColorMode } from '@chakra-ui/react';
+import { Flex,Stack,VStack,Table,Thead,Tbody,Tr,Th,Td,Button,useColorMode,useToast } from '@chakra-ui/react';
+import {useEffect} from 'react';
 import Card from "components/Card/Card.js";
 import CardBody from "components/Card/CardBody.js";
 import {useState} from 'react';
+import api from 'utils/customFetch';
 import './PaymentAlertCard.css';
 import { RiDeleteBinLine } from "react-icons/ri";
+import { Loading } from "components/Loading/Loading.js";
 
 const PaymentAlertCard = () => {
 
     const [company,SetCompany] = useState("");
     const [message,SetMessage] = useState("");
     const [date,SetDate] = useState("");
-    const paymentAlerts = [
-        {id:1,companyName:"Company A",Message:"You are supposed to pay before 26th June"},
-        {id:2,companyName:"Company B",Message:"You are supposed to pay before 26th June"},
-        {id:3,companyName:"Company C",Message:"You are supposed to pay before 26th June"},
-        {id:4,companyName:"Company D",Message:"You are supposed to pay before 26th June"},
-    ];
+    const [loading,SetLoading] = useState("");
+    const [submitLabel,SetSubmitLabel] = useState("Send");
+    const [paymentAlerts,SetPaymentAlerts] = useState([]);
+    const toast = useToast();
+    
+
+    useEffect(async () => {
+      const fetchPaymentAlerts = async () => {
+      try {
+        SetLoading(true);
+        const response = await api().get("/admin/getpaymentalert");
+        SetPaymentAlerts(response.data.data);
+      } catch (error) {
+        console.error(error);
+        toast({
+          title: "Error fetching payment alerts",
+          status: "error",
+          duration: 5000,
+          isClosable: true,
+        });
+      }finally{
+        SetLoading(false);
+      }
+    };
+      fetchPaymentAlerts();
+    }, []);
+
     const { colorMode } = useColorMode();
 
     const handleSubmit = e => {
         e.preventDefault();
-        console.log("submission process");
+        let body = {
+          company,
+          message,
+          date
+        };
+        SetSubmitLabel("Sending...");
+        api()
+        .post(`/admin/addpaymentalert`, {
+          ...body
+        })
+        .then((res) => {
+          SetPaymentAlerts([...paymentAlerts, res.data]);
+          toast({
+            title: "Payment Alert created.",
+            status: "success",
+            duration: 3000,
+            isClosable: true,
+          });
+          SetSubmitLabel("Send");
+          SetCompany("");
+          SetMessage("");
+          SetDate("");
+        })
+        .catch((err) => {
+          toast({
+            title: "Error creating payment alert.",
+            description: err.message,
+            status: "error",
+            duration: 3000,
+            isClosable: true,
+          });
+          SetSubmitLabel("Send");
+        });
+    }
+
+    const handleDelete = async (id) => {
+      try {
+        const response = await api().delete("/admin/deletepaymentalert/"+id);
+        SetPaymentAlerts(
+          paymentAlerts.filter(paymentAlert => paymentAlert._id !== id)
+        );
+      } catch (error) {
+        console.error(error);
+        toast({
+          title: "Error deleting payment alert",
+          status: "error",
+          duration: 5000,
+          isClosable: true,
+        });
+      }finally{
+      }
     }
 
     return (
@@ -59,7 +133,7 @@ const PaymentAlertCard = () => {
                             <input name="date"  type="date" value={date} onChange={e => SetDate(e.target.value)} />
                         </div>
 
-                        <button type="submit" className="cc-form-submit">Send</button>
+                        <button type="submit" className="cc-form-submit">{submitLabel}</button>
 
                     </form>
 
@@ -90,38 +164,48 @@ const PaymentAlertCard = () => {
                                           <Th>Action</Th>
                                         </Tr>
                                       </Thead>
-                                     
-                                        <Tbody>
-                                          {paymentAlerts.map((item) => {
-                                            return (
-                                              <Tr key={item.id}>
-                                                <Td>
-                                                    {item.companyName}
-                                                </Td>
-                                                <Td>{item.Message}</Td>
-                                                <Td>
-                                                  <Button
-                                                    className="tableInterBtn"
-                                                    size="sm"
-                                                    onClick={() => console.log("ooh yeah we are deleting " + item.id)}
-                                                    bg={
-                                                      colorMode === "light" ? "red.600" : "blue.300"
-                                                    }
-                                                    _hover={{
-                                                      bg:
-                                                        colorMode === "light"
-                                                          ? "red.300"
-                                                          : "blue.200",
-                                                    }}
-                                                  >
-                                                    <RiDeleteBinLine size={14} color="white" />
-                                                  </Button>
+                                        {
+                                          loading? (
+                                            <Tbody>
+                                              <Tr>
+                                                <Td colSpan={5}>
+                                                  <Loading />
                                                 </Td>
                                               </Tr>
-                                            );
-                                          })}
-                                        </Tbody>
-                                        
+                                            </Tbody>
+                                          ): (
+                                            <Tbody>
+                                                {paymentAlerts.map((item) => {
+                                                  return (
+                                                    <Tr key={item._id}>
+                                                      <Td>
+                                                          {item.company}
+                                                      </Td>
+                                                      <Td>{item.message}</Td>
+                                                      <Td>
+                                                        <Button
+                                                          className="tableInterBtn"
+                                                          size="sm"
+                                                          onClick={() => handleDelete(item._id)}
+                                                          bg={
+                                                            colorMode === "light" ? "red.600" : "blue.300"
+                                                          }
+                                                          _hover={{
+                                                            bg:
+                                                              colorMode === "light"
+                                                                ? "red.300"
+                                                                : "blue.200",
+                                                          }}
+                                                        >
+                                                          <RiDeleteBinLine size={14} color="white" />
+                                                        </Button>
+                                                      </Td>
+                                                    </Tr>
+                                                  );
+                                                })}
+                                              </Tbody>
+                                          )
+                                        }
                                     </Table>
                                   </VStack>
                                 </Stack>
