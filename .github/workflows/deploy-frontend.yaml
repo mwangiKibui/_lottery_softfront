@@ -1,0 +1,32 @@
+name: Deploy Frontend to VPC
+
+on:
+  push:
+    branches: [dev]
+  pull_request:
+    branches: [dev]
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build project
+        run: npm run build
+        env:
+          REACT_APP_BACKEND_URL: ${{ secrets.REACT_APP_BACKEND_URL }}
+
+      - name: Install sshpass
+        run: sudo apt-get install sshpass
+
+      - name: Upload build to VPC
+        if: github.event_name == 'push'
+        run: |
+          sshpass -p "${{ secrets.VPC_PASSWORD }}" rsync -avz --delete -e "ssh -o StrictHostKeyChecking=no" ./build/ \
+            ${{ secrets.VPC_USERNAME }}@${{ secrets.VPC_HOST }}:/var/www/lotterysoft/LotterySoft_frontend/

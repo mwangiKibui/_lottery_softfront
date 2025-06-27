@@ -16,7 +16,7 @@ import { PanelContainerComponent } from "./additions/layout/PanelContainer";
 // import { mode } from "@chakra-ui/theme-tools";
 export default extendTheme(
   { breakpoints }, // Breakpoints
-  // bgAdmin, // Global styles
+  bgAdmin, // Global styles
   globalStyles, // Global styles
   buttonStyles, // Button styles
   badgeStyles, // Badge styles

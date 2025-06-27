@@ -27,7 +27,7 @@ import { RiDeleteBinLine } from "react-icons/ri";
 
 // Custom components
 import Card from "components/Card/Card.js";
-import CardHeader from "components/Card/CardHeader.js";
+import CustomCardHeader from "components/CustomCardHeader/CustomCardHeader.js";
 import CardBody from "components/Card/CardBody.js";
 import Modal from "components/Modal/Modal.js";
 
@@ -82,7 +82,8 @@ const DeleteTickets = () => {
     fetchSeller();
   }, []);
 
-  const fetchDeleteTickets = async () => {
+  const fetchDeleteTickets = async (e) => {
+    e.preventDefault();
     try {
       const response = await api().get(
         `/subadmin/getdeletedtickets?seller=${selectedSellerId}&fromDate=${fromDate}&toDate=${toDate}&lotteryCategoryName=${lotteryCategoryName.trim()}`
@@ -156,206 +157,113 @@ const DeleteTickets = () => {
   };
 
   return (
-    <Flex direction="column" pt={{ base: "120px", md: "75px" }}>
+    <Flex direction="column" justifyContent="center" alignItems="center" width="60%" mx="auto" pt={{ base: "120px", md: "75px" }}>
       <Card
         overflowX={{ sm: "scroll", xl: "hidden" }}
         p={{ base: "5px", md: "20px" }}
         width="100%"
         border={{ base: "none", md: "1px solid gray" }}
       >
-        <CardHeader
-          p="6px 0px 22px 0px"
-          display="flex"
-          justifyContent="space-between"
-        >
-          <Flex
-            flexWrap="wrap"
-            flexDirection={{ base: "column", sm: "row" }}
-            justifyContent="space-between"
-            alignItems={"center"}
-            width="100%"
-          >
-            <Text fontSize="lg" color="black" font="Weight:bold" mb="10px">
-              Deleted Tickets
-            </Text>
+
+        <CustomCardHeader
+          title="Deleted Tickets"
+          setSelectedSellerId={setSelectedSellerId}
+          sellerInfo={sellerInfo}
+          setLotteryCategoryName={setLotteryCategoryName}
+          lotteryCategories={lotteryCategories}
+          fromDate={fromDate}
+          setFromDate={setFromDate}
+          toDate={toDate}
+          setToDate={setToDate}
+          handleSearch={fetchDeleteTickets}
+          colorMode={colorMode}
+          showAllInSellerField={true}
+          showAllInLotteryField={true}
+        />
+
+        <div className="custom-card-body">
+          <CardBody>
             <Flex
-              color="black"
               flexWrap="wrap"
+              flexDirection={{ base: "column", sm: "row" }}
               justifyContent="flex-start"
               width="100%"
-              alignItems="center"
             >
-              <FormControl id="lotteryCategoryName" width="330px" isRequired>
-                <HStack justifyContent="space-between" py="5px">
-                  <FormLabel m="0" p="10px">
-                    Seller
-                  </FormLabel>
-                  <Select
-                    onChange={(event) =>
-                      setSelectedSellerId(event.target.value)
-                    }
-                    width="200px"
-                  >
-                    <option value={""} style={{ backgroundColor: "#e3e2e2" }}>
-                      All
-                    </option>
-                    {sellerInfo.map((info) => (
-                      <option
-                        key={info._id}
-                        value={info._id}
-                        style={{ backgroundColor: "#e3e2e2" }}
-                      >
-                        {info.userName}
-                      </option>
-                    ))}
-                  </Select>
-                </HStack>
-              </FormControl>
-              <FormControl id="lotteryCategoryName" width="330px" isRequired>
-                <HStack justifyContent="space-between" py="5px">
-                  <FormLabel p="10px" m="0">
-                    Category Name
-                  </FormLabel>
-                  <Select
-                    onChange={(event) =>
-                      setLotteryCategoryName(event.target.value.trim())
-                    }
-                    width="200px"
-                  >
-                    <option value={""} style={{ backgroundColor: "#e3e2e2" }}>
-                      All Category
-                    </option>
-                    {lotteryCategories.map((category) => (
-                      <option
-                        key={category._id}
-                        value={category.lotteryName}
-                        style={{ backgroundColor: "#e3e2e2" }}
-                      >
-                        {category.lotteryName}
-                      </option>
-                    ))}
-                  </Select>
-                </HStack>
-              </FormControl>
-              <FormControl id="fromDate" width="330px" isRequired>
-                <HStack justifyContent="space-between" py="5px">
-                  <FormLabel p="10px" m="0">
-                    From
-                  </FormLabel>
-                  <Input
-                    type="date"
-                    value={fromDate}
-                    onChange={(event) => setFromDate(event.target.value)}
-                    width="200px"
-                  />
-                </HStack>
-              </FormControl>
-              <FormControl id="toDate" width="330px" isRequired>
-                <HStack justifyContent="space-between" py="5px">
-                  <FormLabel p="10px" m="0">
-                    To
-                  </FormLabel>
-                  <Input
-                    type="date"
-                    value={toDate}
-                    onChange={(event) => setToDate(event.target.value)}
-                    width="200px"
-                  />
-                </HStack>
-              </FormControl>
-
-              <Button
-                size="sm"
-                onClick={fetchDeleteTickets}
-                bg={colorMode === "light" ? "red.600" : "blue.300"}
-                _hover={{
-                  bg: colorMode === "light" ? "red.500" : "blue.200",
-                }}
-                mx={"10px"}
+              <Stack
+                spacing={1}
+                borderRadius="3px"
+                m="5px"
+                boxShadow="0px 0px 2px white"
+                width="100%"
               >
-                <CgSearch size={20} color={"white"} />
-              </Button>
+                <VStack spacing={3} align="stretch">
+                  <Table variant="striped">
+                    <Thead>
+                      <Tr>
+                        <Th>Ticket ID</Th>
+                        <Th>Date</Th>
+                        <Th>Lottery</Th>
+                        <Th>Seller</Th>
+                        <Th>Action</Th>
+                      </Tr>
+                    </Thead>
+                    <Tbody>
+                      {deletedTickets.map((item) => {
+                        return (
+                          <Tr key={item._id}>
+                            <Td>
+                              <Button
+                                className="tableInterBtn"
+                                size="sm"
+                                color="white"
+                                backgroundColor={"green"}
+                                borderRadius="5px"
+                                padding="0px"
+                                onClick={() =>
+                                  handleGetTicketNumbers(item.numbers)
+                                }
+                              >
+                                {item.ticketId}
+                              </Button>
+                            </Td>
+                            <Td><pre>{formatDate(item.date.substr(0, 10))}</pre></Td>
+                            <Td><pre>{item.lotteryCategoryName}</pre></Td>
+                            <Td><pre>
+                              {
+                                sellerInfo.find(
+                                  (sitem) => sitem._id === item.seller
+                                )?.userName
+                              }
+                            </pre></Td>
+                            <Td>
+                              <Button
+                                className="tableInterBtn"
+                                size="sm"
+                                onClick={() => deleteTicket(item._id)}
+                                bg={
+                                  colorMode === "light" ? "red.600" : "blue.300"
+                                }
+                                _hover={{
+                                  bg:
+                                    colorMode === "light"
+                                      ? "red.300"
+                                      : "blue.200",
+                                }}
+                              >
+                                <RiDeleteBinLine size={14} color="white" />
+                              </Button>
+                            </Td>
+                          </Tr>
+                        );
+                      })}
+                    </Tbody>
+                  </Table>
+                </VStack>
+              </Stack>
             </Flex>
-          </Flex>
-        </CardHeader>
-        <CardBody pb="15px">
-          <Flex
-            flexWrap="wrap"
-            flexDirection={{ base: "column", sm: "row" }}
-            justifyContent="flex-start"
-            width="100%"
-          >
-            <Stack
-              spacing={1}
-              borderRadius="3px"
-              m="5px"
-              boxShadow="0px 0px 2px white"
-              width="100%"
-            >
-              <VStack spacing={3} align="stretch">
-                <Table variant="striped">
-                  <Thead>
-                    <Tr>
-                      <Th>Ticket ID</Th>
-                      <Th>Date</Th>
-                      <Th>Lottery</Th>
-                      <Th>Seller</Th>
-                      <Th>Action</Th>
-                    </Tr>
-                  </Thead>
-                  <Tbody>
-                    {deletedTickets.map((item) => {
-                      return (
-                        <Tr key={item._id}>
-                          <Td>
-                            <Button
-                              className="tableInterBtn"
-                              size="sm"
-                              width="100%"
-                              backgroundColor={"#edf2f7"}
-                              onClick={() =>
-                                handleGetTicketNumbers(item.numbers)
-                              }
-                            >
-                              {item.ticketId}
-                            </Button>
-                          </Td>
-                          <Td><pre>{formatDate(item.date.substr(0, 10))}</pre></Td>
-                          <Td><pre>{item.lotteryCategoryName}</pre></Td>
-                          <Td><pre>
-                            {
-                              sellerInfo.find(
-                                (sitem) => sitem._id === item.seller
-                              )?.userName
-                            }
-                          </pre></Td>
-                          <Td>
-                            <Button
-                              className="tableInterBtn"
-                              size="sm"
-                              onClick={() => deleteTicket(item._id)}
-                              bg={
-                                colorMode === "light" ? "red.600" : "blue.300"
-                              }
-                              _hover={{
-                                bg:
-                                  colorMode === "light"
-                                    ? "red.300"
-                                    : "blue.200",
-                              }}
-                            >
-                              <RiDeleteBinLine size={14} color="white" />
-                            </Button>
-                          </Td>
-                        </Tr>
-                      );
-                    })}
-                  </Tbody>
-                </Table>
-              </VStack>
-            </Stack>
-          </Flex>
-        </CardBody>
+          </CardBody>
+        </div>
+        
       </Card>
 
       <Modal

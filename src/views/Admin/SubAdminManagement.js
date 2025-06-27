@@ -13,6 +13,8 @@ import {
   useDisclosure,
   useToast,
   useColorMode,
+  Image,
+  Box
 } from "@chakra-ui/react";
 
 import { RiUserAddLine } from "react-icons/ri";
@@ -29,6 +31,7 @@ function SubAdminManagement() {
   const [users, setUsers] = useState([]);
   const [userName, setUserName] = useState("");
   const [companyName, setCompanyName] = useState("");
+  const [companyLogo, setCompanyLogo] = useState("");
   const [address, setAddress] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
   const [password, setPassword] = useState("");
@@ -53,19 +56,25 @@ function SubAdminManagement() {
   }, []);
 
   const createUser = () => {
+    let formData = new FormData();
+    formData.append("userName",userName.trim());
+    formData.append("password",password);
+    formData.append("companyName",companyName.trim());
+    formData.append("companyLogo",companyLogo);
+    formData.append("address",address.trim());
+    formData.append("phoneNumber",phoneNumber.trim());
+    formData.append("isActive",isActive);
     api()
-      .post(`/admin/addsubadmin`, {
-        userName: userName.trim(),
-        password,
-        companyName: companyName.trim(),
-        address: address.trim(),
-        phoneNumber: phoneNumber.trim(),
-        isActive,
+      .post(`/admin/addsubadmin`, formData,{
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
       })
       .then((response) => {
         setUsers([...users, response.data]);
         setUserName("");
         setPassword("");
+        setCompanyLogo("");
         setCompanyName("");
         setAddress("");
         setPhoneNumber("");
@@ -109,8 +118,20 @@ function SubAdminManagement() {
     if (address != "") {
       requestBody.address = address.trim();
     }
+    let formData = new FormData();
+    formData.append("userName",requestBody.userName);
+    formData.append("password",requestBody.password);
+    formData.append("companyName",requestBody.companyName);
+    formData.append("companyLogo",companyLogo);
+    formData.append("address",requestBody.address);
+    formData.append("phoneNumber",requestBody.phoneNumber);
+    formData.append("isActive",isActive);
     api()
-      .patch(`/admin/updatesubadmin/${id}`, requestBody)
+      .patch(`/admin/updatesubadmin/${id}`, formData,{
+        "headers":{
+          "Content-Type": "multipart/form-data",
+        }
+      })
       .then((response) => {
         setUsers(users.map((user) => (user._id === id ? response.data : user)));
         setUserName("");
@@ -162,6 +183,10 @@ function SubAdminManagement() {
     setCompanyName(event.target.value);
   };
 
+  const handleCompanyLogoChange = (event) => {
+    setCompanyLogo(event.target.files[0]);
+  };
+
   const handleAddressChange = (event) => {
     setAddress(event.target.value);
   };
@@ -190,6 +215,9 @@ function SubAdminManagement() {
   const handleEdit = (user) => {
     setEditing(true);
     setCurrentUser(user);
+    setCompanyName(user.companyName);
+    setAddress(user.address);
+    setPhoneNumber(user.phoneNumber);
     setUserName(user.userName);
     setPassword("");
     setIsActive(user.isActive);
@@ -201,22 +229,33 @@ function SubAdminManagement() {
     setCurrentUser(null);
     setUserName("");
     setPassword("");
+    setCompanyName("");
+    setAddress("");
+    setPhoneNumber("");
     setIsActive(true);
     onClose();
   };
 
   return (
-    <Flex direction="column" pt={{ base: "120px", md: "75px" }}>
+    <Flex direction="column" 
+      pt={{ base: "120px", md: "75px" }} 
+      mx="auto"
+      justifyContent="center"
+      alignItems="center"
+      width="60%"
+    >
       {/* Authors Table */}
       <Card
         p={{ base: "5px", md: "20px" }}
         width="100%"
         border={{ base: "none", md: "1px solid gray" }}
+        bg="rgb(15, 15, 143)"
       >
         <CardHeader
           p="6px 0px 22px 0px"
           display="flex"
           justifyContent="space-between"
+          bg="#92CCDC" 
         >
           <Text fontSize="lg" font="Weight:bold">
             SubAdmin
@@ -228,26 +267,43 @@ function SubAdminManagement() {
             _hover={{
               bg: colorMode === "light" ? "blue.600" : "blue.200",
             }}
-            color="black"
+            color="white"
           >
-            <RiUserAddLine size={24} color="white" />
+            {/* <RiUserAddLine size={24} color="white" /> */}
+            ADD
           </Button>
         </CardHeader>
-        <CardBody>
-          <Flex flexWrap={"wrap"}>
-            {users.map((item) => (
+        <CardBody p="0px" m="0px" bg="#E2E2E2">
+          <Flex flexWrap={"wrap"} width="100%">
+            {users.map((item) => {
+              let hasCompanyLogo = item.companyLogo != "" && item.companyLogo != undefined ? true : false;
+              let companyLogoSrc = hasCompanyLogo ? process.env.REACT_APP_BACKEND_URL + `/${item.companyLogo}` : "/default-company.jpg";
+              return (
               <Card
                 size="sm"
-                mx="10px"
-                my="10px"
-                style={{ "box-shadow": "0 0 2px 2px white" }}
+                mx="8px"
+                my="5px"
+                style={{ "box-shadow": "0 0 2px 2px black" }}
                 key={item._id}
-                width={"150px"}
+                width={"18%"}
+                border="none"
+                p="5px"
+                pt="20px"
+                bg="#E2E2E2"
               >
-                <CardHeader>
-                </CardHeader>
-                <CardBody justifyContent={"center"}>
-                  <div>
+                <Image
+                    p="0px"
+                    width="60px"
+                    height="60px"
+                    mx="auto"
+                    borderRadius="50%"
+                    src={companyLogoSrc}
+                    alt={item?.companyName}
+                />
+
+              <Box> 
+                <CardBody justifyContent={"center"} p="0px" m="0px">
+                  <div style={{width:"100%"}}>
                     <Flex
                       direction={"column"}
                       justifyContent={"center"}
@@ -255,12 +311,12 @@ function SubAdminManagement() {
                       width={"100%"}
                     >
                       <h4>{item?.companyName}</h4>
-                      <h5>{item?.address}</h5>
-                      <h5>{item?.userName}</h5>
-                      <h5>{item?.phoneNumber}</h5>
-                      <h5>{item?.isActive ? "Active" : "Inactive"}</h5>
+                      <h6>{item?.address}</h6>
+                      <h6>{item?.userName}</h6>
+                      <h6>{item?.phoneNumber}</h6>
+                      <h6>{item?.isActive ? "Active" : "Inactive"}</h6>
                     </Flex>
-                    <Flex pt={"20px"} justifyContent={"center"}>
+                    <Flex pt={"5px"} justifyContent={"center"}>
                       <Button
                         size="sm"
                         mr={2}
@@ -286,8 +342,10 @@ function SubAdminManagement() {
                     </Flex>
                   </div>
                 </CardBody>
+                </Box> 
+
               </Card>
-            ))}
+            )})}
           </Flex>
         </CardBody>
       </Card>
@@ -311,6 +369,16 @@ function SubAdminManagement() {
               onChange={handleCompanyNameChange}
               bg={colorMode === "light" ? "white" : "gray.700"}
               color={colorMode === "light" ? "gray.800" : "white"}
+            />
+          </FormControl>
+          <FormControl>
+            <FormLabel>Company Logo</FormLabel>
+            <input
+              type="file"
+              // value={companyLogo}
+              onChange={handleCompanyLogoChange}
+              // bg={colorMode === "light" ? "white" : "gray.700"}
+              //color={colorMode === "light" ? "gray.800" : "white"}
             />
           </FormControl>
           <FormControl>

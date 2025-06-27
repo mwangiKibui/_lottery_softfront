@@ -19,6 +19,7 @@ import {
   FaFortAwesome,
   FaUserTie,
   FaInfoCircle,
+  FaMoneyBill
 } from "react-icons/fa";
 import {
   MdFactCheck,
@@ -28,7 +29,8 @@ import {
 import { SiAdblock } from "react-icons/si";
 import { RiNumbersFill, RiDeleteBin5Fill } from "react-icons/ri";
 import { BsTicketDetailedFill } from "react-icons/bs";
-import SubAdminDashboard from "components/SubAdminDashboard/SubAdminDashboard";
+import CustomMainMenu from "components/CustomMainMenu/CustomMainMenu";
+
 const MainMenu = () => {
   const history = useHistory();
 
@@ -90,6 +92,11 @@ const MainMenu = () => {
         name: "Sales Report",
         icon: FaInfoCircle,
       },
+      {
+        path: "/admin/PaymentAlert",
+        name: "Payment Alert",
+        icon: FaMoneyBill,
+      }
     ],
     subAdmin: [
       {
@@ -182,124 +189,144 @@ const MainMenu = () => {
     ],
   };
 
-  const functions = roleBasedFunctions[userRole] || [];
-  let isSubAdmin = userRole && userRole.toLowerCase() == "subadmin" ? true : false;
+  const subAdminMenuLinks = [
+    {
+      text:"Sellers",
+      url:"/subadmin/SellerManagement",
+      icon:<FaUserTie color='white' size={18}/>,
+    },
+    {
+      text:"Supervisors",
+      url:"/subadmin/SupervisorManagement",
+      icon: <FaUserSecret color='white' size={18}/>
+    },
+    {
+      text:"Payment",
+      url:"/subadmin/paymentcondition",
+      icon: <MdPayments color='inherit' size={18}/>
+    },
+    {
+      text:"blockNumber",
+      url:"/subadmin/blocknumber",
+      icon: <SiAdblock color='inherit' size={18}/>
+    },
+    {
+      text:"saleLimit",
+      url:"/subadmin/addlimit",
+      icon: <MdProductionQuantityLimits color='inherit' size={18}/>
+    },
+    {
+      text:"winNumbers",
+      url:"/subadmin/winningnumberviews",
+      icon: <RiNumbersFill color='inherit' size={18}/>
+    },
+    {
+      text:"Tickets",
+      url:"/subadmin/soldtickets",
+      icon: <MdFactCheck color='inherit' size={18}/>
+    },
+    {
+      text:"saleDetails",
+      url:"/subadmin/saledetails",
+      icon: <MdFactCheck color='inherit' size={18}/>
+    },
+    {
+      text:"dltdTickets",
+      url:"/subadmin/deleteticket",
+      icon: <RiDeleteBin5Fill color='inherit' size={18}/>
+    },
+    {
+      text:"winTicket",
+      url:"/subadmin/winningtickets",
+      icon: <FaFortAwesome color='inherit' size={18}/>
+    },
+    {
+      text:"saleReports",
+      url:"/subadmin/salereports",
+      icon: <FaInfoCircle color='inherit' size={18}/>
+    },
+    {
+      text:"Percentage",
+      url:"/subadmin/PercentageLimit",
+      icon: <ImUsers color='inherit' size={18}/>
+    }
+  ];
+  const adminMenuLinks=[
+    {
+      text:"SubAdmin",
+      url:"/admin/SubAdminManagement",
+      icon:<ImUsers color='white' size={18}/>,
+    },
+    {
+      text:"Lottery Category",
+      url:"/admin/LotteryCategoryManagement",
+      icon:<HiViewGridAdd color='white' size={18}/>,
+    },
+    {
+      text:"Winning Numbers",
+      url:"/admin/WinningNumberManagement",
+      icon:<GiPodium color='white' size={18}/>,
+    },
+    {
+      text:"Sales Report",
+      url:"/admin/SubAdminSaleReport",
+      icon:<FaInfoCircle color='white' size={18}/>,
+    },
+    {
+      text:"Payment Alert",
+      url:"/admin/PaymentAlert",
+      icon:<FaMoneyBill color='white' size={18}/>,
+    },
+  ];
+  const superVisorMenuLinks=[
+    {
+      text:"Seller",
+      url:"/supervisor/sellerManagement",
+      icon:<FaUserTie color='white' size={18}/>,
+    },
+    {
+      text:"Sale Details",
+      url:"/supervisor/saleDetails",
+      icon:<BsTicketDetailedFill color='white' size={18}/>,
+    },
+    {
+      text:"Win Number",
+      url:"/supervisor/winNumber",
+      icon:<FaFortAwesome color='white' size={18}/>,
+    },
+    {
+      text:"Sold Tickets",
+      url:"/supervisor/soldTickets",
+      icon:<MdFactCheck color='white' size={18}/>,
+    },
+    {
+      text:"Sale Reports",
+      url:"/supervisor/saleReports",
+      icon:<FaInfoCircle color='white' size={18}/>,
+    }
+  ];
+
+
+  let menuLinks = [];
+  let adminMenus = false;
+  if(userRole && userRole.toLowerCase() == "admin"){
+    menuLinks = adminMenuLinks;
+    adminMenus = true;
+  }else if(userRole && userRole.toLowerCase() == "supervisor"){
+    menuLinks = superVisorMenuLinks;
+    adminMenus = true;
+  }else if(userRole && userRole.toLowerCase() == "subadmin"){
+    menuLinks = subAdminMenuLinks;
+  }
 
   return (
-    
-      !isSubAdmin ?(
-        <Flex
-        width="100%"
-        minHeight="100vh"
-        flexDirection="column"
-        bg="#587a7e"
-        align="center"
-        p={4}
-      >
-        {/* Header */}
-        <Flex
-          as="header"
-          background="linear-gradient(145deg, #556d70, #475c5f)"
-          boxShadow="5px 5px 6px #1b1e1f, -5px -5px 6px #7ea3a8"
-          color="white"
-          alignItems="center"
-          justifyContent="space-between"
-          width="100%"
-          p={5}
-          flexDirection={["column", "row"]}
-          textAlign={["center", "left"]}
-        >
-          <Text fontSize={["lg", "xl"]} fontWeight="bold" mb={[2, 0]}>
-            {companyName || "Company Name"}
-          </Text>
-          <Text
-            fontSize={["md", "xl"]}
-            fontWeight="bold"
-            flexGrow={1}
-            textAlign={["center", "center"]}
-            mb={[2, 0]}
-          ></Text>
-          <Button
-            colorScheme="orange"
-            bg="orange"
-            onClick={handleSignOut}
-            mx={[0, 10]}
-            mt={[2, 0]}
-            p={4}
-            fontWeight="bold"
-            borderRadius={5}
-            fontSize={{ base: "14px", md: "16px" }}
-            leftIcon={<GoSignOut />}
-          >
-            LogOut
-          </Button>
-        </Flex> 
-  
-       { /* Main Menu */}
-       <Box
-          borderRadius="md"
-          maxWidth="1000px"
-          background="linear-gradient(145deg, #5e8387, #4f6e71)"
-          width={["100%", "70%", "50%"]}
-          mt="2%"
-          pb={15}
-          boxShadow="6px 6px 8px #6f989c, -6px -6px 8px #6f989c"
-          px={{ base: 4, md: 6 }}
-        >
-          <Heading
-            fontSize={["xl", "2xl"]}
-            mb={6}
-            textAlign="center"
-            color="gray.700"
-            bg="#fdf9bc"
-            py={4}
-            borderTopRadius="md"
-          >
-            Main Menu
-          </Heading>
-          <SimpleGrid columns={[2, 3]} spacing={6}>
-            {functions.length > 0 ? (
-              functions.map((func) => (
-                <VStack key={func.path} spacing={2} align="center">
-                  <Button
-                    onClick={() => handleNavigation(func.path)}
-                    borderRadius="50%"
-                    width={["40px", "70px"]}
-                    height={["40px", "70px"]}
-                    minWidth="60px"
-                    minHeight="60px"
-                    maxWidth="100px"
-                    maxHeight="100px"
-                    display="flex"
-                    alignItems="center"
-                    justifyContent="center"
-                    boxShadow="md"
-                    bg="gray.100"
-                    color="gray.600"
-                    _hover={{ bg: "gray.200" }}
-                    p={0}
-                  >
-                    <func.icon size={["24"]} />
-                  </Button>
-                  <Text
-                    fontSize={["sm", "md"]}
-                    textAlign="center"
-                    color="gray.700"
-                  >
-                    {func.name}
-                  </Text>
-                </VStack>
-              ))
-            ) : (
-              <Text>No functions available for your role.</Text>
-            )}
-          </SimpleGrid>
-        </Box>
-      </Flex>
-      ):(
-        <SubAdminDashboard />
-      )
-  );
+    <CustomMainMenu 
+      menuLinks = {
+        menuLinks
+      }
+      adminMenus={adminMenus}
+    />
+  )
 };
 
 export default MainMenu;

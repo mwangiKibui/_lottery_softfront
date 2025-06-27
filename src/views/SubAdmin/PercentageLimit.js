@@ -16,7 +16,7 @@ import {
   Text,
   Box,
 } from "@chakra-ui/react";
-import { FaPlus } from "react-icons/fa";
+import { FaPlus, FaTimes, FaTimesCircle } from "react-icons/fa";
 import { FaEdit } from "react-icons/fa";
 import { RiDeleteBinLine } from "react-icons/ri";
 
@@ -49,7 +49,10 @@ const PercentageLimit = () => {
   const [currentCondition, setCurrentCondition] = useState();
 
   useEffect(() => {
-    if (lotteryCategoryName) setConditions(initConditions);
+    if (lotteryCategoryName) {
+      conditions.length == 0 &&
+      setConditions(initConditions);
+    }
   }, [lotteryCategoryName]);
 
   useEffect(() => {
@@ -73,7 +76,7 @@ const PercentageLimit = () => {
   useEffect(() => {
     const fetchConditions = async () => {
       try {
-        const response = await api().get("/subadmin/getpercentagelimit");
+        const response = await api().get("/subadmin/getpercentagelimit?general=true");
         setAllConditions(response.data);
       } catch (error) {
         console.error(
@@ -101,6 +104,7 @@ const PercentageLimit = () => {
 
   const handleCancel = () => {
     setEditing(false);
+    setConditions(initConditions);
     onClose();
   };
 
@@ -186,9 +190,9 @@ const PercentageLimit = () => {
   };
 
   const handleDelete = async (id) => {
-    if (window.confirm("Are you sure you want to delete this condition?")) {
+    if (window.confirm("Are you sure you want to delete this percentage limit?")) {
       try {
-        await api().delete(`/subadmin/deletepaymentterm/${id}`);
+        await api().delete(`/subadmin/deletePercentageLimit/${id}`);
         setAllConditions(
           allConditions.filter((condition) => condition._id !== id)
         );
@@ -206,14 +210,23 @@ const PercentageLimit = () => {
   };
 
   return (
-    <Flex direction="column" pt={{ base: "120px", md: "75px" }}>
+    <Flex 
+    direction="column"
+    pt={{ base: "120px", md: "75px" }}
+    mx="auto"
+    justifyContent="center"
+    alignItems="center" // Add this to center children horizontally
+    width="100%"
+    >
       <Card
-        overflowX={{ md: "scroll", xl: "hidden" }}
-        p={{ base: "5px", md: "20px" }}
-        width="100%"
+        overflowX={{ sm: "scroll", xl: "hidden" }}
+        p={{ base: "0px", md: "0px" }}
+        width="43%"
         border={{ base: "none", md: "1px solid gray" }}
+        borderRadius="none"
+        bg="gray"
       >
-        <CardHeader display="flex" justifyContent="space-between">
+        <CardHeader bg="#92CCDC" display="flex" justifyContent="space-between">
           <Text fontSize="lg" color="black" font="Weight:bold">
             Percentage Limit
           </Text>
@@ -226,33 +239,55 @@ const PercentageLimit = () => {
               }
             }}
             isDisabled={lotteryCategories.length === 0}
-            bg={colorMode === "light" ? "blue.500" : "blue.300"}
+            bg={colorMode === "light" ? "#31859B" : "#31859B"}
+            color={"white"}
             _hover={{ bg: colorMode === "light" ? "blue.600" : "blue.200" }}
           >
-            <FaPlus size={24} color="white" />
+            {/* <FaPlus size={24} color="white" /> */}
+            ADD
           </Button>
         </CardHeader>
-        <CardBody pb="15px">
+        <CardBody  p={{ base: "4px", md: "8px" }} pb="15px">
           <Flex
-            flexWrap="wrap"
-            flexDirection={{ base: "column", sm: "row" }}
-            justifyContent="flex-start"
+            wrap="wrap"
+            gap={0}
+            justifyContent="space-between"
             width="100%"
           >
             {allConditions?.map((condition, index) => (
-              <Stack
-                key={index}
-                spacing={1}
-                width="350px"
-                p="5px"
-                m="10px"
-                border={"1px solid gray"}
-              >
-                <VStack spacing={3} align="stretch" color="black">
-                  <FormControl id="lotteryCategoryName" isRequired>
-                    <HStack justifyContent="space-between">
+              // <Stack
+              //   key={index}
+              //   spacing={1}
+              //   w={{ base: "100%", md: "350px" }}
+              //   p={4}
+              //   bg="#4AADC6"
+              //   // border={"1px solid gray"}
+              // >
+              <div className="loop-content-holder"> 
+                <VStack spacing={3} align="stretch" color="black" bg="#4AADC6"  key={index}
+                border="1px solid gray"
+                w={{ base: "100%", md: "100%" }}>
+                <FormControl id="user" >
+                    <HStack justifyContent="space-between" bg="#92CCDC">
                       <Box>
-                        <FormLabel>Lottery Category Name</FormLabel>
+                        <FormLabel>USER</FormLabel>
+                      </Box>
+                      <Box>
+                        <Button
+                          size="sm"
+                          onClick={() => console.log("this will be done later.")}
+                          bg={
+                            colorMode === "light" ? "red.500" : "red.300"
+                          }
+                        >
+                          <FaTimesCircle cursor="pointer" onClick={() => handleDelete(condition._id)} size={20} color="white" />
+                        </Button>
+                      </Box>
+                    </HStack>
+                  </FormControl>
+                  <FormControl id="lotteryCategoryName" >
+                    <HStack justifyContent="space-between" bg="#92CCDC">
+                      <Box>
                         <FormLabel>{condition.lotteryCategoryName}</FormLabel>
                       </Box>
                       <Box>
@@ -268,75 +303,88 @@ const PercentageLimit = () => {
                       </Box>
                     </HStack>
                   </FormControl>
-                  <FormControl id="conditions" isRequired>
-                    <FormLabel>Percentage Limit</FormLabel>
-                    <Stack>
-                      <Flex justifyContent="space-between">
-                        <VStack color="black">
-                          <Box>
-                            <FormLabel fontSize={14}>L3C</FormLabel>
-                            <Input
-                              isReadOnly
-                              value={condition.limits[0].limitPercent}
-                            />
-                          </Box>
-                          <Box>
+                  <FormControl id="conditions" p={4}>
+                    {/* <FormLabel>Percentage Limit</FormLabel> */}
+                    <Flex justifyContent="space-between">
+                          <FormLabel fontSize={14}>L3C</FormLabel>
+                          <Input
+                            isReadOnly
+                            value={condition.limits[0].limitPercent}
+                          />
+                    </Flex>
+                    <Flex justifyContent="space-between">
                             <FormLabel fontSize={14}>MRG</FormLabel>
                             <Input
                               isReadOnly
                               value={condition.limits[7].limitPercent}
                             />
-                          </Box>
-                          <Box>
+                    </Flex>
+                    <Flex justifyContent="space-between">
                             <FormLabel fontSize={14}>L4C1</FormLabel>
                             <Input
                               isReadOnly
                               value={condition.limits[1].limitPercent}
                             />
-                          </Box>
-                          <Box>
+                    </Flex>
+
+                    <Flex justifyContent="space-between">
                             <FormLabel fontSize={14}>L4C2</FormLabel>
                             <Input
                               isReadOnly
                               value={condition.limits[2].limitPercent}
                             />
-                          </Box>
-                        </VStack>
-                        <VStack color="black">
-                          <Box>
+                    </Flex>
+                    <Flex justifyContent="space-between">
                             <FormLabel fontSize={14}>L4C3</FormLabel>
                             <Input
                               isReadOnly
                               value={condition.limits[3].limitPercent}
                             />
-                          </Box>
-                          <Box>
+                    </Flex>
+                    <Flex justifyContent="space-between">
                             <FormLabel fontSize={14}>L5C1</FormLabel>
                             <Input
                               isReadOnly
                               value={condition.limits[4].limitPercent}
                             />
-                          </Box>
-                          <Box>
-                            <FormLabel fontSize={14}>L5C2</FormLabel>
+                    </Flex>
+                    <Flex justifyContent="space-between">
+                           <FormLabel fontSize={14}>L5C2</FormLabel>
                             <Input
                               isReadOnly
                               value={condition.limits[5].limitPercent}
                             />
-                          </Box>
-                          <Box>
-                            <FormLabel fontSize={14}>L5C3</FormLabel>
+                    </Flex>
+                    <Flex justifyContent="space-between">
+                          <FormLabel fontSize={14}>L5C3</FormLabel>
                             <Input
                               isReadOnly
                               value={condition.limits[4].limitPercent}
                             />
+                    </Flex>
+
+                    {/* <Stack>
+                      <Flex justifyContent="space-between">
+                        <VStack color="black">
+                          <Box>
+                            
+                          </Box>
+                          <Box>
+                           
+                          </Box>
+                          <Box>
+                            
+                          </Box>
+                          <Box>
+                            
                           </Box>
                         </VStack>
                       </Flex>
-                    </Stack>
+                    </Stack> */}
                   </FormControl>
                 </VStack>
-              </Stack>
+              </div>
+              // </Stack>
             ))}
           </Flex>
         </CardBody>
@@ -347,6 +395,7 @@ const PercentageLimit = () => {
         title={editing ? "Edit Condition" : "Create Condition"}
         submitButtonText={editing ? "Update" : "Create"}
         onSubmit={handleSubmit}
+        onCancel={handleCancel}
         cancelButtonText="Cancel"
       >
         <form onSubmit={handleSubmit}>
@@ -366,23 +415,45 @@ const PercentageLimit = () => {
             </FormControl>
             <FormControl id="Conditions" isRequired>
               <FormLabel>Payment Conditions</FormLabel>
-              <Flex justifyContent="space-between">
-                <VStack color="black">
-                  {conditions.map((condition, index) => (
-                    <Box key={index}>
-                      <FormLabel fontSize={14}>
-                        {condition.gameCategory}
-                      </FormLabel>
-                      <Input
-                        value={condition.limitPercent}
-                        onChange={(e) =>
-                          handleNumberChange(index, e.target.value)
-                        }
-                        type="number"
-                      />
-                    </Box>
-                  ))}
-                </VStack>
+              <Flex wrap="wrap" gap={2}>
+                {/* <VStack color="black"> */}
+                  { 
+                  // currentCondition != null ? currentCondition.limits.map((condition, index) => {
+                  //   console.log("this is current condition");
+                  //   return (
+                  //     <Box key={index} w="30%">
+                  //       <FormLabel fontSize={14}>
+                  //         {condition.gameCategory}
+                  //       </FormLabel>
+                  //       <Input
+                  //         value={condition.limitPercent}
+                  //         bg="none"
+                  //         onChange={(e) =>
+                  //           handleNumberChange(index, e.target.value)
+                  //         }
+                  //         type="number"
+                  //       />
+                  //     </Box>
+                  //   )
+                
+                  conditions.map((condition, index) => {
+                    return (
+                      <Box key={index} w="30%">
+                        <FormLabel fontSize={14}>
+                          {condition.gameCategory}
+                        </FormLabel>
+                        <Input
+                          value={condition.limitPercent}
+                          bg="none"
+                          onChange={(e) =>
+                            handleNumberChange(index, e.target.value)
+                          }
+                          type="number"
+                        />
+                      </Box>
+                    )
+                  })}
+                {/* </VStack> */}
               </Flex>
             </FormControl>
           </VStack>

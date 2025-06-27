@@ -30,6 +30,7 @@ import Card from "components/Card/Card.js";
 import CardHeader from "components/Card/CardHeader.js";
 import CardBody from "components/Card/CardBody.js";
 import Modal from "components/Modal/Modal.js";
+import CustomCardHeader from "components/CustomCardHeader/CustomCardHeader.js";
 
 const initWinNumbers = [
   {
@@ -154,14 +155,15 @@ const WinningNumbersManagement = () => {
     fetchLotteryCategories();
   }, []);
 
-  const fetchWinningNumbers = async () => {
+  const fetchWinningNumbers = async (e) => {
+    e.preventDefault();
     try {
       const response = await api().post("/admin/getwiningnumber", {
         lotteryCategoryName: "",
         fromDate,
         toDate,
       });
-      console.log(response.data.data);
+      console.log("the response is ",response);
       setWinningNumbers(response.data.data);
     } catch (error) {
       console.error(error);
@@ -175,26 +177,30 @@ const WinningNumbersManagement = () => {
   };
 
   const handleNumberChange = (index1, value) => {
+
     const newNumbers = [...numbers];
-    newNumbers[index1].number = value;
-    // L4C
-    newNumbers[4].number = `${numbers[1].number}${numbers[2].number}`;
-    newNumbers[5].number = `${numbers[0].number}${numbers[1].number}`;
-    newNumbers[6].number = `${numbers[0].number}${numbers[2].number}`;
+    if(index1 <= 3){
+      newNumbers[index1].number = value;
+      // L4C
+      newNumbers[4].number = `${numbers[1].number}${numbers[2].number}`;
+      newNumbers[5].number = `${numbers[0].number}${numbers[1].number}`;
+      newNumbers[6].number = `${numbers[0].number}${numbers[2].number}`;
 
-    // L5C
-    newNumbers[7].number = `${numbers[3].number}${numbers[2].number}`;
-    newNumbers[8].number = `${numbers[3].number}${numbers[1].number}`;
-    newNumbers[9].number = `${numbers[3].number}${numbers[0].number}`;
+      // L5C
+      newNumbers[7].number = `${numbers[3].number}${numbers[2].number}`;
+      newNumbers[8].number = `${numbers[3].number}${numbers[1].number}`;
+      newNumbers[9].number = `${numbers[3].number}${numbers[0].number}`;
 
-    // MRG
-    newNumbers[10].number = `${numbers[0].number}×${numbers[1].number}`;
-    newNumbers[11].number = `${numbers[0].number}×${numbers[2].number}`;
-    newNumbers[12].number = `${numbers[1].number}×${numbers[2].number}`;
-    newNumbers[13].number = `${numbers[1].number}×${numbers[0].number}`;
-    newNumbers[14].number = `${numbers[2].number}×${numbers[0].number}`;
-    newNumbers[15].number = `${numbers[2].number}×${numbers[1].number}`;
-
+      // MRG
+      newNumbers[10].number = `${numbers[0].number}×${numbers[1].number}`;
+      newNumbers[11].number = `${numbers[0].number}×${numbers[2].number}`;
+      newNumbers[12].number = `${numbers[1].number}×${numbers[2].number}`;
+      newNumbers[13].number = `${numbers[1].number}×${numbers[0].number}`;
+      newNumbers[14].number = `${numbers[2].number}×${numbers[0].number}`;
+      newNumbers[15].number = `${numbers[2].number}×${numbers[1].number}`;
+    }else{
+      newNumbers[index1].number = value;
+    }
     setNumbers([...newNumbers]);
   };
 
@@ -325,78 +331,29 @@ const WinningNumbersManagement = () => {
     return dateString;
   };
 
+  const handleAddWinNumbers = () => {
+    setLotteryCategoryName(lotteryCategories[0]?.lotteryName);
+    onOpen();
+  }
+
   return (
-    <Flex direction="column" pt={{ base: "120px", md: "75px" }}>
+ <Flex direction="column" justifyContent="center" alignItems="center" width="60%" mx="auto" pt={{ base: "120px", md: "75px" }}>
       <Card overflowX={{ sm: "scroll", xl: "hidden" }} p={{ base: "5px", md: "20px"}} width="100%" border={{base: "none", md: "1px solid gray"}}>
-        <CardHeader
-          p="6px 0px 22px 0px"
-          display="flex"
-          justifyContent="space-between"
-        >
-          <Flex
-            flexWrap="wrap"
-            flexDirection="column"
-            justifyContent="flex-start"
-            width="100%"
-          >
-            <Text fontSize="lg"  font="Weight:bold">
-              Winning Numbers
-            </Text>
-            <Flex
-              flexWrap="wrap"
-              justifyContent="space-start"
-              alignItems={"center"}
-            >
-              <FormControl id="fromDate" width="320px" py="10px" isRequired>
-                <HStack justifyContent="space-between">
-                  <FormLabel>From</FormLabel>
-                  <Input
-                    type="date"
-                    value={fromDate}
-                    onChange={(event) => setFromDate(event.target.value)}
-                    width="200px"
-                  />
-                </HStack>
-              </FormControl>
-              <FormControl id="toDate" width="320px" py="10px" isRequired>
-                <HStack justifyContent="space-between">
-                  <FormLabel>To</FormLabel>
-                  <Input
-                    type="date"
-                    value={toDate}
-                    onChange={(event) => setToDate(event.target.value)}
-                    width="200px"
-                  />
-                </HStack>
-              </FormControl>
-              <HStack ml="10px" pt={{md: "0px", sm: "10px"}}>
-                <Button
-                  size="sm"
-                  onClick={fetchWinningNumbers}
-                  bg={colorMode === "light" ? "red.600" : "blue.300"}
-                  _hover={{
-                    bg: colorMode === "light" ? "red.500" : "blue.200",
-                  }}
-                >
-                  <CgSearch size={20} color={"white"}/>
-                </Button>
-                <Button
-                  size="sm"
-                  onClick={() => {
-                    setLotteryCategoryName(lotteryCategories[0]?.lotteryName);
-                    onOpen();
-                  }}
-                  bg={colorMode === "light" ? "blue.500" : "blue.300"}
-                  _hover={{
-                    bg: colorMode === "light" ? "blue.600" : "blue.200",
-                  }}
-                >
-                  <FaPlus size={24} color="white" />
-                </Button>
-              </HStack>
-            </Flex>
-          </Flex>
-        </CardHeader>
+        
+        <CustomCardHeader 
+            title = "Winning Numbers"
+            showSellerField={false}
+            showLotteryField={false}
+            fromDate={fromDate}
+            setFromDate={setFromDate}
+            toDate={toDate}
+            setToDate={setToDate}
+            handleSearch={fetchWinningNumbers}
+            showHeaderAction={true}
+            handleHeaderAction={handleAddWinNumbers}
+        />
+        
+        <div className="custom-card-body">
         <CardBody>
           <Flex
             flexWrap="wrap"
@@ -657,6 +614,7 @@ const WinningNumbersManagement = () => {
             ))}
           </Flex>
         </CardBody>
+        </div>
       </Card>
       {/* Create/Edit User Modal */}
       <Modal
@@ -678,6 +636,8 @@ const WinningNumbersManagement = () => {
                 <Input
                   type="date"
                   value={date}
+                  background="none"
+                  width="100%"
                   onChange={(event) => setDate(event.target.value)}
                 />
               </FormControl>
@@ -716,6 +676,7 @@ const WinningNumbersManagement = () => {
                           placeholder="First"
                           maxLength={2}
                           value={numbers[0].number}
+                          background="none"
                           onChange={(event) =>
                             handleNumberChange(0, event.target.value)
                           }
@@ -728,6 +689,7 @@ const WinningNumbersManagement = () => {
                         <Input
                           placeholder="Second"
                           maxLength={2}
+                          background="none"
                           value={numbers[1].number}
                           onChange={(event) =>
                             handleNumberChange(1, event.target.value)
@@ -741,6 +703,7 @@ const WinningNumbersManagement = () => {
                         <Input
                           placeholder="Third"
                           maxLength={2}
+                          background="none"
                           value={numbers[2].number}
                           onChange={(event) =>
                             handleNumberChange(2, event.target.value)
@@ -754,6 +717,7 @@ const WinningNumbersManagement = () => {
                         <Input
                           placeholder="L3C"
                           maxLength={3}
+                          background="none"
                           value={numbers[3].number}
                           onChange={(event) =>
                             handleNumberChange(3, event.target.value)
@@ -772,6 +736,7 @@ const WinningNumbersManagement = () => {
                         </FormLabel>
                         <Input
                           placeholder="MRG1"
+                          background="none"
                           /*isReadOnly={true}*/
                           value={numbers[10].number}
                           onChange={(event) =>
@@ -785,6 +750,7 @@ const WinningNumbersManagement = () => {
                         </FormLabel>
                         <Input
                           placeholder="MRG2"
+                          background="none"
                           /*isReadOnly={true}*/
                           value={numbers[11].number}
                           onChange={(event) =>
@@ -798,7 +764,8 @@ const WinningNumbersManagement = () => {
                         </FormLabel>
                         <Input
                           placeholder="MRG3"
-                          /*isReadOnly={true}*/
+                          background="none"
+                          // isReadOnly={false}
                           value={numbers[12].number}
                           onChange={(event) =>
                             handleNumberChange(12, event.target.value)
@@ -811,6 +778,7 @@ const WinningNumbersManagement = () => {
                         </FormLabel>
                         <Input
                           placeholder="MRG4"
+                          background="none"
                           /*isReadOnly={true}*/
                           value={numbers[13].number}
                           onChange={(event) =>
@@ -824,6 +792,7 @@ const WinningNumbersManagement = () => {
                         </FormLabel>
                         <Input
                           placeholder="MRG5"
+                          background="none"
                           /*isReadOnly={true}*/
                           value={numbers[14].number}
                           onChange={(event) =>
@@ -837,6 +806,7 @@ const WinningNumbersManagement = () => {
                         </FormLabel>
                         <Input
                           placeholder="MRG5"
+                          background="none"
                           /*isReadOnly={true}*/
                           value={numbers[15].number}
                           onChange={(event) =>
@@ -856,8 +826,12 @@ const WinningNumbersManagement = () => {
                         </FormLabel>
                         <Input
                           placeholder="L4C1"
-                          isReadOnly={true}
+                          background="none"
+                          // isReadOnly={true}
                           value={numbers[4].number}
+                          onChange={(event) =>
+                            handleNumberChange(4, event.target.value)
+                          }
                         />
                       </Box>
                       <Box>
@@ -866,8 +840,12 @@ const WinningNumbersManagement = () => {
                         </FormLabel>
                         <Input
                           placeholder="L4C2"
-                          isReadOnly={true}
+                          background="none"
+                          // isReadOnly={true}
                           value={numbers[5].number}
+                          onChange={(event) =>
+                            handleNumberChange(5, event.target.value)
+                          }
                         />
                       </Box>
                       <Box>
@@ -876,8 +854,12 @@ const WinningNumbersManagement = () => {
                         </FormLabel>
                         <Input
                           placeholder="L4C3"
-                          isReadOnly={true}
+                          background="none"
+                          // isReadOnly={true}
                           value={numbers[6].number}
+                          onChange={(event) =>
+                            handleNumberChange(6, event.target.value)
+                          }
                         />
                       </Box>
                       <Box>
@@ -886,8 +868,12 @@ const WinningNumbersManagement = () => {
                         </FormLabel>
                         <Input
                           placeholder="L5C1"
-                          isReadOnly={true}
+                          background="none"
+                          // isReadOnly={true}
                           value={numbers[7].number}
+                          onChange={(event) =>
+                            handleNumberChange(7, event.target.value)
+                          }
                         />
                       </Box>
                       <Box>
@@ -896,8 +882,12 @@ const WinningNumbersManagement = () => {
                         </FormLabel>
                         <Input
                           placeholder="L5C2"
-                          isReadOnly={true}
+                          background="none"
+                          // isReadOnly={true}
                           value={numbers[8].number}
+                          onChange={(event) =>
+                            handleNumberChange(8, event.target.value)
+                          }
                         />
                       </Box>
                       <Box>
@@ -906,8 +896,12 @@ const WinningNumbersManagement = () => {
                         </FormLabel>
                         <Input
                           placeholder="L5C3"
-                          isReadOnly={true}
+                          background="none"
+                          // isReadOnly={true}
                           value={numbers[9].number}
+                          onChange={(event) =>
+                            handleNumberChange(9, event.target.value)
+                          }
                         />
                       </Box>
                     </VStack>

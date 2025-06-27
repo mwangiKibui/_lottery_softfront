@@ -20,13 +20,14 @@ import {
   ModalHeader,
   Box,
 } from "@chakra-ui/react";
-import { FaPlus, FaEdit } from "react-icons/fa";
+import { FaPlus, FaEdit, FaTimesCircle, FaWatchmanMonitoring, FaNotEqual, FaCircle } from "react-icons/fa";
 import { CgSearch } from "react-icons/cg";
 import { RiDeleteBinLine } from "react-icons/ri";
 import Card from "components/Card/Card.js";
 import CardHeader from "components/Card/CardHeader.js";
 import CardBody from "components/Card/CardBody.js";
 import Modal from "components/Modal/Modal.js";
+import { AxiosError } from "axios";
 
 const LimitNumber = () => {
   const [editing, setEditing] = useState(false);
@@ -52,6 +53,7 @@ const LimitNumber = () => {
   const [activeView, setActiveView] = useState("all");
   const [showSearchForm, setShowSearchForm] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [lotteryName, setLotteryName] = useState("");
 
   const { isOpen, onOpen, onClose } = useDisclosure();
   const toast = useToast();
@@ -62,13 +64,19 @@ const LimitNumber = () => {
         const [
           lotteryResponse,
           sellersResponse,
-          supervisorsResponse,
+          supervisorsResponse
         ] = await Promise.all([
           api().get("/admin/getlotterycategory"),
           api().get("/subadmin/getseller"),
           // api().get("/subadmin/getsellerWhoNotHaveSupervisor"),
           api().get("/subadmin/getsuperVisor"),
+          api().get("/subadmin/getLimitButAll")
         ]);
+
+        if(activeView == "all"){
+          const allLimitsResponse = await api().get("/subadmin/getLimitButAll");
+          setLimitNumbers(allLimitsResponse?.data);
+        }
 
         setLotteryCategories(lotteryResponse?.data?.data);
         setSupervisors(supervisorsResponse?.data);
@@ -88,6 +96,7 @@ const LimitNumber = () => {
 
   const handleGetLimit = async (viewType) => {
     setActiveView(viewType);
+    setLotteryCategoryName("");
     if (viewType === "all") {
       setShowSearchForm(false);
       try {
@@ -117,19 +126,22 @@ const LimitNumber = () => {
     try {
       if (
         !activeView ||
-        (activeView !== "supervisor" && activeView !== "seller")
+        (activeView !== "supervisor" && activeView !== "seller" && activeView !== "all")
       ) {
         throw new Error("Invalid view type");
       }
-      const endpoint = `/subadmin/getLimitBut${
+      const endpoint = activeView == 'supervisor' || activeView == 'seller' ?  `/subadmin/getLimitBut${
         activeView === "supervisor" ? "SuperVisor" : "Seller"
-      }`;
+      }` : `/subadmin/getLimitButAll`;
       const params = {
         seller: selectedSellerId,
         superVisor: selectedSupervisorId,
         lotteryCategoryName,
       };
+
+      console.log("the params here ",params);
       const response = await api().get(endpoint, { params });
+      console.log("the response received is ", response.data);
       setLimitNumbers(response.data);
       toast({
         title: "Limits fetched successfully",
@@ -197,8 +209,14 @@ const LimitNumber = () => {
         isClosable: true,
       });
     } catch (error) {
+      let errorMessage  = "";
+      if(error instanceof AxiosError){
+        errorMessage = error.response?.data?.message || `Error ${editing ? "updating" : "creating"} limit`;
+      }else{
+        errorMessage = `Error ${editing ? "updating" : "creating"} limit`;
+      }
       toast({
-        title: `Error ${editing ? "updating" : "creating"} limit`,
+        title: errorMessage,
         status: "error",
         duration: 3000,
         isClosable: true,
@@ -255,50 +273,21 @@ const LimitNumber = () => {
     >
       <Card
         overflowX={{ sm: "scroll", xl: "hidden" }}
-        p={{ base: "5px", md: "20px" }}
-        width="60%"
+        p={{ base: "0px", md: "0px" }}
+        width="42%"
         border={{ base: "none", md: "1px solid gray" }}
         borderRadius="none"
+        bg="gray"
       >
         <CardHeader
           display="flex"
           justifyContent="space-between"
           alignItems="center"
+          bg="#92CCDC"
         >
           <Text fontSize="lg" fontWeight="bold">
             Limit Numbers
           </Text>
-          <RadioGroup
-            onChange={handleGetLimit}
-            value={activeView}
-            display="flex"
-            gap={4}
-          >
-            <Radio
-              value="all"
-              colorScheme="blue"
-              isDisabled={isLoading}
-              size="lg"
-            >
-              All
-            </Radio>
-            <Radio
-              value="supervisor"
-              colorScheme="blue"
-              isDisabled={isLoading}
-              size="lg"
-            >
-              Supervisor
-            </Radio>
-            <Radio
-              value="seller"
-              colorScheme="blue"
-              isDisabled={isLoading}
-              size="lg"
-            >
-              Seller
-            </Radio>
-          </RadioGroup>
           <Button
             onClick={() => {
               setEditing(false);
@@ -307,16 +296,105 @@ const LimitNumber = () => {
             bg="green.800"
             color="white"
           >
-            <FaPlus />
+            {/* <FaPlus /> */}
+            ADD
           </Button>
         </CardHeader>
+
+        <CardHeader
+             display="flex"
+             justifyContent="center"
+             alignItems="center"
+             bg="#92CCDC"
+             mt="10px"
+             py="15px"
+          >
+            <RadioGroup
+                onChange={handleGetLimit}
+                value={activeView}
+                display="flex"
+                gap={4}
+            >
+              <Radio
+                value="all"
+                colorScheme="blue"
+                isDisabled={isLoading}
+                size="lg"
+              >
+                All
+              </Radio>
+              <Radio
+                value="supervisor"
+                colorScheme="blue"
+                isDisabled={isLoading}
+                size="lg"
+              >
+                Supervisor
+              </Radio>
+              <Radio
+                value="seller"
+                colorScheme="blue"
+                isDisabled={isLoading}
+                size="lg"
+              >
+                Seller
+              </Radio>
+          </RadioGroup>
+
+        </CardHeader>
+        
+        {
+          activeView.toLowerCase() == "all"  && (
+            <CardHeader
+            display="flex"
+            justifyContent="center"
+            alignItems="center"
+            bg="#92CCDC"
+            py="10px"
+          >
+  
+            <HStack>
+            <FormControl flex={1} flexDirection="row">
+              <FormLabel>Lottery: </FormLabel>
+                <Select
+                  value={lotteryCategoryName}
+                  onChange={(e) => setLotteryCategoryName(e.target.value)}
+                >
+                  <option value="">All</option>
+                  {lotteryCategories.map((category) => (
+                    <option key={category._id} value={category.lotteryName}>
+                      {category.lotteryName}
+                    </option>
+                  ))}
+                </Select>
+              
+            </FormControl>
+  
+            <VStack>
+                  <Button
+                    onClick={handleSearch}
+                    bg="#F3960C"
+                    color="white"
+                    isLoading={isLoading}
+                  >
+                    Search
+                  </Button>
+                </VStack>
+            </HStack>
+  
+          </CardHeader>
+          )
+        }
+       
 
         {showSearchForm && (
           <CardHeader
             display="flex"
             flexDirection={{ base: "column", md: "row" }}
             gap={5}
-            marginY="20px"
+            bg="#92CCDC"
+            marginTop="5px"
+            paddingBottom="10px"
             justifyContent="center"
           >
             <HStack>
@@ -381,51 +459,50 @@ const LimitNumber = () => {
         )}
 
         <CardBody>
-          <Flex wrap="wrap" justify="center" gap={4}>
-            {limitNumbers.map((limit) => (
-              <VStack
-                key={limit._id}
-                border="1px solid gray"
-                p={4}
-                w={{ base: "100%", md: "350px" }}
-              >
-                <HStack spacing={20}>
-                  <VStack align="start">
-                    <FormLabel>
-                      {limit.seller?.userName ||
-                        limit.superVisor?.userName ||
-                        "All"}
-                    </FormLabel>
-                    <FormLabel>{limit.lotteryCategoryName}</FormLabel>
-                  </VStack>
-                  <HStack spacing={2}>
-                    <Button onClick={() => handleEdit(limit)} bg="yellow.800">
-                      <FaEdit color="white" />
-                    </Button>
-                    <Button
-                      onClick={() => handleDelete(limit._id)}
-                      bg="red.800"
-                    >
-                      <RiDeleteBinLine color="white" />
-                    </Button>
-                  </HStack>
-                </HStack>
-                <Flex wrap="wrap" gap={2} w="full">
-                  {limit.limits.map((limitItem) => (
-                    <Box key={limitItem.gameCategory} w="45%">
-                      <FormLabel fontSize="sm">
-                        {limitItem.gameCategory}
+          <Flex wrap="wrap" justifyContent="space-between" gap={0} width="100%">
+            {limitNumbers.map((limit) => {
+              return (
+              <div className="loop-content-holder">
+                  <VStack
+                        key={limit._id}
+                        border="1px solid gray"
+                        w={{ base: "100%", md: "100%" }}
+                      >
+
+                    <Flex justifyContent="space-between" width="100%"  bg="#92CCDC" padding="5px" marginBottom="1px">
+                      <FormLabel>
+                        {limit.seller?.userName ||
+                          limit.superVisor?.userName ||
+                          "All"}
                       </FormLabel>
-                      <Input
-                        value={limitItem.limitsButs}
-                        isReadOnly
-                        size="sm"
-                      />
-                    </Box>
-                  ))}
-                </Flex>
-              </VStack>
-            ))}
+                      <FaTimesCircle cursor="pointer" className="limit-number-icon"  color="red" onClick={() => handleDelete(limit._id)}/>
+                    </Flex>
+
+                    <Flex justifyContent="space-between" width="100%"  bg="#92CCDC" padding="5px" >
+
+                      <FormLabel >{limit.lotteryCategoryName}</FormLabel>
+                      <FaEdit cursor="pointer" onClick={() => handleEdit(limit)} className="limit-number-icon" color="yellow"/>
+                    
+                    </Flex>
+                  
+                  <Flex background="#D9E6F1" padding="10px" wrap="wrap" gap={2} w="full" marginTop="1px">
+                    {limit.limits.map((limitItem) => (
+                      <Box key={limitItem.gameCategory} w="45%">
+                        <FormLabel fontSize="sm">
+                          {limitItem.gameCategory}
+                        </FormLabel>
+                        <Input
+                          value={limitItem.limitsButs}
+                          isReadOnly
+                          size="sm"
+                        />
+                      </Box>
+                    ))}
+                  </Flex>
+                </VStack>
+              </div>
+              )
+            })}
           </Flex>
         </CardBody>
       </Card>

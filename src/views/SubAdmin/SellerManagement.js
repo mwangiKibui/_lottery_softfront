@@ -74,7 +74,6 @@ function SellerManagement() {
     const fetchSellers = async () => {
       try {
         const response = await api().get(`/subadmin/getseller`);
-        console.log("Sellers data: "+response.data);
         setUsers(response?.data?.users);
         setCompanyName(response?.data?.companyName);
         setBonusFlag(response?.data?.bonusFlag);

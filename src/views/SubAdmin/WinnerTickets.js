@@ -28,7 +28,7 @@ import { CgSearch } from "react-icons/cg";
 
 // Custom components
 import Card from "components/Card/Card.js";
-import CardHeader from "components/Card/CardHeader.js";
+import CustomCardHeader from "components/CustomCardHeader/CustomCardHeader.js";
 import CardBody from "components/Card/CardBody.js";
 import Modal from "components/Modal/Modal.js";
 import { Loading } from "components/Loading/Loading.js";
@@ -86,7 +86,8 @@ const WinnerTickets = () => {
     fetchSeller();
   }, []);
 
-  const fetchWinnerTickets = async () => {
+  const fetchWinnerTickets = async (e) => {
+    e.preventDefault();
     try {
       setLoading(true);
       const response = await api().get(
@@ -132,131 +133,31 @@ const WinnerTickets = () => {
   };
 
   return (
-    <Flex direction="column" pt={{ base: "120px", md: "75px" }}>
+    <Flex direction="column" justifyContent="center" alignItems="center" width="60%" mx="auto" pt={{ base: "120px", md: "75px" }}>
       <Card
         overflowX={{ sm: "scroll", xl: "hidden" }}
         p={{ base: "5px", md: "20px" }}
         width="100%"
         border={{ base: "none", md: "1px solid gray" }}
       >
-        <CardHeader
-          p="6px 0px 22px 0px"
-          display="flex"
-          justifyContent="space-between"
-        >
-          <Flex
-            flexWrap="wrap"
-            flexDirection={{ base: "column", sm: "row" }}
-            justifyContent="space-between"
-            alignItems={"center"}
-            width="100%"
-          >
-            <Text fontSize="lg" color="black" font="Weight:bold" mb="10px">
-              Win Tickets
-            </Text>
-            <Flex
-              color="black"
-              flexWrap="wrap"
-              justifyContent="flex-start"
-              width="100%"
-              alignItems="center"
-            >
-              <FormControl
-                id="lotteryCategoryName"
-                width="320px"
-                isRequired
-                py="5px"
-              >
-                <HStack justifyContent="space-between">
-                  <FormLabel m="0">Seller</FormLabel>
-                  <Select
-                    onChange={(event) =>
-                      setSelectedSellerId(event.target.value)
-                    }
-                    width="200px"
-                  >
-                    <option value={""} style={{ backgroundColor: "#e3e2e2" }}>
-                      All
-                    </option>
-                    {sellerInfo.map((info) => (
-                      <option
-                        key={info._id}
-                        value={info._id}
-                        style={{ backgroundColor: "#e3e2e2" }}
-                      >
-                        {info.userName}
-                      </option>
-                    ))}
-                  </Select>
-                </HStack>
-              </FormControl>
-              <FormControl
-                id="lotteryCategoryName"
-                width="320px"
-                isRequired
-                py="5px"
-              >
-                <HStack justifyContent="space-between">
-                  <FormLabel m="0">Category Name</FormLabel>
-                  <Select
-                    onChange={(event) =>
-                      setLotteryCategoryName(event.target.value.trim())
-                    }
-                    width="200px"
-                  >
-                    <option value={""} style={{ backgroundColor: "#e3e2e2" }}>
-                      All Category
-                    </option>
-                    {lotteryCategories.map((category) => (
-                      <option
-                        key={category._id}
-                        value={category.lotteryName}
-                        style={{ backgroundColor: "#e3e2e2" }}
-                      >
-                        {category.lotteryName}
-                      </option>
-                    ))}
-                  </Select>
-                </HStack>
-              </FormControl>
-              <FormControl id="fromDate" width="320px" isRequired py="5px">
-                <HStack justifyContent="space-between">
-                  <FormLabel m="0">From</FormLabel>
-                  <Input
-                    type="date"
-                    value={fromDate}
-                    onChange={(event) => setFromDate(event.target.value)}
-                    width="200px"
-                  />
-                </HStack>
-              </FormControl>
-              <FormControl id="toDate" width="320px" isRequired py="5px">
-                <HStack justifyContent="space-between">
-                  <FormLabel m="0">To</FormLabel>
-                  <Input
-                    type="date"
-                    value={toDate}
-                    onChange={(event) => setToDate(event.target.value)}
-                    width="200px"
-                  />
-                </HStack>
-              </FormControl>
 
-              <Button
-                size="sm"
-                onClick={fetchWinnerTickets}
-                bg={colorMode === "light" ? "red.600" : "blue.300"}
-                _hover={{
-                  bg: colorMode === "light" ? "red.500" : "blue.200",
-                }}
-                mx={"10px"}
-              >
-                <CgSearch size={20} color={"white"} />
-              </Button>
-            </Flex>
-          </Flex>
-        </CardHeader>
-        <CardBody pb="15px">
+        <CustomCardHeader
+          title="Win Tickets"
+          setSelectedSellerId={setSelectedSellerId}
+          sellerInfo={sellerInfo}
+          setLotteryCategoryName={setLotteryCategoryName}
+          lotteryCategories={lotteryCategories}
+          fromDate={fromDate}
+          setFromDate={setFromDate}
+          toDate={toDate}
+          setToDate={setToDate}
+          handleSearch={fetchWinnerTickets}
+          colorMode={colorMode}
+          showAllInSellerField={true}
+          showAllInLotteryField={true}
+        />
+      <div className="custom-card-body">
+        <CardBody>
           <Flex
             flexWrap="wrap"
             flexDirection={{ base: "column", sm: "row" }}
@@ -290,8 +191,10 @@ const WinnerTickets = () => {
                             <Button
                               className="tableInterBtn"
                               size="sm"
-                              width="100%"
-                              backgroundColor={"#edf2f7"}
+                              color="white"
+                              backgroundColor={"green"}
+                              borderRadius="5px"
+                              padding="0px"
                               onClick={() => handleGetTicketNumbers(item.numbers, item.paidAmount)}
                             >
                               {item.ticketId}
@@ -321,9 +224,11 @@ const WinnerTickets = () => {
             </VStack>
           </Flex>
         </CardBody>
+      </div>
       </Card>
       <Modal
         isOpen={isOpen}
+        onCancel={handleCancel}
         onClose={handleCancel}
         colorMode={colorMode}
         title={"Game Numbers"}

@@ -1,0 +1,214 @@
+
+.cch-parent-form-card{
+    background-color: rgba(132, 165, 190, 0.904);
+    margin-bottom: 1px;
+}
+.cch-form-card {
+    width: 100%;
+    height: max-content;
+    background-color: rgba(7, 8, 8, 0);
+    /*background-color: rgb(104, 184, 184);*/
+    padding-top: 5px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid white;
+    border-top-left-radius: 5px;
+    border-top-right-radius: 5px;
+}
+
+.cch-title{
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    height: 50px;
+    background-color: rgb(111, 168, 212) !important;
+    border-top-left-radius: 5px;
+    border-top-right-radius: 5px;
+    border-bottom: 1px solid wheat;
+    margin-bottom: 5px;
+}
+
+.cch-title-content {
+    padding-top: 15px;
+    padding-left: 20px;
+    padding-right: 20px;
+    color: black;
+    font-size: 20px;
+    text-align: left;
+}
+
+.cch-title-actions{
+    padding-right:10px;
+    padding-top:5px;
+}
+
+
+
+.cch-form-card form{
+    width: 400px;
+    height: max-content;
+    margin: auto;
+    padding: 20px;
+    border: 1px solid rgb(42, 147, 228);
+    box-shadow: 0px 0px 2px rgb(247, 221, 173),
+                 0px 0px 2px rgb(247, 221, 173);
+    background-color: rgb(94, 165, 219);
+    /*background-color: rgb(98, 172, 172);*/
+    color: black;
+}
+
+.cch-form-card form button {
+    background-color: green;
+    width: 100px;
+    border: 3px solid green;
+    height: 40px;
+    color: antiquewhite;
+    border-radius: 5px;
+    font-size: 18px;
+    font-weight: bold;
+    padding: 5px;
+    box-shadow: none;
+    margin: 0px !important;
+
+}
+
+.cch-form-card form input {
+    height: 30px;
+    width: 360px;
+    margin-bottom: 5px;
+    display: block;
+    border: none;
+    border-radius: 2px;
+    background-color: rgb(111, 172, 219);
+    /*background-color: rgb(99, 160, 160);*/
+    color: rgb(83, 82, 82);
+    padding-left: 20px;
+}
+
+.cch-form-card form select{
+    height: 30px;
+    width: 360px;
+    margin-bottom: 5px;
+    display: block;
+    border: none;
+    border-radius: 2px;
+    background-color: rgb(111, 172, 219);
+    color: rgb(83, 82, 82);
+    padding-left: 15px;
+}
+
+.header-action-btn{
+    background-color: green;
+    /* width: 60px; */
+    border: 1px solid green;
+    /* padding:4px; */
+    padding: 4px 8px;
+    color: antiquewhite;
+    border-radius: 5px;
+    font-size: 20px;
+    font-weight: bold;
+    margin-bottom:10px;
+}
+
+/* Responsive Design */
+@media (max-width: 420px){
+    .cch-form-card {
+        width: 100%;
+        height: max-content;
+        background-color: rgba(7, 8, 8, 0);
+        /*background-color: rgb(104, 184, 184);*/
+        padding-top: 2px;
+        padding-bottom: 10px;
+        border-bottom: 1px solid white;
+        border-top-left-radius: 5px;
+        border-top-right-radius: 5px;
+    }
+
+    .cch-form-card .cch-title{
+        width: 100%;
+        height: 30px;
+        background-color: rgb(111, 168, 212);
+        border-top-left-radius: 2px;
+        border-top-right-radius: 2px;
+      
+        border-bottom: 1px solid wheat;
+        margin-bottom: 5px;
+    }
+    .cch-form-card .cch-title .cch-title-content {
+        padding-top: 2px;
+        padding-left: 20px;
+        color: black;
+        font-size: 15px;
+        text-align: left;
+    }
+
+    .cch-form-card form{
+        width: 95%;
+        height: max-content;
+        margin: auto;
+        padding: 5px;
+        border: 1px solid rgb(42, 147, 228);
+        box-shadow: 0px 0px 2px rgb(247, 221, 173),
+                     0px 0px 2px rgb(247, 221, 173);
+        background-color: rgb(94, 165, 219);
+        /*background-color: rgb(98, 172, 172);*/
+        color: black;
+    }
+
+    .cch-form-card form label {
+        font-size: 13px;
+        font-weight: 800;
+        font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+    }
+    .cch-form-card form button {
+        background-color: green;
+        width: 50px;
+        border: 1px solid green;
+        height: 15px;
+        color: antiquewhite;
+        border-radius: 5px;
+        font-size: 10px;
+        font-weight: bold;
+    }
+
+    .cch-form-card form input {
+        height: 20px;
+        width: 100%;
+        margin-bottom: 5px;
+        display: block;
+        border: none;
+        border-radius: 2px;
+        background-color: rgb(111, 172, 219);
+        /*background-color: rgb(99, 160, 160);*/
+        color: rgb(83, 82, 82);
+        padding-left: 5px;
+    }
+
+    .cch-form-card form select{
+        height: 20px;
+        width: 100%;        margin-bottom: 5px;
+        display: block;
+        border: none;
+        border-radius: 2px;
+        background-color: rgb(111, 172, 219);
+        color: rgb(83, 82, 82);
+        padding-left: 15px;
+    }
+
+    .cch-title-actions{
+        padding-top: 0px;
+    }
+
+    .header-action-btn{
+        display: inline-block;
+        padding: 1px 12px;
+    }
+    
+    .cch-form-card form button {
+    width: 120px;
+    height: max-content;
+    padding: 5px;
+    box-shadow: none;
+    margin: 0px !important;
+    
+}
+}

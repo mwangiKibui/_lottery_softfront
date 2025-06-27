@@ -52,3 +52,29 @@ p {
     padding-inline-start: unset !important;
     padding-inline-end: unset !important;
 }
+
+@media screen and (max-width: 500px) {
+    .winNumbersContainer{
+        width: 100%;
+        overflow: hidden;
+    }
+
+    .showNumbersContainer{
+        gap:20px;
+        animation: slide-left 2s linear infinite;
+    }
+
+    .numbersBoxes{
+        margin-right: 10px;
+        min-width: 100px;
+    }
+
+    @keyframes slide-left {
+        0% {
+          transform: translateX(0);
+        }
+        100% {
+          transform: translateX(-100px);
+        }
+      }
+}

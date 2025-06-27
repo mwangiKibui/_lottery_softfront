@@ -1,0 +1,61 @@
+.features {
+    padding: 50px 20px;
+    background-color: #adcceb;
+    text-align: center;
+    
+  }
+  
+  .features h2 {
+    font-size: 36px;
+    color: #2C3E50;
+    margin-bottom: 40px;
+  }
+  
+  .feature-cards {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    flex-wrap: wrap;
+  }
+  
+  .card {
+    background-color: #F5F5F5;
+    padding: 20px;
+    border-radius: 10px;
+    width: calc(33.33% - 40px);
+    text-align: center;
+    box-sizing: border-box;
+  }
+  
+  .card i {
+    font-size: 48px;
+    color: #27AE60;
+    margin-bottom: 20px;
+  }
+  
+  .card h3 {
+    font-size: 24px;
+    color: #2C3E50;
+    margin-bottom: 10px;
+  }
+  
+  .card p {
+    font-size: 16px;
+    color: #34495E;
+  }
+  @media (max-width: 768px) {
+    .feature-cards {
+        flex-direction: column;
+        align-items: center;
+      }
+    
+      .feature-cards .card {
+        width: 80%;
+      }
+  }
+  @media (max-width: 480px) {
+     /* Features and Pricing Cards */
+     .feature-cards .card, .pricing-cards .card {
+        width: 100%;
+      }
+  }

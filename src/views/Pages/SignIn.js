@@ -22,14 +22,14 @@ import {
 import { HamburgerIcon } from "@chakra-ui/icons";
 import api from "../../utils/customFetch.js";
 import CustomNavbar from "components/CustomNavbar/CustomNavbar.js";
-
+import SigninComponent from "components/Auth/Signin/Signin.js";
 // Color constants for reuse
 const COLORS = {
   title: "rgb(252, 144, 55)",
   text: "white",
   headerBg: "linear-gradient(145deg, #556d70, #475c5f)",
   drawerBg: "#3F3534",
-  bodyBg: "linear-gradient(to right top, #051937, #003455, #00526f, #007086, #239099)",
+  bodyBg: "#adcceb",
   formBg: "linear-gradient(to bottom, #051937, #003f60, #006884, #247c88, #239099)",
   inputBg: "rgb(199, 187, 187)",
   buttonBg: "#475c5f",
@@ -212,6 +212,7 @@ function SignIn() {
         sessionStorage.setItem("userRole", user.role);
         sessionStorage.setItem("userName", user.userName);
         sessionStorage.setItem("company", user.companyName);
+        sessionStorage.setItem("userId", user._id);
 
         handleShowToast(`Welcome Mr.${user.userName}`, "success");
         history.push("/admin/main-menu");
@@ -238,15 +239,16 @@ function SignIn() {
     <>
       {/* <Header onDrawerOpen={() => setIsOpen(true)} />
       <DrawerMenu isOpen={isOpen} onClose={() => setIsOpen(false)} /> */}
-      <CustomNavbar links={[
+      <CustomNavbar centerLinks={[
         {
           text:"Home",
-          url:"/"
+          url:"/",
+          redirect:true
         }
-      ]} navbarBrand="LOTTERY SOFT" navbarBrandUrl="#"/>
+      ]} rightLinks={[]} navbarBrand="LOTTERY SOFT" navbarBrandUrl="#"/>
       <Flex align="center" justify="center" minH="100vh" bg={COLORS.bodyBg}>
         <Flex w="100%" maxW={{ base: "90%", sm: "450px" }} mx="auto" p={5}>
-          <LoginForm
+          <SigninComponent
             name={name}
             setName={setName}
             password={password}

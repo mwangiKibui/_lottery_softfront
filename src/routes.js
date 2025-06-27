@@ -22,6 +22,7 @@ import MainMenuComponent from "views/Pages/MainMenu.js";
 import PercentageLimitComponent from "views/SubAdmin/PercentageLimit.js";
 import LotteryCategoryManagement from "views/Admin/LottoCategoryManagement.js";
 import WinningNumberManagement from "views/Admin/WinningNumberManagement.js";
+import PaymentAlertManagement from "views/Admin/PaymentAlertManagement";
 
 import SellerManagement from "views/SubAdmin/SellerManagement.js";
 import SupervisorManagement from "views/SubAdmin/SupervisorManagement.js";
@@ -34,6 +35,14 @@ import DeletedTickets from "views/SubAdmin/DeletedTickets";
 import WinnerTickets from "views/SubAdmin/WinnerTickets.js";
 import SaleDetails from "views/SubAdmin/SaleDetails.js";
 import SaleReports from "views/SubAdmin/SaleReports.js";
+import SubAdminChat from "views/SubAdmin/Chat";
+
+// supervisor components.
+import SupervisorSellerManagement from "views/SuperVisor/SuperVisorSellerManagement.js";
+import SupervisorSaleDetails from "views/SuperVisor/SuperVisorSaleDetails";
+import SuperVisorSaleReports from "views/SuperVisor/SuperVisorSaleReports";
+import SupervisorSoldTickets from "views/SuperVisor/SuperVisorSoldTickets";
+import SupervisorWinNumber from "views/SuperVisor/SuperVisorWinNumber.js";
 
 
 import SignIn from "views/Pages/SignIn.js";
@@ -42,7 +51,7 @@ import { ImUsers } from "react-icons/im";
 import { GiPodium } from "react-icons/gi";
 import { GoSignOut } from "react-icons/go";
 import { HiViewGridAdd } from "react-icons/hi";
-import { FaUserSecret } from "react-icons/fa";
+import { FaMoneyBill, FaUserSecret } from "react-icons/fa";
 import { FaFortAwesome } from "react-icons/fa";
 import { MdFactCheck } from "react-icons/md";
 import { MdPayments } from "react-icons/md";
@@ -51,6 +60,7 @@ import { FaUserTie } from "react-icons/fa";
 import { SiAdblock } from "react-icons/si";
 import { RiNumbersFill } from "react-icons/ri";
 import { FaInfoCircle } from "react-icons/fa";
+import { FaFacebookMessenger} from "react-icons/fa";
 import { BsTicketDetailedFill } from "react-icons/bs";
 import { RiDeleteBin5Fill } from "react-icons/ri";
 
@@ -74,6 +84,13 @@ var dashRoutes = [
     name: "Sub Admin",
     icon: <ImUsers color='inherit' size={22}/>,
     component: SubAdminManagement,
+    layout: "/admin",
+  },
+  {
+    path: "/PaymentAlert",
+    name: "Payment Alerts",
+    icon: <FaMoneyBill color='inherit' size={22}/>,
+    component: PaymentAlertManagement,
     layout: "/admin",
   },
   {
@@ -165,6 +182,48 @@ var dashRoutes = [
     name: "Sale Reports",
     icon: <FaInfoCircle color='inherit' size={22}/>,
     component: SaleReports,
+    layout: "/subadmin",
+  },
+  {
+    path: "/sellerManagement",
+    name: "Seller",
+    icon: <FaInfoCircle color='inherit' size={22}/>,
+    component: SupervisorSellerManagement,
+    layout: "/supervisor",
+  },
+  {
+    path: "/saleDetails",
+    name: "Sale Details",
+    icon: <FaInfoCircle color='inherit' size={22}/>,
+    component: SupervisorSaleDetails,
+    layout: "/supervisor",
+  },
+  {
+    path: "/saleReports",
+    name: "Sale Reports",
+    icon: <FaInfoCircle color='inherit' size={22}/>,
+    component: SuperVisorSaleReports,
+    layout: "/supervisor",
+  },
+  {
+    path: "/soldTickets",
+    name: "Sold Tickets",
+    icon: <FaInfoCircle color='inherit' size={22}/>,
+    component: SupervisorSoldTickets,
+    layout: "/supervisor",
+  },
+  {
+    path: "/winNumber",
+    name: "Win Number",
+    icon: <FaInfoCircle color='inherit' size={22}/>,
+    component: SupervisorWinNumber,
+    layout: "/supervisor",
+  },
+  {
+    path: "/chat",
+    name: "Chat",
+    icon: <FaFacebookMessenger color='inherit' size={22}/>,
+    component: SubAdminChat,
     layout: "/subadmin",
   },
   // {

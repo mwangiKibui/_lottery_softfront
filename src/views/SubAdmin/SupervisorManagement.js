@@ -27,12 +27,14 @@ import {
 import { RiUserAddLine } from "react-icons/ri";
 import { FaEdit } from "react-icons/fa";
 import { RiDeleteBinLine } from "react-icons/ri";
+import { AxiosError } from "axios";
 
 // Custom components
 import Card from "components/Card/Card.js";
 import CardHeader from "components/Card/CardHeader.js";
 import CardBody from "components/Card/CardBody.js";
 import Modal from "components/Modal/Modal.js";
+
 
 function SupervisorManagement() {
   const [users, setUsers] = useState([]);
@@ -81,8 +83,14 @@ function SupervisorManagement() {
         });
       })
       .catch((error) => {
+        let errorMessage  = "";
+        if(error instanceof AxiosError){
+          errorMessage = error.response?.data?.error || `Error creating Supervisor.`;
+        }else{
+          errorMessage = `Error creating Supervisor.`;
+        }
         toast({
-          title: "Error creating Supervisor.",
+          title: errorMessage,
           description: error.message,
           status: "error",
           duration: 3000,

@@ -116,11 +116,23 @@ export default function Dashboard(props) {
   const { isOpen, onOpen, onClose } = useDisclosure();
   let userRole = sessionStorage.getItem("userRole");
   let isSubAdmin = userRole && userRole.toLowerCase() == "subadmin";
+  let isAdmin = userRole && userRole.toLowerCase() == "admin";
+  let isSupervisor = userRole && userRole.toLowerCase() == "supervisor";
+  let supervisorCompanyName = sessionStorage.getItem("company") != "undefined" ? sessionStorage.getItem("company") : "";
+  let supervisorUserName = sessionStorage.getItem("userName") != "undefined" ? sessionStorage.getItem("userName") : "";
+  let navbarBrand = "";
+  if(supervisorCompanyName && supervisorUserName){
+    navbarBrand = `${supervisorCompanyName}(${supervisorUserName})`;
+  }else if(!supervisorCompanyName && supervisorUserName){
+    navbarBrand = `(${supervisorUserName})`;
+  }else{
+    navbarBrand = "LOTTERY SOFT";
+  }
   document.documentElement.dir = "ltr";
   // Chakra Color Mode
   return (
-    <ChakraProvider theme={theme} resetCss={false}>
-      {
+    <ChakraProvider theme={theme} resetCss={true}>
+      {/* {
         !isSubAdmin && (
           <Sidebar
             routes={matchRoutes}
@@ -130,19 +142,33 @@ export default function Dashboard(props) {
             {...rest}
           />
         )
-      }
+      } */}
 
       {
         isSubAdmin && (
           <CustomNavbar
-          links={
+          centerLinks={
             [
               {
-                text:"Logout",
-                url:"/signout"
+                text:"Main Menu",
+                url:"/admin/main-menu",
+                redirect:true
+              },
+              {
+                text:"Chat",
+                url:"/subadmin/chat",
+                redirect:true
               }
             ]
           }
+          rightLinks={
+            [
+              {
+                text:"Logout",
+                url:"/auth/signout"
+              }
+            ]
+          } navbarBrand="LOTTERY SOFT" navbarBrandUrl="#"
           />
         )
       }
@@ -151,21 +177,83 @@ export default function Dashboard(props) {
         ref={mainPanel}
         w={{
           base: "100%",
-          xl: !isSubAdmin && "calc(100% - 275px)",
+          // xl: !isSubAdmin && "calc(100% - 275px)",
+          xl: "100%",
         }}>
 
           {
-            !isSubAdmin && (
-              <Portal>
-                <AdminNavbar
-                  onOpen={onOpen}
-                  logoText={"LOTTERY"}
-                  brandText={getActiveRoute(matchRoutes)}
-                  secondary={getActiveNavbar(matchRoutes)}
-                  fixed={fixed}
-                  {...rest}
-                />
-              </Portal>
+            isAdmin && (
+              // <Portal>
+              //   <AdminNavbar
+              //     onOpen={onOpen}
+              //     logoText={"LOTTERY"}
+              //     brandText={getActiveRoute(matchRoutes)}
+              //     secondary={getActiveNavbar(matchRoutes)}
+              //     fixed={fixed}
+              //     {...rest}
+              //   />
+              // </Portal>
+
+            <CustomNavbar
+                rightLinks={
+                  [
+                   
+                    {
+                      text:"Sign Out",
+                      url:"/auth/signout"
+                    }
+                  ]
+                }
+                centerLinks={
+                  [
+                    {
+                      text:"Menu",
+                      url:"/admin/main-menu",
+                      redirect:true
+                    }
+                  ]
+                }
+                navbarBrand="LOTTERY SOFT" navbarBrandUrl="#"
+            />
+              
+            )
+          }
+
+          {
+            isSupervisor && (
+              // <Portal>
+              //   <AdminNavbar
+              //     onOpen={onOpen}
+              //     logoText={"LOTTERY"}
+              //     brandText={getActiveRoute(matchRoutes)}
+              //     secondary={getActiveNavbar(matchRoutes)}
+              //     fixed={fixed}
+              //     {...rest}
+              //   />
+              // </Portal>
+
+            <CustomNavbar
+                rightLinks={
+                  [
+                   
+                    {
+                      text:"Sign Out",
+                      url:"/auth/signout"
+                    }
+                  ]
+                }
+                centerLinks={
+                  [
+                    {
+                      text:"Menu",
+                      url:"/admin/main-menu",
+                      redirect:true
+                    }
+                  ]
+                }
+                navbarBrand={navbarBrand} navbarBrandUrl="#"
+            />
+              
             )
           }
         

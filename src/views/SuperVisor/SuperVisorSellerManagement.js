@@ -20,7 +20,13 @@ import {
   useToast,
   useColorMode,
   Switch,
-  Select, // Import Select for the dropdown
+  ModalContent,
+  ModalHeader,
+  ModalBody,
+  ModalCloseButton,
+  Select,
+  Center,
+  VStack, // Import Select for the dropdown
 } from "@chakra-ui/react";
 
 import { RiUserAddLine } from "react-icons/ri";
@@ -37,6 +43,7 @@ function SellerManagement() {
   const [users, setUsers] = useState([]);
   const [userName, setUserName] = useState("");
   const [imei, setImei] = useState("");
+  const [password, setPassword] = useState("");
   const [isActive, setIsActive] = useState(true);
   const [editing, setEditing] = useState(false);
   const [currentUser, setCurrentUser] = useState(null);
@@ -45,19 +52,18 @@ function SellerManagement() {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const toast = useToast();
   const { colorMode } = useColorMode();
-  const [superVisorId, setSupervisorId] = useState("");
 
   const [bonusFlag, setBonusFlag] = useState(false);
+
+
 
   useEffect(() => {
     const fetchSellers = async () => {
       try {
-        const response = await api().get(`/superVisor/getseller`);
-        console.log(response.data);
-        setUsers(response.data.users);
-        setCompanyName(response.data.companyName);
-        setSupervisorId(response.data.superVisorId);
-        setBonusFlag(response.data.bonusFlag);
+        const response = await api().get(`/supervisor/getSeller`);
+        setUsers(response?.data?.users);
+        setCompanyName(response?.data?.companyName);
+        setBonusFlag(response?.data?.bonusFlag);
       } catch (err) {
         console.error(err);
       }
@@ -65,13 +71,49 @@ function SellerManagement() {
     fetchSellers();
   }, []);
 
+  const createUser = () => {
+    api()
+      .post(`/supervisor/addseller`, {
+        userName: userName.trim(),
+        password,
+        isActive,
+        imei: imei.trim()
+      })
+      .then((response) => {
+        console.log("response: " + JSON.stringify(response.data));
+        
+        setUsers([...users, response.data]);
+        resetForm();
+        onClose();
+        toast({
+          title: "Seller created.",
+          status: "success",
+          duration: 3000,
+          isClosable: true,
+        });
+      })
+      .catch((error) => {
+        toast({
+          title: "Error creating Seller.",
+          description: error.message,
+          status: "error",
+          duration: 3000,
+          isClosable: true,
+        });
+      });
+  };
+
   const updateUser = (id) => {
     const requestBody = {
       isActive,
-      superVisorId: superVisorId, // Include selected supervisor ID in update
+      userName: userName.trim(),
+      imei: imei.trim()
     };
+    if (password !== "") {
+      requestBody.password = password;
+    }
     api()
-      .patch(`/superVisor/updateseller/${id}`, requestBody)
+      .patch(`/supervisor/updateseller/${id}`, requestBody)
       .then((response) => {
         setUsers(users.map((user) => (user._id === id ? response.data : user)));
         resetForm();
@@ -96,12 +138,34 @@ function SellerManagement() {
       });
   };
 
+  const deleteUser = (id) => {
+    api()
+      .delete(`/supervisor/deleteseller/${id}`)
+      .then(() => {
+        setUsers(users.filter((user) => user._id !== id));
+        toast({
+          title: "User deleted.",
+          status: "success",
+          duration: 3000,
+          isClosable: true,
+        });
+      })
+      .catch((error) => {
+        toast({
+          title: "Error deleting user.",
+          description: error.message,
+          status: "error",
+          duration: 3000,
+          isClosable: true,
+        });
+      });
+  };
+
   const resetForm = () => {
     setUserName("");
-    // setPassword("");
+    setPassword("");
     setImei("");
     setIsActive(true);
-    // setSelectedSuperVisor(""); // Reset selected supervisor
   };
 
   const handleSubmit = (event) => {
@@ -116,11 +180,10 @@ function SellerManagement() {
   const handleEdit = (user) => {
     setEditing(true);
     setCurrentUser(user);
-    // setUserName(user.userName);
-    // setPassword(""); // Reset password for security
+    setUserName(user.userName);
+    setPassword(""); // Reset password for security
     setImei(user.imei);
     setIsActive(user.isActive);
-    // setSelectedSuperVisor(user.superVisorId || ""); // Set selected supervisor for editing
     onOpen();
   };
 
@@ -131,32 +194,38 @@ function SellerManagement() {
     onClose();
   };
 
+  // Handlers for input changes
+  const handleUserNameChange = (event) => {
+    setUserName(event.target.value);
+  };
+
   const handleImeiChange = (event) => {
     setImei(event.target.value);
+  };
+
+  const handlePasswordChange = (event) => {
+    setPassword(event.target.value);
   };
 
   const handleIsActiveChange = (event) => {
     setIsActive(event.target.checked);
   };
 
-  //   const handleSuperVisorChange = (event) => {
-  //     setSelectedSuperVisor(event.target.value); // Update selected supervisor ID
-  //   };
-
   return (
     <Flex
       direction="column"
-      alignItems="center"
-      justifyContent="center"
       pt={{ base: "120px", md: "75px" }}
+      justifyContent="center"
+      alignItems="center" // Add this to center children horizontally
+      width="100%"
     >
       {/* Sellers Table */}
       <Card
         overflowX={{ sm: "scroll", xl: "hidden" }}
         p={{ base: "5px", md: "20px" }}
-        width="50%"
-        justifyContent="center"
+        width="60%"
         border={{ base: "none", md: "1px solid gray" }}
+        borderRadius="none"
       >
         <CardHeader
           p="6px 0px 22px 0px"
@@ -211,6 +280,16 @@ function SellerManagement() {
                     >
                       <FaEdit size={20} color="white" />
                     </Button>
+                    <Button
+                      size="sm"
+                      onClick={() => deleteUser(user._id)}
+                      bg={colorMode === "light" ? "red.500" : "red.300"}
+                      _hover={{
+                        bg: colorMode === "light" ? "red.600" : "red.200",
+                      }}
+                    >
+                      <RiDeleteBinLine size={20} color="white" />
+                    </Button>
                   </Td>
                 </Tr>
               ))}
@@ -222,71 +301,108 @@ function SellerManagement() {
       <Modal
         isOpen={isOpen}
         onClose={handleCancel}
-        title={editing ? "Edit User" : "Create User"}
-        submitButtonText={editing ? "Update" : "Create"}
+        title="ADD SELLER"
         onSubmit={handleSubmit}
-        cancelButtonText="Cancel"
         onCancel={handleCancel}
         colorMode={colorMode}
       >
-        <Stack spacing={4}>
-          {/* <FormControl>
-            <FormLabel>Seller Name</FormLabel>
-            <Input
-              type="text"
-              value={userName}
-              onChange={handleUserNameChange}
-              bg={colorMode === "light" ? "white" : "gray.700"}
-              color={colorMode === "light" ? "gray.800" : "white"}
-            />
-          </FormControl> */}
-          <FormControl>
-            <FormLabel>Device ID</FormLabel>
-            <Input
-              type="text"
-              value={imei}
-              onChange={handleImeiChange}
-              bg={colorMode === "light" ? "white" : "gray.700"}
-              color={colorMode === "light" ? "gray.800" : "white"}
-            />
-          </FormControl>
-          {/* <FormControl>
-            <FormLabel>Password</FormLabel>
-            <Input
-              type="password"
-              value={password}
-              onChange={handlePasswordChange}
-              bg={colorMode === "light" ? "white" : "gray.700"}
-              color={colorMode === "light" ? "gray.800" : "white"}
-            />
-          </FormControl> */}
-          {/* <FormControl>
-            <FormLabel>Supervisor</FormLabel>
-            <Select
-              placeholder="Select Supervisor"
-              value={selectedSuperVisor}
-              onChange={handleSuperVisorChange} // Handle change for supervisor selection
-              bg={colorMode === "light" ? "white" : "gray.700"}
-              color={colorMode === "light" ? "gray.800" : "white"}
-            >
-              {superVisors.map((superVisor) => (
-                <option key={superVisor._id} value={superVisor._id}>
-                  {superVisor.userName}
-                </option>
-              ))}
-            </Select>
-          </FormControl> */}
-          <FormControl>
-            <FormLabel>Active</FormLabel>
-            <Checkbox
-              isChecked={isActive}
-              onChange={handleIsActiveChange}
-              colorScheme={colorMode === "light" ? "blue" : "gray"}
-            >
-              Active
-            </Checkbox>
-          </FormControl>
-        </Stack>
+        <ModalContent bg="#A6A6A6" justifyContent="center">
+          <ModalHeader
+            bg="#7F7F7F"
+            textColor="white"
+            mb={4}
+            display="flex"
+            justifyContent="center"
+          >
+            {editing ? "EDIT SELLER" : "ADD SELLER"}
+          </ModalHeader>
+          <ModalCloseButton />
+          <ModalBody>
+            <Stack spacing={4}>
+              <FormControl>
+                <Flex alignItems="center">
+                  <FormLabel color="#7f7f7f" mb="0" mr={4} width="120px">
+                    Name:
+                  </FormLabel>
+                  <Input
+                    type="text"
+                    value={userName}
+                    onChange={handleUserNameChange}
+                    bg="#bfbfbf"
+                    color="black"
+                    height="40px"
+                    width="300px" // Set fixed width
+                  />
+                </Flex>
+              </FormControl>
+              <FormControl>
+                <Flex alignItems="center">
+                  <FormLabel color="#7f7f7f" mb="0" mr={4} width="120px">
+                    Device ID:
+                  </FormLabel>
+                  <Input
+                    type="text"
+                    value={imei}
+                    onChange={handleImeiChange}
+                    bg="#bfbfbf"
+                    color="black"
+                    height="40px"
+                    width="300px" // Set fixed width
+                  />
+                </Flex>
+              </FormControl>
+              <FormControl>
+                <Flex alignItems="center">
+                  <FormLabel color="#7f7f7f" mb="0" mr={4} width="120px">
+                    Password:
+                  </FormLabel>
+                  <Input
+                    type="password"
+                    value={password}
+                    onChange={handlePasswordChange}
+                    bg="#bfbfbf"
+                    color="black"
+                    height="40px"
+                    width="300px" // Set fixed width
+                  />
+                </Flex>
+              </FormControl>
+              <FormControl bg="#bfbfbf">
+                <FormLabel color="#7f7f7f" mb="0" mr={4} width="120px">
+                  Active:
+                </FormLabel>
+                <Checkbox
+                  isChecked={isActive}
+                  onChange={handleIsActiveChange}
+                  colorScheme="gray"
+                  size="lg"
+                >
+                  Active
+                </Checkbox>
+              </FormControl>
+            </Stack>
+            <Stack direction="row" spacing={4} justify="center" mt={6} mb={6}>
+              <Button
+                onClick={handleSubmit}
+                bg="#C6D98D"
+                color="black"
+                _hover={{ bg: "#b2c270" }}
+                width="120px"
+              >
+                {editing ? "Update" : "Create"}
+              </Button>
+              <Button
+                onClick={handleCancel}
+                bg="#c6d98d"
+                color="black"
+                _hover={{ bg: "#b2c270" }}
+                width="120px"
+              >
+                Cancel
+              </Button>
+            </Stack>
+          </ModalBody>
+        </ModalContent>
       </Modal>
     </Flex>
   );
