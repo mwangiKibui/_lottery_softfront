@@ -159,6 +159,11 @@ const MainMenu = () => {
         name: "Sale Reports",
         icon: FaInfoCircle,
       },
+      {
+        path: "/subadmin/PaymentAlert",
+        name: "Payment Alert",
+        icon: FaMoneyBill,
+      }
     ],
     superVisor: [
       {
@@ -249,6 +254,11 @@ const MainMenu = () => {
       text:"Percentage",
       url:"/subadmin/PercentageLimit",
       icon: <ImUsers color='inherit' size={18}/>
+    },
+    {
+      text:"Payment Alert",
+      url:"/subadmin/PaymentAlert",
+      icon:<FaMoneyBill color='white' size={18}/>,
     }
   ];
   const adminMenuLinks=[
