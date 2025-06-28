@@ -60,6 +60,16 @@
     color: rgb(83, 82, 82);
 }
 
+.payment-card-header-form select {
+    height: 30px;
+    width: 75%;
+    margin-bottom: 5px;
+    border: none;
+    border-radius: 2px;
+    background-color: rgb(111, 172, 219);
+    color: rgb(83, 82, 82);
+}
+
 .payment-card-header-form input:focus {
     border: none;
 }

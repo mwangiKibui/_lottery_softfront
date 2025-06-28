@@ -23,6 +23,7 @@ import PercentageLimitComponent from "views/SubAdmin/PercentageLimit.js";
 import LotteryCategoryManagement from "views/Admin/LottoCategoryManagement.js";
 import WinningNumberManagement from "views/Admin/WinningNumberManagement.js";
 import PaymentAlertManagement from "views/Admin/PaymentAlertManagement";
+import SubAdminPaymentAlertManagement from "views/SubAdmin/PaymentAlertManagement";
 
 import SellerManagement from "views/SubAdmin/SellerManagement.js";
 import SupervisorManagement from "views/SubAdmin/SupervisorManagement.js";
@@ -92,6 +93,13 @@ var dashRoutes = [
     icon: <FaMoneyBill color='inherit' size={22}/>,
     component: PaymentAlertManagement,
     layout: "/admin",
+  },
+  {
+    path: "/PaymentAlert",
+    name: "Payment Alerts",
+    icon: <FaMoneyBill color='inherit' size={22}/>,
+    component: SubAdminPaymentAlertManagement,
+    layout: "/subadmin",
   },
   {
     path: "/LotteryCategoryManagement",
