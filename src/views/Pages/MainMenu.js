@@ -255,11 +255,11 @@ const MainMenu = () => {
       url:"/subadmin/PercentageLimit",
       icon: <ImUsers color='inherit' size={18}/>
     },
-    {
-      text:"Payment Alert",
-      url:"/subadmin/PaymentAlert",
-      icon:<FaMoneyBill color='white' size={18}/>,
-    }
+    // {
+    //   text:"Payment Alert",
+    //   url:"/subadmin/PaymentAlert",
+    //   icon:<FaMoneyBill color='white' size={18}/>,
+    // }
   ];
   const adminMenuLinks=[
     {
@@ -335,6 +335,7 @@ const MainMenu = () => {
         menuLinks
       }
       adminMenus={adminMenus}
+      userRole={userRole?.toLowerCase()}
     />
   )
 };
