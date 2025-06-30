@@ -6,8 +6,9 @@ import PropTypes from 'prop-types';
 import api from 'utils/customFetch';
 import './CustomMainMenu.css';
 
-const CustomMainMenu = ({menuLinks,adminMenus,userRole}) => {
+const CustomMainMenu = ({menuLinks,adminMenus}) => {
     const [paymentAlerts,setPaymentAlerts] = useState([]);
+    let userRole = sessionStorage.getItem("userRole")?.toLowerCase();
     const toast = useToast();
     const fetchSubAdminAlerts = async () => {
       try{
@@ -29,7 +30,6 @@ const CustomMainMenu = ({menuLinks,adminMenus,userRole}) => {
     useEffect(async () => {
       if(userRole == "subadmin")
       {
-        console.log("on the user role "+ userRole);
        await fetchSubAdminAlerts();
       }
       
@@ -52,13 +52,11 @@ const CustomMainMenu = ({menuLinks,adminMenus,userRole}) => {
 
 CustomMainMenu.propTypes = {
   menuLinks:  PropTypes.arrayOf(PropTypes.object),
-  adminMenus: PropTypes.bool,
-  userRole: PropTypes.string
+  adminMenus: PropTypes.bool
 }
 
 CustomMainMenu.defaultProps = {
-  adminMenus: false,
-  userRole:"admin"
+  adminMenus: false
 }
 
 export default CustomMainMenu;

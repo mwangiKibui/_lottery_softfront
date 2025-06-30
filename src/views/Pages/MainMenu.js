@@ -335,7 +335,6 @@ const MainMenu = () => {
         menuLinks
       }
       adminMenus={adminMenus}
-      userRole={userRole?.toLowerCase()}
     />
   )
 };

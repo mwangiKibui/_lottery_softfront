@@ -4,4 +4,11 @@
     background-color: red;
     color: white;
     text-align: center;
+    margin-top: 15px;
+}
+
+@media screen and (max-width: 500px) {
+    .payment-alert-banner{
+        margin-top: 5px;
+    }
 }
