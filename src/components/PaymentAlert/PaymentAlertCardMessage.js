@@ -68,7 +68,7 @@ const PaymentAlertCardMessage = ({userGroup}) => {
                     width="100%"
                 >
                     <VStack spacing={3} align="stretch">
-                    <Table variant="striped">
+                    <Table variant="striped" background="rgb(217, 230, 241)">
                         <Thead>
                         <Tr>
                             {
