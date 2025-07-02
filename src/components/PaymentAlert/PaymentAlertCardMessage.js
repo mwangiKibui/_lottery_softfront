@@ -72,7 +72,7 @@ const PaymentAlertCardMessage = ({userGroup}) => {
                         <Thead>
                         <Tr>
                             {
-                                userGroup == "admin" && <Th>Company Name</Th>
+                                userGroup == "admin" && <Th whiteSpace="nowrap">Company Name</Th>
                             }
                             <Th>Message</Th>
                             {
@@ -98,7 +98,7 @@ const PaymentAlertCardMessage = ({userGroup}) => {
                                     return (
                                     <Tr key={item._id}>
                                         {
-                                            userGroup == "admin" && <Td>
+                                            userGroup == "admin" && <Td whiteSpace="nowrap">
                                                 {item.company}
                                             </Td>
                                         }
