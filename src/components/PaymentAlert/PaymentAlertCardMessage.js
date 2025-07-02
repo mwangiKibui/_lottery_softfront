@@ -53,7 +53,7 @@ const PaymentAlertCardMessage = ({userGroup}) => {
 
     return (
         <div className='payment-card-body custom-card-body'>
-            <CardBody>
+            <div className='payment-card-body-content'>
                 <Flex
                 flexWrap="wrap"
                 flexDirection={{ base: "column", sm: "row" }}
@@ -138,7 +138,7 @@ const PaymentAlertCardMessage = ({userGroup}) => {
                     </VStack>
                 </Stack>
                 </Flex>
-            </CardBody>
+            </div>
         </div>
     )
 };
