@@ -18,10 +18,10 @@
     height: max-content;
     margin: auto;
     padding: 20px;
-    border: 1px solid rgb(42, 147, 228);
+    border: 1px solid gray;
     box-shadow: 0px 0px 2px rgb(247, 221, 173),
                  0px 0px 2px rgb(247, 221, 173);
-    background-color: rgb(94, 165, 219);
+    background-color: rgb(217, 230, 241);
     color: black;
 }
 
