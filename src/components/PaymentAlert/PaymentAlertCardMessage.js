@@ -64,7 +64,7 @@ const PaymentAlertCardMessage = ({userGroup}) => {
                     spacing={1}
                     borderRadius="3px"
                     m="5px"
-                    boxShadow="0px 0px 2px white"
+                    boxShadow="0px 0px 2px black"
                     width="100%"
                 >
                     <VStack spacing={3} align="stretch">
