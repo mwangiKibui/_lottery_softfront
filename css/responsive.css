@@ -1,0 +1,122 @@
+/* =====================================================================
+   PRINCE LOTO — Responsive Breakpoints
+   ===================================================================== */
+
+/* ──────────────────────────────────────────────
+   DESKTOP (sticky sidebar)
+────────────────────────────────────────────── */
+@media (min-width: 1025px) {
+  .menu-toggle     { display: none !important; }
+  .sidebar-overlay { display: none !important; }
+}
+
+/* ──────────────────────────────────────────────
+   TABLET + MOBILE (drawer sidebar)
+────────────────────────────────────────────── */
+@media (max-width: 1024px) {
+  .menu-toggle { display: flex; }
+
+  .sidebar {
+    position: fixed;
+    top: var(--topbar-height);
+    left: 0;
+    height: calc(100vh - var(--topbar-height));
+    z-index: 1001;
+    transform: translateX(-100%);
+    transition: transform var(--transition-slide);
+    border-right: none;
+    box-shadow: 5px 0 20px rgba(0,0,0,0.15);
+  }
+  .sidebar.open-mobile { transform: translateX(0); }
+
+  .main-content {
+    width: 100%;
+    padding: 20px 18px;
+  }
+
+  body.sidebar-open { overflow: hidden; }
+
+  .brand-name     { font-size: 1.25rem; }
+  .brand-name i   { font-size: 1.6rem; }
+  .topbar-user    { display: none; }
+
+  .top-bar { padding: 0 16px; }
+  .disconnect-btn { padding: 8px 16px; font-size: 0.85rem; gap: 8px; }
+
+  .stats-grid     { grid-template-columns: repeat(2, 1fr); gap: 16px; }
+  .stat-number    { font-size: 1.8rem; }
+  .section-title  { font-size: var(--font-size-md); }
+
+  /* Horizontally scrollable tables on tablet */
+  .table-wrapper  { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+
+  .data-table th,
+  .data-table td  { padding: 10px 10px; font-size: var(--font-size-sm); white-space: nowrap; }
+
+  .btn, .btn-gradient { padding: 8px 18px; font-size: var(--font-size-sm); }
+
+  .filter-field input,
+  .filter-field select { padding: 9px 12px; font-size: var(--font-size-sm); }
+
+  .page-card { padding: 1.2rem 1.2rem; }
+}
+
+/* ──────────────────────────────────────────────
+   MOBILE
+────────────────────────────────────────────── */
+@media (max-width: 640px) {
+  .main-content { padding: 14px 12px; }
+
+  /* Single column stats on small screens */
+  .stats-grid    { grid-template-columns: 1fr; }
+  .stat-number   { font-size: 1.5rem; }
+  .stat-title    { font-size: 0.68rem; }
+
+  /* Scrollable tables */
+  .table-wrapper { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  .data-table    { min-width: 540px; } /* prevents columns from collapsing */
+  .data-table th,
+  .data-table td { font-size: 0.75rem; padding: 8px 8px; white-space: nowrap; }
+
+  /* Filters stack vertically */
+  .filter-grid   { flex-direction: column; gap: 10px; }
+  .filter-field  { min-width: 100%; }
+  .radio-group   { gap: 10px; font-size: 0.82rem; flex-wrap: wrap; }
+
+  .prize-input   { width: 100%; max-width: 160px; }
+
+  /* Modals take most of the screen width */
+  .modal-overlay { align-items: flex-end; padding: 0; }
+  .modal-container {
+    padding: 24px 18px;
+    border-radius: 24px 24px 0 0;
+    max-height: 90vh;
+    overflow-y: auto;
+    width: 100%;
+    max-width: 100%;
+  }
+  .modal-header h3 { font-size: 1.2rem; }
+  .modal-grid      { grid-template-columns: 1fr; }
+  .modal-form .form-group { min-width: unset; width: 100%; }
+
+  .brand-name      { font-size: 1rem; }
+  .brand-name i    { font-size: 1.3rem; }
+
+  /* Hide logout button text on very small screens */
+  .disconnect-btn span { display: none; }
+  .disconnect-btn      { padding: 10px 12px; }
+
+  .page-card          { padding: 1rem; }
+  .page-card-header   { flex-direction: column; align-items: flex-start; gap: 10px; }
+  .page-card-header .btn,
+  .page-card-header .btn-gradient { width: 100%; justify-content: center; }
+
+  /* Toasts span full width on mobile */
+  .toast-container { bottom: 16px; right: 12px; left: 12px; }
+  .toast           { max-width: 100%; }
+
+  /* Ensure select/inputs have decent touch target */
+  input, select, textarea, button { min-height: 44px; }
+  .filter-field input,
+  .filter-field select { min-height: 44px; font-size: 1rem; }
+}

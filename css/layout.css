@@ -1,0 +1,273 @@
+/* =====================================================================
+   PRINCE LOTO — Layout
+   Top bar, sidebar, app-wrapper, main content area.
+   ===================================================================== */
+
+/* ── Body shell ── */
+html, body {
+  overflow: hidden;
+  background: var(--clr-bg-body);
+}
+body { overflow-x: hidden; }
+
+/* ──────────────────────────────────────────────
+   TOP BAR
+────────────────────────────────────────────── */
+.top-bar {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%;
+  height: var(--topbar-height);
+  background: var(--gradient-topbar);
+  box-shadow: var(--shadow-topbar);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 32px;
+  z-index: 1000;
+  border-bottom: 2px solid var(--clr-gold-500);
+  gap: 12px;
+}
+
+.menu-toggle {
+  background: rgba(255,255,240,0.2);
+  border: none;
+  width: 44px;
+  height: 44px;
+  border-radius: var(--radius-full);
+  color: white;
+  font-size: 1.5rem;
+  cursor: pointer;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  transition: var(--transition-base);
+  backdrop-filter: blur(2px);
+}
+.menu-toggle:hover {
+  background: rgba(255,255,200,0.35);
+  transform: scale(0.96);
+}
+
+.brand-name {
+  font-size: 1.7rem;
+  font-weight: 700;
+  letter-spacing: 1px;
+  color: white;
+  text-shadow: 0 2px 6px rgba(0,0,0,0.2);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+  flex: 1;
+  text-decoration: none;
+  user-select: none;
+}
+.brand-name i {
+  font-size: 2rem;
+  color: var(--clr-gold-300);
+}
+
+.topbar-right {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.topbar-user {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: rgba(255,255,255,0.85);
+  font-size: var(--font-size-sm);
+  font-weight: 500;
+}
+.topbar-user i {
+  font-size: 1.1rem;
+  color: var(--clr-gold-300);
+}
+
+.disconnect-btn {
+  background: var(--clr-danger);
+  border: none;
+  padding: 10px 26px;
+  border-radius: var(--radius-full);
+  font-weight: 600;
+  font-size: 0.95rem;
+  color: white;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  transition: var(--transition-base);
+  box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+  white-space: nowrap;
+}
+.disconnect-btn:hover {
+  background: var(--clr-danger-dark);
+  transform: translateY(-2px);
+}
+
+/* ──────────────────────────────────────────────
+   APP WRAPPER
+────────────────────────────────────────────── */
+.app-wrapper {
+  display: flex;
+  margin-top: var(--topbar-height);
+  height: calc(100vh - var(--topbar-height));
+  position: relative;
+}
+
+/* ──────────────────────────────────────────────
+   SIDEBAR
+────────────────────────────────────────────── */
+.sidebar {
+  width: var(--sidebar-width);
+  background: var(--clr-bg-sidebar);
+  border-right: 1px solid var(--clr-warm-200);
+  box-shadow: 3px 0 12px rgba(0,0,0,0.02);
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: var(--clr-warm-400) var(--clr-warm-100);
+  transition: transform var(--transition-slide);
+  flex-shrink: 0;
+  overscroll-behavior: contain;
+}
+.sidebar::-webkit-scrollbar       { width: 6px; }
+.sidebar::-webkit-scrollbar-track { background: var(--clr-warm-100); border-radius: var(--radius-sm); }
+.sidebar::-webkit-scrollbar-thumb { background: var(--clr-warm-400); border-radius: var(--radius-sm); }
+
+/* Sidebar mobile overlay */
+.sidebar-overlay {
+  position: fixed;
+  top: var(--topbar-height);
+  left: 0;
+  width: 100%;
+  height: calc(100% - var(--topbar-height));
+  background: rgba(0,0,0,0.45);
+  backdrop-filter: blur(3px);
+  z-index: 999;
+  visibility: hidden;
+  opacity: 0;
+  transition: var(--transition-base);
+}
+.sidebar-overlay.active {
+  visibility: visible;
+  opacity: 1;
+}
+
+/* Sidebar brand area */
+.sidebar-brand {
+  padding: 24px 20px 18px 24px;
+  border-bottom: 2px solid var(--clr-warm-200);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  transition: background var(--transition-base);
+  text-decoration: none;
+  user-select: none;
+}
+.sidebar-brand:hover { background: var(--clr-warm-100); }
+
+.sidebar-logo-icon {
+  background: var(--gradient-logo);
+  width: 48px;
+  height: 48px;
+  border-radius: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--clr-gold-300);
+  font-size: 1.6rem;
+  box-shadow: 0 6px 12px rgba(0,0,0,0.08);
+  flex-shrink: 0;
+}
+.sidebar-logo-text {
+  font-weight: 800;
+  font-size: 1.1rem;
+  color: #2b5b41;
+  line-height: 1.2;
+}
+.sidebar-logo-text span {
+  font-size: 0.65rem;
+  color: var(--clr-warm-500);
+  font-weight: 400;
+  display: block;
+  margin-top: 2px;
+}
+
+/* Navigation menu */
+.nav-menu {
+  flex: 1;
+  padding: 20px 10px 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  list-style: none;
+}
+
+.nav-item a {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 11px 16px;
+  border-radius: var(--radius-md);
+  font-weight: 500;
+  color: var(--clr-warm-900);
+  text-decoration: none;
+  transition: var(--transition-base);
+  font-size: var(--font-size-base);
+}
+.nav-item a i {
+  width: 22px;
+  color: var(--clr-warm-700);
+  text-align: center;
+  font-size: 0.95rem;
+}
+.nav-item a:hover {
+  background: var(--clr-warm-200);
+  color: var(--clr-text-green);
+}
+.nav-item a:hover i { color: var(--clr-primary-500); }
+
+.nav-item.active a {
+  background: var(--clr-primary-100);
+  color: var(--clr-text-green);
+  font-weight: 600;
+  border-left: 3px solid var(--clr-primary-500);
+  padding-left: 13px;
+}
+.nav-item.active a i { color: var(--clr-primary-700); }
+
+/* ──────────────────────────────────────────────
+   MAIN CONTENT
+────────────────────────────────────────────── */
+.main-content {
+  flex: 1;
+  background: var(--clr-bg-page);
+  padding: 28px 32px;
+  overflow-y: auto;
+  height: 100%;
+  min-width: 0;
+}
+.main-content::-webkit-scrollbar       { width: 6px; }
+.main-content::-webkit-scrollbar-track { background: #e8eef5; }
+.main-content::-webkit-scrollbar-thumb { background: #b0bcc8; border-radius: 6px; }
+
+/* ──────────────────────────────────────────────
+   TOAST CONTAINER
+────────────────────────────────────────────── */
+.toast-container {
+  position: fixed;
+  bottom: 28px;
+  right: 28px;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  pointer-events: none;
+}

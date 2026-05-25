@@ -1,0 +1,118 @@
+/* =====================================================================
+   PRINCE LOTO — Design Tokens
+   All shared colors, typography, spacing, and visual constants live here.
+   ===================================================================== */
+
+:root {
+  /* ── Brand: Primary Green ── */
+  --clr-primary-900: #0B2B26;
+  --clr-primary-700: #176B4A;
+  --clr-primary-500: #2C9B6E;
+  --clr-primary-400: #3ecc8b;
+  --clr-primary-100: #d9ebdf;
+  --clr-primary-50:  #ecf5ef;
+
+  /* ── Accent: Gold ── */
+  --clr-gold-500: #FDDF8C;
+  --clr-gold-300: #FFE5B4;
+  --clr-gold-100: #fff4d6;
+
+  /* ── Neutral: Warm Beige ── */
+  --clr-warm-50:  #fdf9f0;
+  --clr-warm-100: #f7efdf;
+  --clr-warm-200: #ece2d1;
+  --clr-warm-300: #dacfba;
+  --clr-warm-400: #b9aa8c;
+  --clr-warm-500: #9b8868;
+  --clr-warm-700: #7a6a52;
+  --clr-warm-900: #4a453b;
+
+  /* ── Surfaces ── */
+  --clr-bg-body:    #eef2f7;
+  --clr-bg-page:    #f4f9fe;
+  --clr-bg-card:    #fffef9;
+  --clr-bg-sidebar: #fdf9f0;
+  --clr-bg-white:   #ffffff;
+
+  /* ── Text ── */
+  --clr-text-heading: #1e2a3a;
+  --clr-text-body:    #2d3e50;
+  --clr-text-muted:   #6f6a58;
+  --clr-text-green:   #165a3b;
+  --clr-text-link:    #1f6e4a;
+
+  /* ── Borders ── */
+  --clr-border-warm:  #ece2d1;
+  --clr-border-table: #edf2f7;
+  --clr-border-soft:  #e2e8f0;
+
+  /* ── Status ── */
+  --clr-success-bg:   #dff0e4;
+  --clr-success-text: #1f6e4a;
+  --clr-danger:       #DC3C2C;
+  --clr-danger-dark:  #b92c1e;
+  --clr-warning-bg:   #fff3cd;
+  --clr-warning-text: #856404;
+  --clr-info-bg:      #d1ecf1;
+  --clr-info-text:    #0c5460;
+
+  /* ── Gradients ── */
+  --gradient-topbar:  linear-gradient(125deg, #0B2B26 0%, #176B4A 45%, #2C9B6E 100%);
+  --gradient-primary: linear-gradient(95deg,  #1f6e4a, #2e9e6b);
+  --gradient-stat:    linear-gradient(145deg, #1e4c38, #2b7c57);
+  --gradient-logo:    linear-gradient(135deg, #226e4a, #0e543a);
+
+  /* ── Typography ── */
+  --font-family:    'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
+  --font-size-xs:   0.72rem;
+  --font-size-sm:   0.8rem;
+  --font-size-base: 0.9rem;
+  --font-size-md:   1rem;
+  --font-size-lg:   1.2rem;
+  --font-size-xl:   1.4rem;
+  --font-size-2xl:  1.8rem;
+  --font-size-stat: 2.5rem;
+
+  /* ── Layout ── */
+  --topbar-height:  72px;
+  --sidebar-width:  280px;
+
+  /* ── Border Radius ── */
+  --radius-sm:   8px;
+  --radius-md:   16px;
+  --radius-lg:   28px;
+  --radius-xl:   40px;
+  --radius-2xl:  48px;
+  --radius-full: 9999px;
+
+  /* ── Shadows ── */
+  --shadow-sm:     0 1px 3px rgba(0,0,0,0.04);
+  --shadow-md:     0 8px 18px rgba(0,0,0,0.06);
+  --shadow-lg:     0 12px 28px rgba(0,0,0,0.1);
+  --shadow-topbar: 0 10px 25px rgba(0,0,0,0.12);
+  --shadow-card:   0 8px 18px rgba(0,0,0,0.04);
+  --shadow-modal:  0 30px 60px rgba(0,0,0,0.25);
+
+  /* ── Transitions ── */
+  --transition-fast:  0.15s ease;
+  --transition-base:  0.2s ease;
+  --transition-slide: 0.25s ease-in-out;
+}
+
+/* ── Base Reset ── */
+*, *::before, *::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* Ensure [hidden] attribute is never overridden by display properties in components */
+[hidden] { display: none !important; }
+
+html, body {
+  height: 100%;
+  font-family: var(--font-family);
+  font-size: var(--font-size-base);
+  color: var(--clr-text-body);
+  -webkit-font-smoothing: antialiased;
+}

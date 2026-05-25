@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PRINCE LOTO</title>
+  <style>
+    body { margin: 0; background: #0B2B26; display: flex; align-items: center; justify-content: center; min-height: 100vh; }
+    .spinner { width: 36px; height: 36px; border: 3px solid rgba(253,223,140,0.2); border-top-color: #FDDF8C; border-radius: 50%; animation: spin 0.7s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+  </style>
+</head>
+<body>
+  <!-- Shown for just a moment while JS redirects -->
+  <div class="spinner"></div>
+
+  <script>
+    // Read the session token key directly (same value as App.Config.SESSION_TOKEN_KEY).
+    // config.js is NOT loaded here to keep the redirect instant and dependency-free.
+    var SESSION_TOKEN_KEY = 'pl_session_token';
+
+    try {
+      var token = localStorage.getItem(SESSION_TOKEN_KEY);
+      window.location.replace(token ? 'dashboard.html' : 'login.html');
+    } catch (e) {
+      // localStorage may be blocked (private browsing edge case) — send to login
+      window.location.replace('login.html');
+    }
+  </script>
+</body>
+</html>

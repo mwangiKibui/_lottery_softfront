@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PRINCE LOTO — Sign In</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <link rel="stylesheet" href="css/theme.css">
+  <link rel="stylesheet" href="css/login.css">
+</head>
+<body>
+
+  <div class="login-bg">
+    <div class="login-card">
+
+      <!-- Brand -->
+      <div class="login-brand">
+        <div class="login-logo-wrap">
+          <i class="fas fa-crown"></i>
+        </div>
+        <h1 class="login-title">PRINCE LOTO</h1>
+      </div>
+
+      <!-- Form heading -->
+      <p class="login-form-heading">Sign In to your account</p>
+
+      <!-- Login form -->
+      <form id="loginForm" class="login-form" novalidate autocomplete="on">
+
+        <div class="form-group">
+          <label for="loginUsername">Username or Email</label>
+          <div class="input-wrap">
+            <i class="fas fa-user"></i>
+            <input
+              type="text"
+              id="loginUsername"
+              name="username"
+              placeholder="Enter your username or email"
+              autocomplete="username"
+              spellcheck="false"
+              required
+            >
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="loginPassword">Password</label>
+          <div class="input-wrap">
+            <i class="fas fa-lock"></i>
+            <input
+              type="password"
+              id="loginPassword"
+              name="password"
+              placeholder="Enter your password"
+              autocomplete="current-password"
+              required
+            >
+            <button
+              type="button"
+              class="toggle-pw"
+              id="togglePassword"
+              aria-label="Toggle password visibility"
+            >
+              <i class="fas fa-eye"></i>
+            </button>
+          </div>
+        </div>
+
+        <!-- Error message (hidden by default) -->
+        <div id="loginError" class="login-error" hidden role="alert"></div>
+
+        <!-- Submit -->
+        <button type="submit" class="btn-login" id="loginBtn">
+          <span class="btn-spinner" aria-hidden="true"></span>
+          <span class="btn-text"><i class="fas fa-arrow-right"></i> Sign In</span>
+        </button>
+
+      </form>
+
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="js/config.js"></script>
+  <script src="js/utils.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/login.js"></script>
+
+</body>
+</html>
