@@ -41,8 +41,8 @@ window.App = window.App || {};
        Ignored when USE_DUMMY_DATA = false (API handles auth).
     ────────────────────────────────────────────────────────────────── */
     DUMMY_CREDENTIALS: [
-      { username: 'admin',   password: 'admin123',  role: 'admin',    name: 'Administrator' },
-      { username: 'manager', password: 'manager123', role: 'manager', name: 'Branch Manager' }
+      { username: 'LuckyMan', password: 'happy0831', role: 'admin',   name: 'Administrator' },
+      { username: 'Ken',      password: 'Test1234!', role: 'manager', name: 'Branch Manager' }
     ],
 
     /* ── Session ───────────────────────────────────────────────────── */
