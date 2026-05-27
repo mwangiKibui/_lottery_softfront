@@ -14,11 +14,11 @@ App.Pages.Statistics = {
           <div class="stat-number" id="statActiveSellers">—</div>
         </div>
         <div class="stat-card stat-card--blue">
-          <div class="stat-title"><i class="fas fa-ticket-alt"></i> Total Tickets</div>
+          <div class="stat-title"><i class="fas fa-dollar-sign"></i> Total Sales</div>
           <div class="stat-number" id="statTotalTickets">—</div>
         </div>
         <div class="stat-card stat-card--orange">
-          <div class="stat-title"><i class="fas fa-trophy"></i> Winning Tickets</div>
+          <div class="stat-title"><i class="fas fa-hand-holding-usd"></i> Paid Out</div>
           <div class="stat-number" id="statWinTickets">—</div>
         </div>
         <div class="stat-card stat-card--purple">
@@ -28,14 +28,14 @@ App.Pages.Statistics = {
       </div>
 
       <div class="page-card">
-        <h2><i class="fas fa-chart-pie"></i> Top Sellers by Volume</h2>
+        <h2><i class="fas fa-chart-pie"></i> Sellers</h2>
         <div class="table-wrapper">
           <table class="data-table">
             <thead>
-              <tr><th>#</th><th>Seller</th><th>Company</th><th>Total Sold</th><th>Commission</th></tr>
+              <tr><th>#</th><th>Username</th><th>Email</th><th>Status</th></tr>
             </thead>
             <tbody id="topSellersBody">
-              ${App.Utils.tableLoadingRow(5)}
+              ${App.Utils.tableLoadingRow(4)}
             </tbody>
           </table>
         </div>
@@ -46,29 +46,35 @@ App.Pages.Statistics = {
   init() {
     /* Stats */
     App.Api.getDashboardStats().then(stats => {
-      document.getElementById('statActiveSellers').textContent = stats.activeSellers ?? App.Data.sellers.length;
-      document.getElementById('statTotalTickets').textContent  = (stats.totalTickets ?? App.Data.soldTickets.length).toLocaleString();
-      document.getElementById('statWinTickets').textContent    = App.Data.winningTickets.length;
-      document.getElementById('statSupervisors').textContent   = App.Data.supervisors.length;
-    });
+      document.getElementById('statActiveSellers').textContent = stats.sellerCount ?? '—';
+      document.getElementById('statTotalTickets').textContent  = App.Utils.formatMoney(stats.totalSell ?? 0);
+      document.getElementById('statWinTickets').textContent    = App.Utils.formatMoney(stats.paidAmount ?? 0);
+      document.getElementById('statSupervisors').textContent   = stats.supCount ?? '—';
+    }).catch(() => {});
 
-    /* Top sellers table */
-    App.Api.getSellers().then(sellers => {
-      const sorted = [...sellers].sort((a, b) => b.totalSold - a.totalSold);
-      const tbody  = document.getElementById('topSellersBody');
-      if (!sorted.length) {
-        tbody.innerHTML = App.Utils.tableEmptyRow('No sellers.', 5);
+    /* Sellers table */
+    App.Api.getSellers().then(resp => {
+      const sellers = Array.isArray(resp.users) ? resp.users : [];
+      const tbody   = document.getElementById('topSellersBody');
+      if (!sellers.length) {
+        tbody.innerHTML = App.Utils.tableEmptyRow('No sellers registered yet.', 4);
         return;
       }
+      const sorted = [...sellers].sort((a, b) =>
+        (a.userName || '').localeCompare(b.userName || '')
+      );
       tbody.innerHTML = sorted.map((s, i) => `
         <tr>
           <td><strong>#${i + 1}</strong></td>
-          <td>${App.Utils.escHtml(s.name)}</td>
-          <td>${App.Utils.escHtml(s.companyName)}</td>
-          <td><strong>${App.Utils.formatMoney(s.totalSold)}</strong></td>
-          <td>${App.Utils.formatPercent(s.commission)}</td>
+          <td>${App.Utils.escHtml(s.userName || '—')}</td>
+          <td>${App.Utils.escHtml(s.email    || '—')}</td>
+          <td>${App.Utils.badge(s.isActive ? 'Active' : 'Inactive', s.isActive ? 'success' : 'neutral')}</td>
         </tr>
       `).join('');
+    }).catch(() => {
+      const tbody = document.getElementById('topSellersBody');
+      if (tbody) tbody.innerHTML = App.Utils.tableEmptyRow('Failed to load sellers.', 4);
     });
   },
 };
+

@@ -13,6 +13,36 @@
 
 window.App = window.App || {};
 
+/* Extracts a human-readable message from various backend error shapes:
+   - Plain { message } objects
+   - Mongoose ValidationError { errors: { field: { message } } }
+   - MongoDB duplicate-key error { code: 11000, keyValue: { field } }
+   - Plain JS Error serialised as {} (message is non-enumerable) */
+function _extractErrorMessage(data, status) {
+  if (!data) return `Request failed (HTTP ${status})`;
+
+  // Plain message string
+  if (data.message) return data.message;
+
+  // Mongoose ValidationError — collect per-field messages
+  if (data.errors && typeof data.errors === 'object') {
+    const msgs = Object.values(data.errors)
+      .map(e => e.message || e.msg)
+      .filter(Boolean);
+    if (msgs.length) return msgs.join(' | ');
+  }
+
+  // MongoDB duplicate key (code 11000)
+  if (data.code === 11000 || data.code === '11000') {
+    const field = Object.keys(data.keyValue || {})[0];
+    return field
+      ? `"${data.keyValue[field]}" is already taken (${field}).`
+      : 'A duplicate entry already exists.';
+  }
+
+  return `Request failed (HTTP ${status})`;
+}
+
 App.Api = {
   /* ────────────────────────────────────────────
      INTERNAL: HTTP helpers
@@ -39,16 +69,35 @@ App.Api = {
       return;
     }
     if (!res.ok) {
-      const err = await res.json().catch(() => ({ message: 'Request failed' }));
-      throw new Error(err.message || `HTTP ${res.status}`);
+      const errData = await res.json().catch(() => null);
+      throw new Error(_extractErrorMessage(errData, res.status));
     }
     return res.json();
   },
 
-  _get(path)         { return this._request('GET', path); },
-  _post(path, body)  { return this._request('POST', path, body); },
-  _put(path, body)   { return this._request('PUT', path, body); },
-  _delete(path)      { return this._request('DELETE', path); },
+  _get(path)           { return this._request('GET', path); },
+  _post(path, body)    { return this._request('POST', path, body); },
+  _put(path, body)     { return this._request('PUT', path, body); },
+  _patch(path, body)   { return this._request('PATCH', path, body); },
+  _delete(path)        { return this._request('DELETE', path); },
+
+  /* For multipart/form-data (file uploads) */
+  async _multipart(method, path, formData) {
+    const headers = {};
+    const token = this._token();
+    if (token) headers['Authorization'] = `Bearer ${token}`;
+    const res = await fetch(`${App.Config.API_BASE_URL}${path}`, {
+      method,
+      headers,
+      body: formData,
+    });
+    if (res.status === 401) { App.Auth.logout(); return; }
+    if (!res.ok) {
+      const errData = await res.json().catch(() => null);
+      throw new Error(_extractErrorMessage(errData, res.status));
+    }
+    return res.json();
+  },
 
   _dummy(data) {
     return App.Utils.delay(App.Config.DUMMY_DELAY).then(() => data);
@@ -64,266 +113,427 @@ App.Api = {
 
   /* ────────────────────────────────────────────
      DASHBOARD
-     API INTEGRATION POINT: GET /dashboard/stats
-     Returns: { totalSell, paidAmount, profit, activeSellers, totalTickets }
-
-     API INTEGRATION POINT: GET /draws/latest
-     Returns: [{ drawId, lottery, lot3, sec2, third, date }]
+     For admin: fetches counts of sub-admins, game & lottery categories.
+     For subAdmin: re-uses existing stats shape from dummy data (no dedicated endpoint).
   ──────────────────────────────────────────── */
   getDashboardStats() {
     if (App.Config.USE_DUMMY_DATA) return this._dummy({ ...App.Data.dashboardStats });
-    return this._get('/dashboard/stats');
+    const user = App.Auth.getUser();
+    if (user && user.role === 'admin') {
+      return Promise.all([
+        this._get('/admin/getsubadmin').catch(() => []),
+        this._get('/admin/getgamecategory').catch(() => []),
+        this._get('/admin/getlotterycategory').catch(() => ({ data: [] })),
+      ]).then(([subAdmins, gameCategories, lotteryCatResp]) => {
+        const subAdminCount   = Array.isArray(subAdmins) ? subAdmins.length : 0;
+        const gameCatCount    = Array.isArray(gameCategories) ? gameCategories.length : 0;
+        const lotteryCats     = lotteryCatResp && Array.isArray(lotteryCatResp.data) ? lotteryCatResp.data : [];
+        const lotteryCatCount = lotteryCats.length;
+        return { subAdminCount, gameCatCount, lotteryCatCount };
+      });
+    }
+    // subAdmin: pull today’s reports + seller/supervisor counts
+    const today = new Date().toISOString().split('T')[0];
+    return Promise.all([
+      this._get('/subadmin/getseller').catch(() => ({ users: [] })),
+      this._get('/subadmin/getsuperVisor').catch(() => []),
+      this._get(`/subadmin/getsalereports?fromDate=${today}&toDate=${today}&lotteryCategoryName=&seller=`).catch(() => ({ data: {} })),
+    ]).then(([sellerResp, supResp, reportResp]) => {
+      const sellerCount = Array.isArray(sellerResp.users) ? sellerResp.users.length : 0;
+      const supCount    = Array.isArray(supResp) ? supResp.length : 0;
+      const data        = (reportResp && reportResp.data) ? reportResp.data : {};
+      let   totalSell   = 0;
+      let   paidAmount  = 0;
+      Object.values(data).forEach(s => { totalSell += s.sum || 0; paidAmount += s.paid || 0; });
+      return { totalSell, paidAmount, profit: totalSell - paidAmount, sellerCount, supCount };
+    });
   },
 
   getLatestDraws() {
     if (App.Config.USE_DUMMY_DATA) return this._dummy([...App.Data.drawNumbers].slice(0, 3));
-    return this._get('/draws/latest');
+    const user     = App.Auth.getUser();
+    const endpoint = (user && user.role === 'admin') ? '/admin/getwiningnumber' : '/subadmin/getwiningnumber';
+    return this._post(endpoint, { lotteryCategoryName: '', fromDate: '', toDate: '' })
+      .then(resp => {
+        const rows = (resp && resp.data) ? resp.data : [];
+        return rows.slice(0, 5).map(w => ({
+          _id:     w._id,
+          lottery: w.lotteryCategoryName || w.lotteryName,
+          date:    w.date,
+          numbers: w.numbers || [],
+        }));
+      })
+      .catch(() => []);
   },
 
   /* ────────────────────────────────────────────
-     SELLERS
-     API INTEGRATION POINT: GET  /sellers
-     API INTEGRATION POINT: POST /sellers          body: seller object
-     API INTEGRATION POINT: PUT  /sellers/:id      body: partial seller
-     API INTEGRATION POINT: DELETE /sellers/:id
-     Returns list: [{ id, name, deviceId, supervisor, commission, paymentTerm,
-                      bonus, profitLimit, logo, companyName, dailyLimit,
-                      sellLimit, totalSold, status }]
+     ADMIN — GAME CATEGORIES
+     GET    /admin/getgamecategory
+     POST   /admin/addgamecategory          { gameName, positions, requiredLength }
+     PATCH  /admin/updategamecategory/:id
+     DELETE /admin/deletegamecategory/:id
   ──────────────────────────────────────────── */
-  getSellers(search = '') {
+  getGameCategories() {
+    if (App.Config.USE_DUMMY_DATA) return this._dummy(App.Data.gameCategories || []);
+    return this._get('/admin/getgamecategory');
+  },
+
+  createGameCategory(payload) {
     if (App.Config.USE_DUMMY_DATA) {
-      let data = [...App.Data.sellers];
-      if (search) data = data.filter(s => s.name.toLowerCase().includes(search.toLowerCase()));
+      const cat = { ...payload, _id: 'gc_' + Date.now() };
+      (App.Data.gameCategories = App.Data.gameCategories || []).push(cat);
+      return this._dummy(cat);
+    }
+    return this._post('/admin/addgamecategory', payload);
+  },
+
+  updateGameCategory(id, payload) {
+    if (App.Config.USE_DUMMY_DATA) {
+      const cats = App.Data.gameCategories || [];
+      const idx = cats.findIndex(c => c._id === id);
+      if (idx > -1) cats[idx] = { ...cats[idx], ...payload };
+      return this._dummy(cats[idx]);
+    }
+    return this._patch(`/admin/updategamecategory/${id}`, payload);
+  },
+
+  deleteGameCategory(id) {
+    if (App.Config.USE_DUMMY_DATA) {
+      App.Data.gameCategories = (App.Data.gameCategories || []).filter(c => c._id !== id);
+      return this._dummy({ message: 'Game category deleted' });
+    }
+    return this._delete(`/admin/deletegamecategory/${id}`);
+  },
+
+  /* ────────────────────────────────────────────
+     ADMIN — LOTTERY CATEGORIES
+     GET    /admin/getlotterycategory        → { success, data: [...] }
+     POST   /admin/addlotterycategory        { lotteryName, startTime, endTime }
+     PATCH  /admin/updatelotterycategory/:id
+     DELETE /admin/deletelotterycategory/:id
+  ──────────────────────────────────────────── */
+  getLotteryCategories() {
+    if (App.Config.USE_DUMMY_DATA) return this._dummy(App.Data.lotteries.map((l, i) => ({ _id: 'lc_' + i, lotteryName: l })));
+    return this._get('/admin/getlotterycategory').then(resp => (resp && resp.data) ? resp.data : []);
+  },
+
+  createLotteryCategory(payload) {
+    if (App.Config.USE_DUMMY_DATA) {
+      const cat = { ...payload, _id: 'lc_' + Date.now() };
+      return this._dummy(cat);
+    }
+    return this._post('/admin/addlotterycategory', payload);
+  },
+
+  updateLotteryCategory(id, payload) {
+    if (App.Config.USE_DUMMY_DATA) return this._dummy({ ...payload, _id: id });
+    return this._patch(`/admin/updatelotterycategory/${id}`, payload);
+  },
+
+  deleteLotteryCategory(id) {
+    if (App.Config.USE_DUMMY_DATA) return this._dummy({ message: 'Category deleted' });
+    return this._delete(`/admin/deletelotterycategory/${id}`);
+  },
+
+  /* ────────────────────────────────────────────
+     ADMIN — SUB-ADMIN MANAGEMENT
+     GET    /admin/getsubadmin
+     POST   /admin/addsubadmin              multipart/form-data
+     PATCH  /admin/updatesubadmin/:id       multipart/form-data
+     DELETE /admin/deletesubadmin/:id
+  ──────────────────────────────────────────── */
+  getSubAdmins() {
+    if (App.Config.USE_DUMMY_DATA) return this._dummy(App.Data.subAdmins || []);
+    return this._get('/admin/getsubadmin');
+  },
+
+  createSubAdmin(formData) {
+    if (App.Config.USE_DUMMY_DATA) {
+      const sa = { _id: 'sa_' + Date.now(), userName: formData.get('userName'), companyName: formData.get('companyName'), role: 'subAdmin', isActive: true };
+      (App.Data.subAdmins = App.Data.subAdmins || []).push(sa);
+      return this._dummy(sa);
+    }
+    return this._multipart('POST', '/admin/addsubadmin', formData);
+  },
+
+  updateSubAdmin(id, formData) {
+    if (App.Config.USE_DUMMY_DATA) return this._dummy({ _id: id });
+    return this._multipart('PATCH', `/admin/updatesubadmin/${id}`, formData);
+  },
+
+  deleteSubAdmin(id) {
+    if (App.Config.USE_DUMMY_DATA) {
+      App.Data.subAdmins = (App.Data.subAdmins || []).filter(s => s._id !== id);
+      return this._dummy({ message: 'Sub-admin deleted' });
+    }
+    return this._delete(`/admin/deletesubadmin/${id}`);
+  },
+
+  /* ────────────────────────────────────────────
+     ADMIN — WINNING NUMBERS
+     POST   /admin/addwiningnumber          { lotteryCategoryName, date, numbers: [{gameCategory, number, position}] }
+     POST   /admin/getwiningnumber          { lotteryCategoryName, fromDate, toDate }   → { success, data }
+     GET    /admin/getwiningnumber/:date    single by date
+     PATCH  /admin/updatewiningnumber/:id
+     DELETE /admin/deletewiningnumber/:id
+  ──────────────────────────────────────────── */
+  getWinningNumbers(filters = {}) {
+    if (App.Config.USE_DUMMY_DATA) {
+      let data = [...App.Data.drawNumbers];
+      if (filters.lottery)  data = data.filter(d => d.lottery === filters.lottery);
+      if (filters.fromDate) data = data.filter(d => d.date >= filters.fromDate);
+      if (filters.toDate)   data = data.filter(d => d.date <= filters.toDate);
       return this._dummy(data);
     }
-    const q = search ? `?search=${encodeURIComponent(search)}` : '';
-    return this._get(`/sellers${q}`);
+    const user     = App.Auth.getUser();
+    const endpoint = (user && user.role === 'admin') ? '/admin/getwiningnumber' : '/subadmin/getwiningnumber';
+    return this._post(endpoint, {
+      lotteryCategoryName: filters.lottery   || '',
+      fromDate:            filters.fromDate  || '',
+      toDate:              filters.toDate    || '',
+    }).then(resp => (resp && resp.data) ? resp.data : []);
+  },
+
+  addWinningNumber(payload) {
+    if (App.Config.USE_DUMMY_DATA) return this._dummy({ ...payload, _id: 'wn_' + Date.now() });
+    return this._post('/admin/addwiningnumber', payload);
+  },
+
+  updateWinningNumber(id, payload) {
+    if (App.Config.USE_DUMMY_DATA) return this._dummy({ ...payload, _id: id });
+    return this._patch(`/admin/updatewiningnumber/${id}`, payload);
+  },
+
+  deleteWinningNumber(id) {
+    if (App.Config.USE_DUMMY_DATA) return this._dummy({ message: 'Winning number deleted successfully!' });
+    return this._delete(`/admin/deletewiningnumber/${id}`);
+  },
+
+  /* ────────────────────────────────────────────
+     SUB-ADMIN — SELLERS
+     GET    /subadmin/getseller              → { sucess, users, companyName, bonusFlag }
+     POST   /subadmin/addseller             { userName, password, imei, email, isActive, superVisorName }
+     PATCH  /subadmin/updateseller/:id
+     PATCH  /subadmin/updateBonusFlag       { bonusFlag }
+     DELETE /subadmin/deleteseller/:id
+  ──────────────────────────────────────────── */
+  getSellers() {
+    if (App.Config.USE_DUMMY_DATA) return this._dummy({ users: [...App.Data.sellers], companyName: '', bonusFlag: false });
+    return this._get('/subadmin/getseller')
+      .then(resp => ({
+        users:       Array.isArray(resp.users) ? resp.users : [],
+        companyName: resp.companyName || '',
+        bonusFlag:   !!resp.bonusFlag,
+      }));
   },
 
   createSeller(payload) {
     if (App.Config.USE_DUMMY_DATA) {
-      const seller = { ...payload, id: App.Data.nextSellerId(), totalSold: 0, status: 'active' };
-      App.Data.sellers.push(seller);
+      const seller = { ...payload, _id: 'sel_' + Date.now(), role: 'seller' };
       return this._dummy(seller);
     }
-    return this._post('/sellers', payload);
+    return this._post('/subadmin/addseller', payload);
   },
 
   updateSeller(id, payload) {
-    if (App.Config.USE_DUMMY_DATA) {
-      const idx = App.Data.sellers.findIndex(s => s.id === id);
-      if (idx > -1) App.Data.sellers[idx] = { ...App.Data.sellers[idx], ...payload };
-      return this._dummy(App.Data.sellers[idx]);
-    }
-    return this._put(`/sellers/${id}`, payload);
+    if (App.Config.USE_DUMMY_DATA) return this._dummy({ _id: id });
+    return this._patch(`/subadmin/updateseller/${id}`, payload);
   },
 
   deleteSeller(id) {
-    if (App.Config.USE_DUMMY_DATA) {
-      App.Data.sellers = App.Data.sellers.filter(s => s.id !== id);
-      return this._dummy({ success: true });
-    }
-    return this._delete(`/sellers/${id}`);
+    if (App.Config.USE_DUMMY_DATA) return this._dummy({ success: true });
+    return this._delete(`/subadmin/deleteseller/${id}`);
+  },
+
+  updateBonusFlag(bonusFlag) {
+    if (App.Config.USE_DUMMY_DATA) return this._dummy({ success: true });
+    return this._patch('/subadmin/updateBonusFlag', { bonusFlag });
   },
 
   /* ────────────────────────────────────────────
-     SUPERVISORS
-     API INTEGRATION POINT: GET  /supervisors
-     API INTEGRATION POINT: POST /supervisors      body: supervisor object
-     Returns list: [{ id, name, contact, commission, region }]
+     SUB-ADMIN — SUPERVISORS
+     GET    /subadmin/getsuperVisor
+     POST   /subadmin/addsuperVisor         { userName, password, email, isActive }
+     PATCH  /subadmin/updatesuperVisor/:id
+     DELETE /subadmin/deletesuperVisor/:id
   ──────────────────────────────────────────── */
-  getSupervisors(search = '') {
-    if (App.Config.USE_DUMMY_DATA) {
-      let data = [...App.Data.supervisors];
-      if (search) data = data.filter(s => s.name.toLowerCase().includes(search.toLowerCase()));
-      return this._dummy(data);
-    }
-    const q = search ? `?search=${encodeURIComponent(search)}` : '';
-    return this._get(`/supervisors${q}`);
+  getSupervisors() {
+    if (App.Config.USE_DUMMY_DATA) return this._dummy([...App.Data.supervisors]);
+    return this._get('/subadmin/getsuperVisor')
+      .then(resp => Array.isArray(resp) ? resp : (resp.users || []));
   },
 
   createSupervisor(payload) {
     if (App.Config.USE_DUMMY_DATA) {
-      const sup = { ...payload, id: App.Data.nextSupervisorId() };
-      App.Data.supervisors.push(sup);
+      const sup = { ...payload, _id: 'sup_' + Date.now(), role: 'superVisor' };
       return this._dummy(sup);
     }
-    return this._post('/supervisors', payload);
+    return this._post('/subadmin/addsuperVisor', payload);
+  },
+
+  updateSupervisor(id, payload) {
+    if (App.Config.USE_DUMMY_DATA) return this._dummy({ _id: id });
+    return this._patch(`/subadmin/updatesuperVisor/${id}`, payload);
+  },
+
+  deleteSupervisor(id) {
+    if (App.Config.USE_DUMMY_DATA) return this._dummy({ success: true });
+    return this._delete(`/subadmin/deletesuperVisor/${id}`);
   },
 
   /* ────────────────────────────────────────────
-     SALES REPORTS
-     API INTEGRATION POINT: GET /reports/sales
-     Query params: seller, supervisor, lottery, fromDate, toDate
-     Returns: [{ seller, lottery, date, amount }]
+     SUB-ADMIN — SALES REPORTS
+     GET /subadmin/getsalereports?fromDate=&toDate=&lotteryCategoryName=&seller=
+     → { success, data: { sellerName: { name, sum, paid } } }
   ──────────────────────────────────────────── */
   getSalesReport(filters = {}) {
-    if (App.Config.USE_DUMMY_DATA) {
-      let data = [...App.Data.sales];
-      if (filters.lottery)    data = data.filter(r => r.lottery === filters.lottery);
-      if (filters.fromDate)   data = data.filter(r => r.date >= filters.fromDate);
-      if (filters.toDate)     data = data.filter(r => r.date <= filters.toDate);
-      if (filters.seller)     data = data.filter(r => r.seller === filters.seller);
-      if (filters.supervisor) {
-        const names = App.Data.getSellersBySupervisor(filters.supervisor);
-        data = data.filter(r => names.includes(r.seller));
-      }
-      return this._dummy(data);
-    }
-    return this._get(`/reports/sales?${App.Utils.buildQuery(filters)}`);
+    if (App.Config.USE_DUMMY_DATA) return this._dummy({});
+    const q = new URLSearchParams({
+      fromDate:            filters.fromDate || '',
+      toDate:              filters.toDate   || '',
+      lotteryCategoryName: filters.lottery  || '',
+      seller:              filters.seller   || '',
+    }).toString();
+    return this._get(`/subadmin/getsalereports?${q}`)
+      .then(resp => (resp && resp.data) ? resp.data : {});
   },
 
   /* ────────────────────────────────────────────
-     PAYMENT CONDITIONS
-     API INTEGRATION POINT: GET /payment-conditions
-     API INTEGRATION POINT: PUT /payment-conditions/:lottery  body: prizeObj
-     Returns global: { [lottery]: { '1st': n, '2nd': n, ... '8th': n } }
-
-     API INTEGRATION POINT: GET /payment-conditions/seller/:name/:lottery
-     API INTEGRATION POINT: PUT /payment-conditions/seller/:name/:lottery
-     API INTEGRATION POINT: GET /payment-conditions/supervisor/:name/:lottery
-     API INTEGRATION POINT: PUT /payment-conditions/supervisor/:name/:lottery
+     SUB-ADMIN — PAYMENT TERMS
+     GET    /subadmin/getpaymentterm         → [{ _id, lotteryCategoryName, conditions }]
+     POST   /subadmin/addpaymentterm         { lotteryCategoryName, conditions: [{gameCategory,position,condition}] }
+     PATCH  /subadmin/updatepaymentterm/:id  { conditions: [...] }
+     DELETE /subadmin/deletepaymentterm/:id
   ──────────────────────────────────────────── */
-  getPaymentConditions(lottery, context = 'all', entity = null) {
-    if (App.Config.USE_DUMMY_DATA) {
-      let obj;
-      if (context === 'all') {
-        obj = { ...App.Data.paymentConditions[lottery] };
-      } else if (context === 'seller') {
-        const key = `${entity}|${lottery}`;
-        if (!App.Data.sellerPaymentOverrides[key])
-          App.Data.sellerPaymentOverrides[key] = { ...App.Data.paymentConditions[lottery] };
-        obj = { ...App.Data.sellerPaymentOverrides[key] };
-      } else if (context === 'supervisor') {
-        const key = `${entity}|${lottery}`;
-        if (!App.Data.supervisorPaymentOverrides[key])
-          App.Data.supervisorPaymentOverrides[key] = { ...App.Data.paymentConditions[lottery] };
-        obj = { ...App.Data.supervisorPaymentOverrides[key] };
-      }
-      return this._dummy(obj);
-    }
-    if (context === 'all')        return this._get(`/payment-conditions/${encodeURIComponent(lottery)}`);
-    if (context === 'seller')     return this._get(`/payment-conditions/seller/${encodeURIComponent(entity)}/${encodeURIComponent(lottery)}`);
-    if (context === 'supervisor') return this._get(`/payment-conditions/supervisor/${encodeURIComponent(entity)}/${encodeURIComponent(lottery)}`);
+  getPaymentTerms() {
+    if (App.Config.USE_DUMMY_DATA) return this._dummy([]);
+    return this._get('/subadmin/getpaymentterm')
+      .then(resp => Array.isArray(resp) ? resp : []);
   },
 
-  savePaymentConditions(lottery, prizeObj, context = 'all', entity = null) {
-    if (App.Config.USE_DUMMY_DATA) {
-      if (context === 'all') {
-        App.Data.paymentConditions[lottery] = { ...prizeObj };
-      } else if (context === 'seller') {
-        App.Data.sellerPaymentOverrides[`${entity}|${lottery}`] = { ...prizeObj };
-      } else if (context === 'supervisor') {
-        App.Data.supervisorPaymentOverrides[`${entity}|${lottery}`] = { ...prizeObj };
-      }
-      return this._dummy({ success: true });
-    }
-    if (context === 'all')        return this._put(`/payment-conditions/${encodeURIComponent(lottery)}`, prizeObj);
-    if (context === 'seller')     return this._put(`/payment-conditions/seller/${encodeURIComponent(entity)}/${encodeURIComponent(lottery)}`, prizeObj);
-    if (context === 'supervisor') return this._put(`/payment-conditions/supervisor/${encodeURIComponent(entity)}/${encodeURIComponent(lottery)}`, prizeObj);
+  addPaymentTerm(payload) {
+    if (App.Config.USE_DUMMY_DATA) return this._dummy({ ...payload, _id: 'pt_' + Date.now() });
+    return this._post('/subadmin/addpaymentterm', payload);
+  },
+
+  updatePaymentTerm(id, payload) {
+    if (App.Config.USE_DUMMY_DATA) return this._dummy({ _id: id });
+    return this._patch(`/subadmin/updatepaymentterm/${id}`, payload);
+  },
+
+  deletePaymentTerm(id) {
+    if (App.Config.USE_DUMMY_DATA) return this._dummy({ success: true });
+    return this._delete(`/subadmin/deletepaymentterm/${id}`);
   },
 
   /* ────────────────────────────────────────────
-     LIMITS
-     API INTEGRATION POINT: GET /limits/:lottery
-     API INTEGRATION POINT: PUT /limits/:lottery             body: limitObj
-     API INTEGRATION POINT: GET /limits/seller/:name/:lottery
-     API INTEGRATION POINT: PUT /limits/seller/:name/:lottery
-     API INTEGRATION POINT: GET /limits/supervisor/:name/:lottery
-     API INTEGRATION POINT: PUT /limits/supervisor/:name/:lottery
-  ──────────────────────────────────────────── */
-  getLimits(lottery, context = 'all', entity = null) {
-    if (App.Config.USE_DUMMY_DATA) {
-      let obj;
-      if (context === 'all') {
-        obj = { ...App.Data.globalLimits[lottery] };
-      } else if (context === 'seller') {
-        const key = `${entity}|${lottery}`;
-        if (!App.Data.sellerLimits[key]) {
-          App.Data.sellerLimits[key] = {};
-          App.Data.limitCategories.forEach(c => App.Data.sellerLimits[key][c] = 1000);
-        }
-        obj = { ...App.Data.sellerLimits[key] };
-      } else if (context === 'supervisor') {
-        const key = `${entity}|${lottery}`;
-        if (!App.Data.supervisorLimits[key]) {
-          App.Data.supervisorLimits[key] = {};
-          App.Data.limitCategories.forEach(c => App.Data.supervisorLimits[key][c] = 1000);
-        }
-        obj = { ...App.Data.supervisorLimits[key] };
-      }
-      return this._dummy(obj);
-    }
-    if (context === 'all')        return this._get(`/limits/${encodeURIComponent(lottery)}`);
-    if (context === 'seller')     return this._get(`/limits/seller/${encodeURIComponent(entity)}/${encodeURIComponent(lottery)}`);
-    if (context === 'supervisor') return this._get(`/limits/supervisor/${encodeURIComponent(entity)}/${encodeURIComponent(lottery)}`);
-  },
-
-  saveLimits(lottery, limitObj, context = 'all', entity = null) {
-    if (App.Config.USE_DUMMY_DATA) {
-      if (context === 'all') {
-        App.Data.globalLimits[lottery] = { ...limitObj };
-      } else if (context === 'seller') {
-        App.Data.sellerLimits[`${entity}|${lottery}`] = { ...limitObj };
-      } else if (context === 'supervisor') {
-        App.Data.supervisorLimits[`${entity}|${lottery}`] = { ...limitObj };
-      }
-      return this._dummy({ success: true });
-    }
-    if (context === 'all')        return this._put(`/limits/${encodeURIComponent(lottery)}`, limitObj);
-    if (context === 'seller')     return this._put(`/limits/seller/${encodeURIComponent(entity)}/${encodeURIComponent(lottery)}`, limitObj);
-    if (context === 'supervisor') return this._put(`/limits/supervisor/${encodeURIComponent(entity)}/${encodeURIComponent(lottery)}`, limitObj);
-  },
-
-  /* ────────────────────────────────────────────
-     SOLD TICKETS
-     API INTEGRATION POINT: GET /tickets/sold
-     Query params: seller, supervisor, lottery, fromDate, toDate
-     Returns: [{ id, lottery, buyer, price, status, seller, date }]
+     SUB-ADMIN — SOLD TICKETS
+     GET /subadmin/gettickets?fromDate=&toDate=&lotteryCategoryName=&seller=
+     → { success, data: [{ _id, ticketId, seller, lotteryCategoryName, date, isDelete, numbers }] }
   ──────────────────────────────────────────── */
   getSoldTickets(filters = {}) {
-    if (App.Config.USE_DUMMY_DATA) {
-      let data = [...App.Data.soldTickets];
-      if (filters.lottery)    data = data.filter(t => t.lottery === filters.lottery);
-      if (filters.fromDate)   data = data.filter(t => t.date >= filters.fromDate);
-      if (filters.toDate)     data = data.filter(t => t.date <= filters.toDate);
-      if (filters.seller)     data = data.filter(t => t.seller === filters.seller);
-      if (filters.supervisor) {
-        const names = App.Data.getSellersBySupervisor(filters.supervisor);
-        data = data.filter(t => names.includes(t.seller));
-      }
-      return this._dummy(data);
-    }
-    return this._get(`/tickets/sold?${App.Utils.buildQuery(filters)}`);
+    if (App.Config.USE_DUMMY_DATA) return this._dummy([]);
+    const q = new URLSearchParams({
+      fromDate:            filters.fromDate || '',
+      toDate:              filters.toDate   || '',
+      lotteryCategoryName: filters.lottery  || '',
+      seller:              filters.seller   || '',
+    }).toString();
+    return this._get(`/subadmin/gettickets?${q}`)
+      .then(resp => (resp && resp.data) ? resp.data : []);
+  },
+
+  deleteTicket(id) {
+    if (App.Config.USE_DUMMY_DATA) return this._dummy({ success: true });
+    return this._delete(`/subadmin/deleteticket/${id}`);
   },
 
   /* ────────────────────────────────────────────
-     WINNING TICKETS
-     API INTEGRATION POINT: GET /tickets/winning
-     Query params: seller, supervisor, lottery, fromDate, toDate
-     Returns: [{ ticket, lottery, prize, winner, status, seller, date }]
+     SUB-ADMIN — WINNING TICKETS
+     GET /subadmin/getwintickets?fromDate=&toDate=&lotteryCategoryName=&seller=
   ──────────────────────────────────────────── */
   getWinningTickets(filters = {}) {
-    if (App.Config.USE_DUMMY_DATA) {
-      let data = [...App.Data.winningTickets];
-      if (filters.lottery)    data = data.filter(w => w.lottery === filters.lottery);
-      if (filters.fromDate)   data = data.filter(w => w.date >= filters.fromDate);
-      if (filters.toDate)     data = data.filter(w => w.date <= filters.toDate);
-      if (filters.seller)     data = data.filter(w => w.seller === filters.seller);
-      if (filters.supervisor) {
-        const names = App.Data.getSellersBySupervisor(filters.supervisor);
-        data = data.filter(w => names.includes(w.seller));
-      }
-      return this._dummy(data);
-    }
-    return this._get(`/tickets/winning?${App.Utils.buildQuery(filters)}`);
+    if (App.Config.USE_DUMMY_DATA) return this._dummy([]);
+    const q = new URLSearchParams({
+      fromDate:            filters.fromDate || '',
+      toDate:              filters.toDate   || '',
+      lotteryCategoryName: filters.lottery  || '',
+      seller:              filters.seller   || '',
+    }).toString();
+    return this._get(`/subadmin/getwintickets?${q}`)
+      .then(resp => (resp && resp.data) ? resp.data : []);
   },
 
   /* ────────────────────────────────────────────
-     DRAW NUMBERS
-     API INTEGRATION POINT: GET /draws
-     Query params: lottery, fromDate, toDate
-     Returns: [{ drawId, lottery, lot3, sec2, third, date }]
+     SUB-ADMIN — AMOUNT LIMITS
+     POST   /subadmin/addlimitbut           { lotteryCategoryName, limits:[{gameCategory,gameNumber,limitsButs}], seller?, superVisor? }
+     GET    /subadmin/getlimitbutAll
+     GET    /subadmin/getlimitbutSeller?seller=&lotteryCategoryName=
+     GET    /subadmin/getlimitbutSuperVisor?superVisor=&lotteryCategoryName=
+     PATCH  /subadmin/updatelimitbut/:id
+     DELETE /subadmin/deletelimitbut/:id
+  ──────────────────────────────────────────── */
+  getLimits(context = 'all', entity = null, lottery = '') {
+    if (App.Config.USE_DUMMY_DATA) return this._dummy([]);
+    if (context === 'seller' && entity) {
+      const q = new URLSearchParams({ seller: entity, lotteryCategoryName: lottery }).toString();
+      return this._get(`/subadmin/getlimitbutSeller?${q}`)
+        .then(resp => Array.isArray(resp) ? resp : (resp.data || []));
+    }
+    if (context === 'supervisor' && entity) {
+      const q = new URLSearchParams({ superVisor: entity, lotteryCategoryName: lottery }).toString();
+      return this._get(`/subadmin/getlimitbutSuperVisor?${q}`)
+        .then(resp => Array.isArray(resp) ? resp : (resp.data || []));
+    }
+    return this._get('/subadmin/getlimitbutAll')
+      .then(resp => Array.isArray(resp) ? resp : (resp.data || []));
+  },
+
+  addLimit(payload) {
+    if (App.Config.USE_DUMMY_DATA) return this._dummy({ success: true });
+    return this._post('/subadmin/addlimitbut', payload);
+  },
+
+  updateLimit(id, payload) {
+    if (App.Config.USE_DUMMY_DATA) return this._dummy({ _id: id });
+    return this._patch(`/subadmin/updatelimitbut/${id}`, payload);
+  },
+
+  deleteLimit(id) {
+    if (App.Config.USE_DUMMY_DATA) return this._dummy({ success: true });
+    return this._delete(`/subadmin/deletelimitbut/${id}`);
+  },
+
+  /* ────────────────────────────────────────────
+     SUB-ADMIN — BLOCK NUMBERS
+     POST   /subadmin/addblocknumber        { lotteryCategoryName, gameCategory, number }
+     GET    /subadmin/getblocknumber
+     PATCH  /subadmin/updateblocknumber/:id
+     DELETE /subadmin/deleteblocknumber/:id
+  ──────────────────────────────────────────── */
+  getBlockNumbers() {
+    if (App.Config.USE_DUMMY_DATA) return this._dummy([]);
+    return this._get('/subadmin/getblocknumber')
+      .then(resp => Array.isArray(resp) ? resp : (resp.data || []));
+  },
+
+  addBlockNumber(payload) {
+    if (App.Config.USE_DUMMY_DATA) return this._dummy({ ...payload, _id: 'bn_' + Date.now() });
+    return this._post('/subadmin/addblocknumber', payload);
+  },
+
+  updateBlockNumber(id, payload) {
+    if (App.Config.USE_DUMMY_DATA) return this._dummy({ _id: id });
+    return this._patch(`/subadmin/updateblocknumber/${id}`, payload);
+  },
+
+  deleteBlockNumber(id) {
+    if (App.Config.USE_DUMMY_DATA) return this._dummy({ success: true });
+    return this._delete(`/subadmin/deleteblocknumber/${id}`);
+  },
+
+  /* ────────────────────────────────────────────
+     DRAW NUMBERS (kept for backward compat)
   ──────────────────────────────────────────── */
   getDrawNumbers(filters = {}) {
     if (App.Config.USE_DUMMY_DATA) {
@@ -333,6 +543,6 @@ App.Api = {
       if (filters.toDate)   data = data.filter(d => d.date <= filters.toDate);
       return this._dummy(data);
     }
-    return this._get(`/draws?${App.Utils.buildQuery(filters)}`);
+    return this.getWinningNumbers(filters);
   },
 };

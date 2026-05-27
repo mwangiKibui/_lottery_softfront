@@ -18,10 +18,22 @@
       <i class="fas fa-bars"></i>
     </button>
 
+    <!-- Default brand (hidden for sub-admin) -->
     <a class="brand-name" id="brandBtn" href="#" aria-label="Go to dashboard">
       <i class="fas fa-crown"></i>
       PRINCE LOTO
     </a>
+
+    <!-- Sub-admin company branding — replaces brand on left (hidden until logged in as subAdmin) -->
+    <div id="topbarCompanyInfo" class="topbar-company" hidden>
+      <div id="topbarLogoWrap" class="topbar-company-logo-wrap">
+        <img id="topbarCompanyLogo" class="topbar-company-logo" src="" alt="Company Logo">
+      </div>
+      <div class="topbar-company-text">
+        <div id="topbarCompanyName" class="topbar-company-name">—</div>
+
+      </div>
+    </div>
 
     <div class="topbar-right">
       <div class="topbar-user">
@@ -54,32 +66,50 @@
         <li class="nav-item" data-page="dashboard">
           <a href="#"><i class="fas fa-chart-pie"></i> Dashboard</a>
         </li>
-        <li class="nav-item" data-page="sellers">
+
+        <!-- Admin-only nav items -->
+        <li class="nav-item nav-admin" data-page="subadmins" hidden>
+          <a href="#"><i class="fas fa-building"></i> Sub-Admins</a>
+        </li>
+        <li class="nav-item nav-admin" data-page="gamecategories" hidden>
+          <a href="#"><i class="fas fa-dice"></i> Game Types</a>
+        </li>
+        <li class="nav-item nav-admin" data-page="lotterycategories" hidden>
+          <a href="#"><i class="fas fa-calendar-alt"></i> Lottery Schedules</a>
+        </li>
+
+        <!-- Sub-admin / manager nav items -->
+        <li class="nav-item nav-subadmin" data-page="sellers" hidden>
           <a href="#"><i class="fas fa-users"></i> Sellers</a>
         </li>
-        <li class="nav-item" data-page="supervisors">
+        <li class="nav-item nav-subadmin" data-page="supervisors" hidden>
           <a href="#"><i class="fas fa-user-tie"></i> Supervisors</a>
         </li>
-        <li class="nav-item" data-page="reports">
+        <li class="nav-item nav-subadmin" data-page="reports" hidden>
           <a href="#"><i class="fas fa-chart-line"></i> Reports</a>
         </li>
-        <li class="nav-item" data-page="payment">
+        <li class="nav-item nav-subadmin" data-page="payment" hidden>
           <a href="#"><i class="fas fa-dollar-sign"></i> Payment</a>
         </li>
-        <li class="nav-item" data-page="soldtickets">
+        <li class="nav-item nav-subadmin" data-page="soldtickets" hidden>
           <a href="#"><i class="fas fa-receipt"></i> Sold Tickets</a>
         </li>
-        <li class="nav-item" data-page="numbers">
-          <a href="#"><i class="fas fa-dice-d6"></i> Draw Numbers</a>
-        </li>
-        <li class="nav-item" data-page="wintickets">
-          <a href="#"><i class="fas fa-trophy"></i> Winning Tickets</a>
-        </li>
-        <li class="nav-item" data-page="limit">
+        <li class="nav-item nav-subadmin" data-page="limit" hidden>
           <a href="#"><i class="fas fa-sliders-h"></i> Limits</a>
         </li>
-        <li class="nav-item" data-page="statistics">
+        <li class="nav-item nav-subadmin" data-page="blocknumbers" hidden>
+          <a href="#"><i class="fas fa-ban"></i> Block Numbers</a>
+        </li>
+        <li class="nav-item nav-subadmin" data-page="statistics" hidden>
           <a href="#"><i class="fas fa-chart-bar"></i> Statistics</a>
+        </li>
+
+        <!-- Shared -->
+        <li class="nav-item" data-page="numbers">
+          <a href="#"><i class="fas fa-dice-d6"></i> Winning Numbers</a>
+        </li>
+        <li class="nav-item nav-subadmin" data-page="wintickets" hidden>
+          <a href="#"><i class="fas fa-trophy"></i> Winning Tickets</a>
         </li>
       </ul>
     </aside>
@@ -117,6 +147,12 @@
   <script src="js/pages/numbers.js"></script>
   <script src="js/pages/limit.js"></script>
   <script src="js/pages/statistics.js"></script>
+  <!-- Admin pages -->
+  <script src="js/pages/game-categories.js"></script>
+  <script src="js/pages/lottery-categories.js"></script>
+  <script src="js/pages/sub-admins.js"></script>
+  <!-- Sub-admin pages -->
+  <script src="js/pages/block-numbers.js"></script>
 
   <!-- Router & shell (must be last) -->
   <script src="js/app.js"></script>

@@ -34,7 +34,7 @@ window.App = window.App || {};
        Set USE_DUMMY_DATA = false once the API is connected.
        All Api.* methods will automatically switch to live calls.
     ────────────────────────────────────────────────────────────────── */
-    USE_DUMMY_DATA: true,
+    USE_DUMMY_DATA: false,
 
     /* ── Auth ──────────────────────────────────────────────────────────
        Dummy credentials for local development.

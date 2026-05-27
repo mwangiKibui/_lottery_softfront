@@ -7,18 +7,63 @@
   /* ── Auth guard ── */
   if (!App.Auth.requireAuth()) return;
 
+  /* ── Current user & role ── */
+  const user    = App.Auth.getUser();
+  const isAdmin = user && user.role === 'admin';
+
+  /* ── Role-based navigation visibility ── */
+  document.querySelectorAll('.nav-admin').forEach(el => {
+    el.hidden = !isAdmin;
+  });
+  document.querySelectorAll('.nav-subadmin').forEach(el => {
+    el.hidden = isAdmin;
+  });
+
+  /* ── Sub-admin company branding (topbar left — replaces brand) ── */
+  if (!isAdmin && user) {
+    const companySection = document.getElementById('topbarCompanyInfo');
+    const brandEl        = document.getElementById('brandBtn');
+    if (companySection) {
+      const logoWrap = document.getElementById('topbarLogoWrap');
+      const nameEl   = document.getElementById('topbarCompanyName');
+
+      nameEl.textContent = user.companyName || user.name;
+
+      if (user.companyLogo) {
+        const baseUrl = App.Config.API_BASE_URL.replace(/\/api$/, '');
+        const img     = document.getElementById('topbarCompanyLogo');
+        img.src       = `${baseUrl}/${user.companyLogo}`;
+        img.alt       = user.companyName || 'Company Logo';
+        img.onerror   = function () {
+          logoWrap.innerHTML = '<i class="fas fa-building topbar-company-logo-placeholder"></i>';
+        };
+      } else {
+        logoWrap.innerHTML = '<i class="fas fa-building topbar-company-logo-placeholder"></i>';
+      }
+
+      companySection.hidden = false;
+      if (brandEl) brandEl.hidden = true;
+    }
+  }
+
   /* ── Page registry ── */
   const PAGES = {
-    dashboard:   App.Pages.Dashboard,
-    sellers:     App.Pages.Sellers,
-    supervisors: App.Pages.Supervisors,
-    reports:     App.Pages.Reports,
-    payment:     App.Pages.Payment,
-    soldtickets: App.Pages.SoldTickets,
-    wintickets:  App.Pages.WinTickets,
-    numbers:     App.Pages.Numbers,
-    limit:       App.Pages.Limit,
-    statistics:  App.Pages.Statistics,
+    dashboard:         App.Pages.Dashboard,
+    sellers:           App.Pages.Sellers,
+    supervisors:       App.Pages.Supervisors,
+    reports:           App.Pages.Reports,
+    payment:           App.Pages.Payment,
+    soldtickets:       App.Pages.SoldTickets,
+    wintickets:        App.Pages.WinTickets,
+    numbers:           App.Pages.Numbers,
+    limit:             App.Pages.Limit,
+    statistics:        App.Pages.Statistics,
+    // Admin-only pages
+    gamecategories:    App.Pages.GameCategories,
+    lotterycategories: App.Pages.LotteryCategories,
+    subadmins:         App.Pages.SubAdmins,
+    // Sub-admin pages
+    blocknumbers:      App.Pages.BlockNumbers,
   };
 
   let currentPage = null;
@@ -59,10 +104,19 @@
   document.getElementById('sidebarBrandBtn')?.addEventListener('click', () => renderPage('dashboard'));
 
   /* ── Topbar user display ── */
-  const user = App.Auth.getUser();
   if (user) {
     const nameEl = document.getElementById('topbarUserName');
-    if (nameEl) nameEl.textContent = user.name || user.username || 'User';
+    if (nameEl) {
+      const roleLabel = isAdmin
+        ? '(Admin)'
+        : user.role === 'subAdmin'
+          ? '(Sub-Admin)'
+          : user.role === 'superVisor'
+            ? '(Supervisor)'
+            : '(Seller)';
+      const roleBadge = ` <small style="opacity:.7">${roleLabel}</small>`;
+      nameEl.innerHTML = App.Utils.escHtml(user.name || user.username || 'User') + roleBadge;
+    }
   }
 
   /* ── Logout ── */
