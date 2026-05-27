@@ -558,3 +558,39 @@ hr.divider {
   flex-wrap: wrap;
   gap: 12px;
 }
+
+/* ──────────────────────────────────────────────
+   SEARCH BAR
+────────────────────────────────────────────── */
+.search-bar-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.search-input-wrap {
+  position: relative;
+  flex: 1;
+  max-width: 420px;
+}
+.search-icon {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--text-muted);
+  pointer-events: none;
+}
+.search-input {
+  width: 100%;
+  padding: 8px 12px 8px 36px;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  background: var(--clr-surface);
+  color: var(--text-primary);
+  font-size: var(--font-size-base);
+  transition: border-color var(--transition-base);
+}
+.search-input:focus {
+  outline: none;
+  border-color: var(--clr-primary-500);
+}

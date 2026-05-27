@@ -153,15 +153,22 @@ App.Api = {
     if (App.Config.USE_DUMMY_DATA) return this._dummy([...App.Data.drawNumbers].slice(0, 3));
     const user     = App.Auth.getUser();
     const endpoint = (user && user.role === 'admin') ? '/admin/getwiningnumber' : '/subadmin/getwiningnumber';
-    return this._post(endpoint, { lotteryCategoryName: '', fromDate: '', toDate: '' })
+    // Send a 90-day window so the backend date filter always returns recent draws
+    const toDate   = new Date().toISOString().slice(0, 10);
+    const fromDate = new Date(Date.now() - 90 * 24 * 60 * 60 * 1000).toISOString().slice(0, 10);
+    return this._post(endpoint, { lotteryCategoryName: '', fromDate, toDate })
       .then(resp => {
         const rows = (resp && resp.data) ? resp.data : [];
-        return rows.slice(0, 5).map(w => ({
-          _id:     w._id,
-          lottery: w.lotteryCategoryName || w.lotteryName,
-          date:    w.date,
-          numbers: w.numbers || [],
-        }));
+        // Sort descending by date and take the 5 most recent
+        return rows
+          .sort((a, b) => new Date(b.date) - new Date(a.date))
+          .slice(0, 5)
+          .map(w => ({
+            _id:     w._id,
+            lottery: w.lotteryCategoryName || w.lotteryName,
+            date:    w.date,
+            numbers: w.numbers || [],
+          }));
       })
       .catch(() => []);
   },
@@ -238,13 +245,20 @@ App.Api = {
   /* ────────────────────────────────────────────
      ADMIN — SUB-ADMIN MANAGEMENT
      GET    /admin/getsubadmin
+     GET    /admin/getdeletedsubadmin
      POST   /admin/addsubadmin              multipart/form-data
      PATCH  /admin/updatesubadmin/:id       multipart/form-data
+     PATCH  /admin/restoresubadmin/:id
      DELETE /admin/deletesubadmin/:id
   ──────────────────────────────────────────── */
   getSubAdmins() {
     if (App.Config.USE_DUMMY_DATA) return this._dummy(App.Data.subAdmins || []);
     return this._get('/admin/getsubadmin');
+  },
+
+  getDeletedSubAdmins() {
+    if (App.Config.USE_DUMMY_DATA) return this._dummy([]);
+    return this._get('/admin/getdeletedsubadmin');
   },
 
   createSubAdmin(formData) {
@@ -267,6 +281,11 @@ App.Api = {
       return this._dummy({ message: 'Sub-admin deleted' });
     }
     return this._delete(`/admin/deletesubadmin/${id}`);
+  },
+
+  restoreSubAdmin(id) {
+    if (App.Config.USE_DUMMY_DATA) return this._dummy({ _id: id });
+    return this._patch(`/admin/restoresubadmin/${id}`, {});
   },
 
   /* ────────────────────────────────────────────

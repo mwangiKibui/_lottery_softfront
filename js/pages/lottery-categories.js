@@ -8,8 +8,9 @@ window.App = window.App || {};
 App.Pages = App.Pages || {};
 
 App.Pages.LotteryCategories = {
-  _editingId: null,
+  _editingId:  null,
   _deletingId: null,
+  _allCats:    [],
 
   render() {
     return `
@@ -21,6 +22,14 @@ App.Pages.LotteryCategories = {
           </button>
         </div>
         <hr class="divider">
+
+        <!-- Search -->
+        <div class="search-bar-row" style="margin-bottom:1rem">
+          <div class="search-input-wrap">
+            <i class="fas fa-search search-icon"></i>
+            <input type="search" id="lotCatSearch" placeholder="Search lottery schedules…" class="search-input">
+          </div>
+        </div>
 
         <div class="table-wrapper">
           <table class="data-table">
@@ -99,6 +108,10 @@ App.Pages.LotteryCategories = {
     document.getElementById('cancelDelLotCatBtn').addEventListener('click', () => this._closeDeleteModal());
     document.getElementById('lotCatDeleteModal').addEventListener('click', e => { if (e.target === e.currentTarget) this._closeDeleteModal(); });
     document.getElementById('confirmDelLotCatBtn').addEventListener('click', () => this._doDelete());
+
+    document.getElementById('lotCatSearch').addEventListener('input', e => {
+      this._filterTable(e.target.value.trim());
+    });
   },
 
   _load() {
@@ -106,44 +119,56 @@ App.Pages.LotteryCategories = {
     tbody.innerHTML = App.Utils.tableLoadingRow(4);
 
     App.Api.getLotteryCategories().then(cats => {
-      if (!cats || cats.length === 0) {
-        tbody.innerHTML = App.Utils.tableEmptyRow('No lottery schedules found.', 4);
-        return;
-      }
-      tbody.innerHTML = cats.map(c => `
-        <tr>
-          <td><strong>${App.Utils.escHtml(c.lotteryName)}</strong></td>
-          <td>${App.Utils.escHtml(c.startTime || '—')}</td>
-          <td>${App.Utils.escHtml(c.endTime   || '—')}</td>
-          <td>
-            <button class="btn btn-ghost btn-sm" data-edit="${App.Utils.escHtml(c._id)}"
-              data-name="${App.Utils.escHtml(c.lotteryName)}"
-              data-start="${App.Utils.escHtml(c.startTime || '')}"
-              data-end="${App.Utils.escHtml(c.endTime || '')}">
-              <i class="fas fa-edit"></i> Edit
-            </button>
-            <button class="btn btn-danger btn-sm" data-delete="${App.Utils.escHtml(c._id)}" data-name="${App.Utils.escHtml(c.lotteryName)}">
-              <i class="fas fa-trash-alt"></i>
-            </button>
-          </td>
-        </tr>
-      `).join('');
-
-      tbody.querySelectorAll('[data-edit]').forEach(btn => {
-        btn.addEventListener('click', () => this._openModal({
-          _id: btn.dataset.edit,
-          lotteryName: btn.dataset.name,
-          startTime:   btn.dataset.start,
-          endTime:     btn.dataset.end,
-        }));
-      });
-      tbody.querySelectorAll('[data-delete]').forEach(btn => {
-        btn.addEventListener('click', () => this._openDeleteModal(btn.dataset.delete, btn.dataset.name));
-      });
+      this._allCats = cats || [];
+      this._renderTable(this._allCats);
     }).catch(err => {
       tbody.innerHTML = App.Utils.tableEmptyRow('Failed to load lottery schedules.', 4);
       App.Utils.toast(err.message || 'Error loading lottery schedules.', 'error');
     });
+  },
+
+  _renderTable(cats) {
+    const tbody = document.getElementById('lotCatTableBody');
+    if (!cats || cats.length === 0) {
+      tbody.innerHTML = App.Utils.tableEmptyRow('No lottery schedules found.', 4);
+      return;
+    }
+    tbody.innerHTML = cats.map(c => `
+      <tr>
+        <td><strong>${App.Utils.escHtml(c.lotteryName)}</strong></td>
+        <td>${App.Utils.escHtml(c.startTime || '—')}</td>
+        <td>${App.Utils.escHtml(c.endTime   || '—')}</td>
+        <td>
+          <button class="btn btn-ghost btn-sm" data-edit="${App.Utils.escHtml(c._id)}"
+            data-name="${App.Utils.escHtml(c.lotteryName)}"
+            data-start="${App.Utils.escHtml(c.startTime || '')}"
+            data-end="${App.Utils.escHtml(c.endTime || '')}">
+            <i class="fas fa-edit"></i> Edit
+          </button>
+          <button class="btn btn-danger btn-sm" data-delete="${App.Utils.escHtml(c._id)}" data-name="${App.Utils.escHtml(c.lotteryName)}">
+            <i class="fas fa-trash-alt"></i>
+          </button>
+        </td>
+      </tr>
+    `).join('');
+
+    tbody.querySelectorAll('[data-edit]').forEach(btn => {
+      btn.addEventListener('click', () => this._openModal({
+        _id: btn.dataset.edit,
+        lotteryName: btn.dataset.name,
+        startTime:   btn.dataset.start,
+        endTime:     btn.dataset.end,
+      }));
+    });
+    tbody.querySelectorAll('[data-delete]').forEach(btn => {
+      btn.addEventListener('click', () => this._openDeleteModal(btn.dataset.delete, btn.dataset.name));
+    });
+  },
+
+  _filterTable(query) {
+    if (!query) { this._renderTable(this._allCats); return; }
+    const q = query.toLowerCase();
+    this._renderTable(this._allCats.filter(c => (c.lotteryName || '').toLowerCase().includes(q)));
   },
 
   _openModal(cat = null) {

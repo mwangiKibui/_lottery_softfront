@@ -9,8 +9,9 @@ window.App = window.App || {};
 App.Pages = App.Pages || {};
 
 App.Pages.SubAdmins = {
-  _editingId:  null,
-  _deletingId: null,
+  _editingId:    null,
+  _deletingId:   null,
+  _allAdmins:    [],   // cache for client-side search
 
   render() {
     return `
@@ -23,6 +24,14 @@ App.Pages.SubAdmins = {
         </div>
         <hr class="divider">
 
+        <!-- Search -->
+        <div class="search-bar-row" style="margin-bottom:1rem">
+          <div class="search-input-wrap">
+            <i class="fas fa-search search-icon"></i>
+            <input type="search" id="subAdminSearch" placeholder="Search by username, company, or note…" class="search-input">
+          </div>
+        </div>
+
         <div class="table-wrapper">
           <table class="data-table">
             <thead>
@@ -31,14 +40,42 @@ App.Pages.SubAdmins = {
                 <th>Company Name</th>
                 <th>Email</th>
                 <th>Phone</th>
+                <th>Note</th>
                 <th>Status</th>
                 <th>Actions</th>
               </tr>
             </thead>
             <tbody id="subAdminTableBody">
-              ${App.Utils.tableLoadingRow(6)}
+              ${App.Utils.tableLoadingRow(7)}
             </tbody>
           </table>
+        </div>
+      </div>
+
+      <!-- Deleted / Restoration Section -->
+      <div class="page-card" style="margin-top:1.5rem">
+        <div class="page-card-header" style="cursor:pointer" id="toggleDeletedBtn">
+          <h2><i class="fas fa-trash-restore"></i> Deleted Sub-Admins</h2>
+          <button class="btn btn-ghost btn-sm"><i class="fas fa-chevron-down" id="deletedChevron"></i> Show</button>
+        </div>
+        <div id="deletedSubAdminSection" style="display:none">
+          <hr class="divider">
+          <div class="table-wrapper">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Username</th>
+                  <th>Company Name</th>
+                  <th>Email</th>
+                  <th>Note</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="deletedSubAdminBody">
+                ${App.Utils.tableLoadingRow(5)}
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
 
@@ -86,6 +123,10 @@ App.Pages.SubAdmins = {
               <input type="file" id="saLogo" accept="image/*">
               <small style="color:var(--text-muted)">Optional. JPEG/PNG recommended.</small>
             </div>
+            <div class="form-group" style="grid-column:1/-1">
+              <label>Note</label>
+              <textarea id="saNote" rows="3" placeholder="Internal admin notes…" style="width:100%;resize:vertical"></textarea>
+            </div>
           </div>
           <div class="modal-buttons">
             <button class="btn btn-ghost" id="cancelSubAdminModalBtn">Cancel</button>
@@ -101,7 +142,7 @@ App.Pages.SubAdmins = {
             <h3><i class="fas fa-trash-alt"></i> Delete Sub-Admin</h3>
             <button class="modal-close" id="closeDelSubAdminBtn" aria-label="Close"><i class="fas fa-times"></i></button>
           </div>
-          <p style="padding:0 1.5rem 1rem">Are you sure you want to delete <strong id="delSubAdminName"></strong>? All associated data may be affected.</p>
+          <p style="padding:0 1.5rem 1rem">Are you sure you want to delete <strong id="delSubAdminName"></strong>? They will be moved to the restoration list.</p>
           <div class="modal-buttons">
             <button class="btn btn-ghost" id="cancelDelSubAdminBtn">Cancel</button>
             <button class="btn btn-danger" id="confirmDelSubAdminBtn"><i class="fas fa-trash-alt"></i> Delete</button>
@@ -112,9 +153,11 @@ App.Pages.SubAdmins = {
   },
 
   init() {
-    this._editingId  = null;
-    this._deletingId = null;
+    this._editingId    = null;
+    this._deletingId   = null;
+    this._allAdmins    = [];
     this._load();
+    this._loadDeleted();
 
     document.getElementById('openSubAdminModalBtn').addEventListener('click', () => this._openModal());
     document.getElementById('closeSubAdminModalBtn').addEventListener('click', () => this._closeModal());
@@ -126,59 +169,134 @@ App.Pages.SubAdmins = {
     document.getElementById('cancelDelSubAdminBtn').addEventListener('click', () => this._closeDeleteModal());
     document.getElementById('subAdminDeleteModal').addEventListener('click', e => { if (e.target === e.currentTarget) this._closeDeleteModal(); });
     document.getElementById('confirmDelSubAdminBtn').addEventListener('click', () => this._doDelete());
+
+    // Search
+    document.getElementById('subAdminSearch').addEventListener('input', e => {
+      this._filterTable(e.target.value.trim());
+    });
+
+    // Toggle deleted section
+    document.getElementById('toggleDeletedBtn').addEventListener('click', () => {
+      const section = document.getElementById('deletedSubAdminSection');
+      const chevron = document.getElementById('deletedChevron');
+      const btn = document.querySelector('#toggleDeletedBtn button');
+      if (section.style.display === 'none') {
+        section.style.display = '';
+        chevron.className = 'fas fa-chevron-up';
+        btn.innerHTML = '<i class="fas fa-chevron-up"></i> Hide';
+      } else {
+        section.style.display = 'none';
+        chevron.className = 'fas fa-chevron-down';
+        btn.innerHTML = '<i class="fas fa-chevron-down"></i> Show';
+      }
+    });
   },
 
   _load() {
     const tbody = document.getElementById('subAdminTableBody');
-    tbody.innerHTML = App.Utils.tableLoadingRow(6);
+    tbody.innerHTML = App.Utils.tableLoadingRow(7);
 
     App.Api.getSubAdmins().then(admins => {
+      this._allAdmins = admins || [];
+      this._renderTable(this._allAdmins);
+    }).catch(err => {
+      tbody.innerHTML = App.Utils.tableEmptyRow('Failed to load sub-admins.', 7);
+      App.Utils.toast(err.message || 'Error loading sub-admins.', 'error');
+    });
+  },
+
+  _loadDeleted() {
+    const tbody = document.getElementById('deletedSubAdminBody');
+    tbody.innerHTML = App.Utils.tableLoadingRow(5);
+
+    App.Api.getDeletedSubAdmins().then(admins => {
       if (!admins || admins.length === 0) {
-        tbody.innerHTML = App.Utils.tableEmptyRow('No sub-admins found.', 6);
+        tbody.innerHTML = App.Utils.tableEmptyRow('No deleted sub-admins.', 5);
         return;
       }
       tbody.innerHTML = admins.map(a => `
         <tr>
           <td><strong>${App.Utils.escHtml(a.userName)}</strong></td>
           <td>${App.Utils.escHtml(a.companyName || '—')}</td>
-          <td>${App.Utils.escHtml(a.email       || '—')}</td>
-          <td>${App.Utils.escHtml(a.phoneNumber  || '—')}</td>
-          <td>${App.Utils.badge(a.isActive ? 'active' : 'inactive', a.isActive ? 'success' : 'neutral')}</td>
+          <td>${App.Utils.escHtml(a.email || '—')}</td>
+          <td>${App.Utils.escHtml(a.note || '—')}</td>
           <td>
-            <button class="btn btn-ghost btn-sm" data-edit="${App.Utils.escHtml(a._id)}"
-              data-username="${App.Utils.escHtml(a.userName)}"
-              data-email="${App.Utils.escHtml(a.email || '')}"
-              data-company="${App.Utils.escHtml(a.companyName || '')}"
-              data-address="${App.Utils.escHtml(a.address || '')}"
-              data-phone="${App.Utils.escHtml(a.phoneNumber || '')}"
-              data-active="${a.isActive ? 'true' : 'false'}">
-              <i class="fas fa-edit"></i> Edit
-            </button>
-            <button class="btn btn-danger btn-sm" data-delete="${App.Utils.escHtml(a._id)}" data-name="${App.Utils.escHtml(a.userName)}">
-              <i class="fas fa-trash-alt"></i>
+            <button class="btn btn-primary btn-sm" data-restore="${App.Utils.escHtml(a._id)}" data-name="${App.Utils.escHtml(a.userName)}">
+              <i class="fas fa-trash-restore"></i> Restore
             </button>
           </td>
         </tr>
       `).join('');
 
-      tbody.querySelectorAll('[data-edit]').forEach(btn => {
-        btn.addEventListener('click', () => this._openModal({
-          _id:         btn.dataset.edit,
-          userName:    btn.dataset.username,
-          email:       btn.dataset.email,
-          companyName: btn.dataset.company,
-          address:     btn.dataset.address,
-          phoneNumber: btn.dataset.phone,
-          isActive:    btn.dataset.active === 'true',
-        }));
+      tbody.querySelectorAll('[data-restore]').forEach(btn => {
+        btn.addEventListener('click', () => this._doRestore(btn.dataset.restore, btn.dataset.name, btn));
       });
-      tbody.querySelectorAll('[data-delete]').forEach(btn => {
-        btn.addEventListener('click', () => this._openDeleteModal(btn.dataset.delete, btn.dataset.name));
-      });
-    }).catch(err => {
-      tbody.innerHTML = App.Utils.tableEmptyRow('Failed to load sub-admins.', 6);
-      App.Utils.toast(err.message || 'Error loading sub-admins.', 'error');
+    }).catch(() => {
+      tbody.innerHTML = App.Utils.tableEmptyRow('Failed to load deleted sub-admins.', 5);
     });
+  },
+
+  _renderTable(admins) {
+    const tbody = document.getElementById('subAdminTableBody');
+    if (!admins || admins.length === 0) {
+      tbody.innerHTML = App.Utils.tableEmptyRow('No sub-admins found.', 7);
+      return;
+    }
+    tbody.innerHTML = admins.map(a => `
+      <tr>
+        <td><strong>${App.Utils.escHtml(a.userName)}</strong></td>
+        <td>${App.Utils.escHtml(a.companyName || '—')}</td>
+        <td>${App.Utils.escHtml(a.email       || '—')}</td>
+        <td>${App.Utils.escHtml(a.phoneNumber  || '—')}</td>
+        <td>${App.Utils.escHtml(a.note         || '—')}</td>
+        <td>${App.Utils.badge(a.isActive ? 'active' : 'inactive', a.isActive ? 'success' : 'neutral')}</td>
+        <td>
+          <button class="btn btn-ghost btn-sm" data-edit="${App.Utils.escHtml(a._id)}"
+            data-username="${App.Utils.escHtml(a.userName)}"
+            data-email="${App.Utils.escHtml(a.email || '')}"
+            data-company="${App.Utils.escHtml(a.companyName || '')}"
+            data-address="${App.Utils.escHtml(a.address || '')}"
+            data-phone="${App.Utils.escHtml(a.phoneNumber || '')}"
+            data-note="${App.Utils.escHtml(a.note || '')}"
+            data-active="${a.isActive ? 'true' : 'false'}">
+            <i class="fas fa-edit"></i> Edit
+          </button>
+          <button class="btn btn-danger btn-sm" data-delete="${App.Utils.escHtml(a._id)}" data-name="${App.Utils.escHtml(a.userName)}">
+            <i class="fas fa-trash-alt"></i>
+          </button>
+        </td>
+      </tr>
+    `).join('');
+
+    tbody.querySelectorAll('[data-edit]').forEach(btn => {
+      btn.addEventListener('click', () => this._openModal({
+        _id:         btn.dataset.edit,
+        userName:    btn.dataset.username,
+        email:       btn.dataset.email,
+        companyName: btn.dataset.company,
+        address:     btn.dataset.address,
+        phoneNumber: btn.dataset.phone,
+        note:        btn.dataset.note,
+        isActive:    btn.dataset.active === 'true',
+      }));
+    });
+    tbody.querySelectorAll('[data-delete]').forEach(btn => {
+      btn.addEventListener('click', () => this._openDeleteModal(btn.dataset.delete, btn.dataset.name));
+    });
+  },
+
+  _filterTable(query) {
+    if (!query) {
+      this._renderTable(this._allAdmins);
+      return;
+    }
+    const q = query.toLowerCase();
+    const filtered = this._allAdmins.filter(a =>
+      (a.userName    || '').toLowerCase().includes(q) ||
+      (a.companyName || '').toLowerCase().includes(q) ||
+      (a.note        || '').toLowerCase().includes(q)
+    );
+    this._renderTable(filtered);
   },
 
   _openModal(sa = null) {
@@ -203,6 +321,7 @@ App.Pages.SubAdmins = {
     document.getElementById('saAddress').value     = sa ? sa.address     : '';
     document.getElementById('saPhoneNumber').value = sa ? sa.phoneNumber : '';
     document.getElementById('saIsActive').value    = sa ? String(sa.isActive) : 'true';
+    document.getElementById('saNote').value        = sa ? (sa.note || '') : '';
     document.getElementById('saLogo').value        = '';
 
     document.getElementById('subAdminModal').classList.add('active');
@@ -234,6 +353,7 @@ App.Pages.SubAdmins = {
     const address     = document.getElementById('saAddress').value.trim();
     const phoneNumber = document.getElementById('saPhoneNumber').value.trim();
     const isActive    = document.getElementById('saIsActive').value;
+    const note        = document.getElementById('saNote').value.trim();
     const logoFile    = document.getElementById('saLogo').files[0];
 
     if (userName)    fd.append('userName',    userName);
@@ -243,6 +363,7 @@ App.Pages.SubAdmins = {
     if (address)     fd.append('address',     address);
     if (phoneNumber) fd.append('phoneNumber', phoneNumber);
     fd.append('isActive', isActive);
+    fd.append('note', note);
     if (logoFile)    fd.append('companyLogo', logoFile);
 
     return { fd, userName, password };
@@ -284,9 +405,22 @@ App.Pages.SubAdmins = {
     App.Api.deleteSubAdmin(this._deletingId).then(() => {
       this._closeDeleteModal();
       this._load();
-      App.Utils.toast('Sub-admin deleted.');
+      this._loadDeleted();
+      App.Utils.toast('Sub-admin moved to deleted list.');
     }).catch(err => {
       App.Utils.toast(err.message || 'Failed to delete sub-admin.', 'error');
     }).finally(() => { btn.disabled = false; });
+  },
+
+  _doRestore(id, name, btn) {
+    btn.disabled = true;
+    App.Api.restoreSubAdmin(id).then(() => {
+      this._load();
+      this._loadDeleted();
+      App.Utils.toast(`Sub-admin "${name}" restored.`);
+    }).catch(err => {
+      App.Utils.toast(err.message || 'Failed to restore sub-admin.', 'error');
+      btn.disabled = false;
+    });
   },
 };

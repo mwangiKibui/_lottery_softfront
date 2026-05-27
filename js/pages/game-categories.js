@@ -8,7 +8,8 @@ window.App = window.App || {};
 App.Pages = App.Pages || {};
 
 App.Pages.GameCategories = {
-  _editingId: null,
+  _editingId:  null,
+  _allCats:    [],
 
   render() {
     return `
@@ -20,6 +21,14 @@ App.Pages.GameCategories = {
           </button>
         </div>
         <hr class="divider">
+
+        <!-- Search -->
+        <div class="search-bar-row" style="margin-bottom:1rem">
+          <div class="search-input-wrap">
+            <i class="fas fa-search search-icon"></i>
+            <input type="search" id="gameCatSearch" placeholder="Search game types…" class="search-input">
+          </div>
+        </div>
 
         <div class="table-wrapper">
           <table class="data-table">
@@ -97,6 +106,10 @@ App.Pages.GameCategories = {
     document.getElementById('cancelDelGameCatBtn').addEventListener('click', () => this._closeDeleteModal());
     document.getElementById('gameCatDeleteModal').addEventListener('click', e => { if (e.target === e.currentTarget) this._closeDeleteModal(); });
     document.getElementById('confirmDelGameCatBtn').addEventListener('click', () => this._doDelete());
+
+    document.getElementById('gameCatSearch').addEventListener('input', e => {
+      this._filterTable(e.target.value.trim());
+    });
   },
 
   _load() {
@@ -104,44 +117,56 @@ App.Pages.GameCategories = {
     tbody.innerHTML = App.Utils.tableLoadingRow(4);
 
     App.Api.getGameCategories().then(cats => {
-      if (!cats || cats.length === 0) {
-        tbody.innerHTML = App.Utils.tableEmptyRow('No game categories found.', 4);
-        return;
-      }
-      tbody.innerHTML = cats.map(c => `
-        <tr>
-          <td><strong>${App.Utils.escHtml(c.gameName)}</strong></td>
-          <td>${App.Utils.escHtml(String(c.positions))}</td>
-          <td>${App.Utils.escHtml(String(c.requiredLength))} digit(s)</td>
-          <td>
-            <button class="btn btn-ghost btn-sm" data-edit="${App.Utils.escHtml(c._id)}"
-              data-name="${App.Utils.escHtml(c.gameName)}"
-              data-positions="${App.Utils.escHtml(String(c.positions))}"
-              data-length="${App.Utils.escHtml(String(c.requiredLength))}">
-              <i class="fas fa-edit"></i> Edit
-            </button>
-            <button class="btn btn-danger btn-sm" data-delete="${App.Utils.escHtml(c._id)}" data-name="${App.Utils.escHtml(c.gameName)}">
-              <i class="fas fa-trash-alt"></i>
-            </button>
-          </td>
-        </tr>
-      `).join('');
-
-      tbody.querySelectorAll('[data-edit]').forEach(btn => {
-        btn.addEventListener('click', () => this._openModal({
-          _id: btn.dataset.edit,
-          gameName: btn.dataset.name,
-          positions: btn.dataset.positions,
-          requiredLength: btn.dataset.length,
-        }));
-      });
-      tbody.querySelectorAll('[data-delete]').forEach(btn => {
-        btn.addEventListener('click', () => this._openDeleteModal(btn.dataset.delete, btn.dataset.name));
-      });
+      this._allCats = cats || [];
+      this._renderTable(this._allCats);
     }).catch(err => {
       tbody.innerHTML = App.Utils.tableEmptyRow('Failed to load game categories.', 4);
       App.Utils.toast(err.message || 'Error loading game categories.', 'error');
     });
+  },
+
+  _renderTable(cats) {
+    const tbody = document.getElementById('gameCatTableBody');
+    if (!cats || cats.length === 0) {
+      tbody.innerHTML = App.Utils.tableEmptyRow('No game categories found.', 4);
+      return;
+    }
+    tbody.innerHTML = cats.map(c => `
+      <tr>
+        <td><strong>${App.Utils.escHtml(c.gameName)}</strong></td>
+        <td>${App.Utils.escHtml(String(c.positions))}</td>
+        <td>${App.Utils.escHtml(String(c.requiredLength))} digit(s)</td>
+        <td>
+          <button class="btn btn-ghost btn-sm" data-edit="${App.Utils.escHtml(c._id)}"
+            data-name="${App.Utils.escHtml(c.gameName)}"
+            data-positions="${App.Utils.escHtml(String(c.positions))}"
+            data-length="${App.Utils.escHtml(String(c.requiredLength))}">
+            <i class="fas fa-edit"></i> Edit
+          </button>
+          <button class="btn btn-danger btn-sm" data-delete="${App.Utils.escHtml(c._id)}" data-name="${App.Utils.escHtml(c.gameName)}">
+            <i class="fas fa-trash-alt"></i>
+          </button>
+        </td>
+      </tr>
+    `).join('');
+
+    tbody.querySelectorAll('[data-edit]').forEach(btn => {
+      btn.addEventListener('click', () => this._openModal({
+        _id: btn.dataset.edit,
+        gameName: btn.dataset.name,
+        positions: btn.dataset.positions,
+        requiredLength: btn.dataset.length,
+      }));
+    });
+    tbody.querySelectorAll('[data-delete]').forEach(btn => {
+      btn.addEventListener('click', () => this._openDeleteModal(btn.dataset.delete, btn.dataset.name));
+    });
+  },
+
+  _filterTable(query) {
+    if (!query) { this._renderTable(this._allCats); return; }
+    const q = query.toLowerCase();
+    this._renderTable(this._allCats.filter(c => (c.gameName || '').toLowerCase().includes(q)));
   },
 
   _openModal(cat = null) {
