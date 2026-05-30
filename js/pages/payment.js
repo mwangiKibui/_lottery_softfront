@@ -1,19 +1,23 @@
 /* =====================================================================
    PRINCE LOTO — Payment Terms Page  (Sub-Admin only)
-   Real API: GET/POST/PATCH/DELETE /api/subadmin/*paymentterm*
-   Term structure per lottery:
-     { _id, lotteryCategoryName, conditions: [{gameCategory, position, condition}] }
+   Scope: All (subAdmin-level) | Seller | Supervisor
+   Versioning: edit archives old term, creates a new one
    ===================================================================== */
 
 window.App = window.App || {};
 App.Pages = App.Pages || {};
 
 App.Pages.Payment = {
-  _terms:      [],   // loaded payment terms
-  _gameCats:   [],   // loaded game categories
-  _lotteries:  [],   // loaded lottery categories
-  _editingId:  null, // currently editing term id
+  _terms:      [],
+  _gameCats:   [],
+  _lotteries:  [],
+  _sellers:    [],
+  _supervisors:[],
+  _scope:      'all',   // 'all' | 'seller' | 'supervisor'
+  _scopeEntity:'',      // selected seller/supervisor _id for filter
+  _editingId:  null,
   _editingLottery: '',
+  _deletingId: null,
 
   render() {
     return `
@@ -26,6 +30,32 @@ App.Pages.Payment = {
         </div>
         <hr class="divider">
 
+        <!-- Scope filter -->
+        <div class="filter-card" style="margin-bottom:16px;">
+          <div class="filter-title"><i class="fas fa-filter"></i> View Terms For</div>
+          <div class="filter-grid" style="align-items:flex-end;">
+            <div class="filter-field">
+              <label>Scope</label>
+              <select id="ptScopeSelect">
+                <option value="all">All (SubAdmin-level)</option>
+                <option value="seller">Specific Seller</option>
+                <option value="supervisor">Specific Supervisor</option>
+              </select>
+            </div>
+            <div class="filter-field" id="ptEntityWrap" style="display:none;">
+              <label id="ptEntityLabel">Entity</label>
+              <select id="ptEntitySelect">
+                <option value="">— Select —</option>
+              </select>
+            </div>
+            <div style="display:flex; align-items:flex-end;">
+              <button class="btn btn-gradient btn-sm" id="ptLoadBtn">
+                <i class="fas fa-sync-alt"></i> Load
+              </button>
+            </div>
+          </div>
+        </div>
+
         <div class="table-wrapper">
           <table class="data-table">
             <thead>
@@ -34,6 +64,7 @@ App.Pages.Payment = {
                 <th>Game Category</th>
                 <th>Position</th>
                 <th>Multiplier (×)</th>
+                <th id="ptScopeHeader" style="display:none;">Applies To</th>
                 <th>Actions</th>
               </tr>
             </thead>
@@ -46,25 +77,38 @@ App.Pages.Payment = {
 
       <!-- Add / Edit Payment Term Modal -->
       <div id="paymentModal" class="modal-overlay">
-        <div class="modal-container" style="max-width:560px;">
+        <div class="modal-container" style="max-width:580px;">
           <div class="modal-header">
             <h3 id="paymentModalTitle"><i class="fas fa-dollar-sign"></i> New Payment Term</h3>
             <button class="modal-close" id="closePaymentModalBtn"><i class="fas fa-times"></i></button>
           </div>
 
-          <div class="modal-grid" style="margin-bottom:12px;">
+          <div class="modal-grid" style="margin-bottom:12px; grid-template-columns:1fr 1fr;">
             <div class="form-group">
               <label>Lottery <span class="required">*</span></label>
-              <select id="mPayLottery" ${''/* disabled on edit */}>
+              <select id="mPayLottery">
                 <option value="">— Select Lottery —</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Scope</label>
+              <select id="mPayScope">
+                <option value="all">SubAdmin-level (all)</option>
+                <option value="seller">Specific Seller</option>
+                <option value="supervisor">Specific Supervisor</option>
               </select>
             </div>
           </div>
 
-          <div style="margin-bottom:8px; font-weight:600; font-size:0.9rem;">Conditions</div>
-          <div id="payConditionsContainer">
-            <!-- rows inserted dynamically -->
+          <div class="form-group" id="mPayEntityWrap" style="display:none; margin-bottom:12px;">
+            <label id="mPayEntityLabel">Seller / Supervisor</label>
+            <select id="mPayEntitySelect">
+              <option value="">— Select —</option>
+            </select>
           </div>
+
+          <div style="margin-bottom:8px; font-weight:600; font-size:0.9rem;">Conditions</div>
+          <div id="payConditionsContainer"></div>
           <button class="btn btn-ghost btn-sm" id="addConditionRowBtn" style="margin-top:8px;">
             <i class="fas fa-plus"></i> Add Condition Row
           </button>
@@ -96,20 +140,60 @@ App.Pages.Payment = {
   },
 
   init() {
-    this._editingId = null;
+    this._editingId      = null;
     this._editingLottery = '';
+    this._deletingId     = null;
+    this._scope          = 'all';
+    this._scopeEntity    = '';
 
-    // Load data
+    // Load all reference data + initial terms (subAdmin-level)
     Promise.all([
-      App.Api.getPaymentTerms().catch(() => []),
+      App.Api.getPaymentTerms('all').catch(() => []),
       App.Api.getGameCategories().catch(() => []),
       App.Api.getLotteryCategories().catch(() => []),
-    ]).then(([terms, gameCats, lotteries]) => {
-      this._terms     = Array.isArray(terms)     ? terms     : [];
-      this._gameCats  = Array.isArray(gameCats)  ? gameCats  : [];
-      this._lotteries = Array.isArray(lotteries) ? lotteries : [];
+      App.Api.getSellers().catch(() => ({ users: [] })),
+      App.Api.getSupervisors().catch(() => []),
+    ]).then(([terms, gameCats, lotteries, sellerResp, supervisors]) => {
+      this._terms       = Array.isArray(terms)             ? terms             : [];
+      this._gameCats    = Array.isArray(gameCats)          ? gameCats          : [];
+      this._lotteries   = Array.isArray(lotteries)         ? lotteries         : [];
+      this._sellers     = Array.isArray(sellerResp.users)  ? sellerResp.users  : [];
+      this._supervisors = Array.isArray(supervisors)       ? supervisors       : [];
       this._renderTable();
       this._populateLotteryDropdown();
+    });
+
+    // Scope filter change
+    document.getElementById('ptScopeSelect').addEventListener('change', e => {
+      const scope = e.target.value;
+      this._scope = scope;
+      this._scopeEntity = '';
+      const wrap  = document.getElementById('ptEntityWrap');
+      const label = document.getElementById('ptEntityLabel');
+      const sel   = document.getElementById('ptEntitySelect');
+
+      if (scope === 'seller' || scope === 'supervisor') {
+        wrap.style.display = '';
+        label.textContent  = scope === 'seller' ? 'Seller' : 'Supervisor';
+        const list = scope === 'seller' ? this._sellers : this._supervisors;
+        sel.innerHTML = '<option value="">— All —</option>' +
+          list.map(s => `<option value="${App.Utils.escHtml(s._id)}">${App.Utils.escHtml(s.userName)}</option>`).join('');
+        document.getElementById('ptScopeHeader').style.display = '';
+      } else {
+        wrap.style.display = 'none';
+        document.getElementById('ptScopeHeader').style.display = 'none';
+      }
+    });
+
+    document.getElementById('ptEntitySelect')?.addEventListener('change', e => {
+      this._scopeEntity = e.target.value;
+    });
+
+    document.getElementById('ptLoadBtn').addEventListener('click', () => this._loadTerms());
+
+    // Modal scope change
+    document.getElementById('mPayScope').addEventListener('change', e => {
+      this._refreshModalEntityDropdown(e.target.value);
     });
 
     // Modal controls
@@ -131,33 +215,76 @@ App.Pages.Payment = {
     document.getElementById('confirmDeletePaymentBtn').addEventListener('click', () => this._confirmDelete());
   },
 
+  _loadTerms() {
+    const tbody = document.getElementById('paymentTableBody');
+    tbody.innerHTML = App.Utils.tableLoadingRow(6);
+    App.Api.getPaymentTerms(this._scope, this._scopeEntity).then(terms => {
+      this._terms = Array.isArray(terms) ? terms : [];
+      this._renderTable();
+    }).catch(err => {
+      tbody.innerHTML = App.Utils.tableEmptyRow('Failed to load terms.', 6);
+      App.Utils.toast(err.message || 'Error loading payment terms.', 'error');
+    });
+  },
+
   _populateLotteryDropdown() {
     const sel = document.getElementById('mPayLottery');
     if (!sel) return;
     const current = sel.value;
     sel.innerHTML = '<option value="">— Select Lottery —</option>' +
-      this._lotteries.map(l => `<option value="${App.Utils.escHtml(l.lotteryName)}">${App.Utils.escHtml(l.lotteryName)}</option>`).join('');
+      this._lotteries.map(l =>
+        `<option value="${App.Utils.escHtml(l.lotteryName)}">${App.Utils.escHtml(l.lotteryName)}</option>`
+      ).join('');
     if (current) sel.value = current;
   },
 
+  _refreshModalEntityDropdown(scope, selected = '') {
+    const wrap  = document.getElementById('mPayEntityWrap');
+    const label = document.getElementById('mPayEntityLabel');
+    const sel   = document.getElementById('mPayEntitySelect');
+    if (scope === 'seller' || scope === 'supervisor') {
+      wrap.style.display = '';
+      label.textContent  = scope === 'seller' ? 'Seller' : 'Supervisor';
+      const list = scope === 'seller' ? this._sellers : this._supervisors;
+      sel.innerHTML = '<option value="">— Select —</option>' +
+        list.map(s => `<option value="${App.Utils.escHtml(s._id)}">${App.Utils.escHtml(s.userName)}</option>`).join('');
+      if (selected) sel.value = selected;
+    } else {
+      wrap.style.display = 'none';
+    }
+  },
+
   _renderTable() {
-    const tbody = document.getElementById('paymentTableBody');
+    const tbody      = document.getElementById('paymentTableBody');
+    const showScope  = this._scope !== 'all';
+    const colCount   = showScope ? 6 : 5;
     if (!tbody) return;
 
+    // Update header visibility
+    const hdr = document.getElementById('ptScopeHeader');
+    if (hdr) hdr.style.display = showScope ? '' : 'none';
+
     if (!this._terms.length) {
-      tbody.innerHTML = App.Utils.tableEmptyRow('No payment terms yet. Click "New Term" to add.', 5);
+      tbody.innerHTML = App.Utils.tableEmptyRow('No payment terms found. Click "New Term" to add.', colCount);
       return;
     }
 
-    // Flatten: one row per condition
     const rows = [];
     this._terms.forEach(term => {
-      const conds = Array.isArray(term.conditions) ? term.conditions : [];
+      const conds    = Array.isArray(term.conditions) ? term.conditions : [];
+      const scopeLabel = term.seller
+        ? (term.seller.userName || 'Seller')
+        : term.superVisor
+          ? (term.superVisor.userName || 'Supervisor')
+          : 'SubAdmin-level';
+      const scopeCell = showScope ? `<td><span style="font-size:0.82rem; color:var(--clr-warm-500)">${App.Utils.escHtml(scopeLabel)}</span></td>` : '';
+
       if (!conds.length) {
         rows.push(`
           <tr>
             <td><strong>${App.Utils.escHtml(term.lotteryCategoryName)}</strong></td>
-            <td colspan="3" style="color:var(--clr-warm-500)"><em>No conditions defined</em></td>
+            <td colspan="3" style="color:var(--clr-warm-500)"><em>No conditions</em></td>
+            ${scopeCell}
             <td>
               <button class="btn btn-ghost btn-sm" data-edit="${App.Utils.escHtml(term._id)}"><i class="fas fa-edit"></i> Edit</button>
               <button class="btn btn-danger btn-sm" data-delete="${App.Utils.escHtml(term._id)}" data-lottery="${App.Utils.escHtml(term.lotteryCategoryName)}"><i class="fas fa-trash-alt"></i></button>
@@ -171,6 +298,7 @@ App.Pages.Payment = {
               <td>${App.Utils.escHtml(c.gameCategory || '—')}</td>
               <td>${App.Utils.escHtml(String(c.position || '—'))}</td>
               <td><strong>${App.Utils.escHtml(String(c.condition || 0))}×</strong></td>
+              ${ci === 0 && showScope ? `<td rowspan="${conds.length}"><span style="font-size:0.82rem;color:var(--clr-warm-500)">${App.Utils.escHtml(scopeLabel)}</span></td>` : (ci === 0 && !showScope ? '' : '')}
               ${ci === 0 ? `<td rowspan="${conds.length}">
                 <button class="btn btn-ghost btn-sm" data-edit="${App.Utils.escHtml(term._id)}"><i class="fas fa-edit"></i> Edit</button>
                 <button class="btn btn-danger btn-sm" data-delete="${App.Utils.escHtml(term._id)}" data-lottery="${App.Utils.escHtml(term.lotteryCategoryName)}"><i class="fas fa-trash-alt"></i></button>
@@ -197,11 +325,13 @@ App.Pages.Payment = {
     const container = document.getElementById('payConditionsContainer');
     const row       = document.createElement('div');
     row.className   = 'modal-grid condition-row';
-    row.style.cssText = 'gap:8px; margin-bottom:6px; grid-template-columns: 1fr 80px 80px 36px;';
+    row.style.cssText = 'gap:8px; margin-bottom:6px; grid-template-columns:1fr 80px 80px 36px;';
     row.innerHTML = `
       <select class="cond-game">
         <option value="">— Game —</option>
-        ${this._gameCats.map(g => `<option value="${App.Utils.escHtml(g.gameName)}" ${g.gameName === gameCategory ? 'selected' : ''}>${App.Utils.escHtml(g.gameName)}</option>`).join('')}
+        ${this._gameCats.map(g =>
+          `<option value="${App.Utils.escHtml(g.gameName)}" ${g.gameName === gameCategory ? 'selected' : ''}>${App.Utils.escHtml(g.gameName)}</option>`
+        ).join('')}
       </select>
       <input type="number" class="cond-pos" min="1" max="20" placeholder="Pos" value="${App.Utils.escHtml(String(position))}">
       <input type="number" class="cond-val" min="0" step="1" placeholder="×" value="${App.Utils.escHtml(String(condition))}">
@@ -233,8 +363,11 @@ App.Pages.Payment = {
     document.getElementById('paymentModalTitle').innerHTML = '<i class="fas fa-dollar-sign"></i> New Payment Term';
     document.getElementById('mPayLottery').disabled = false;
     document.getElementById('mPayLottery').value    = '';
+    document.getElementById('mPayScope').disabled   = false;
+    document.getElementById('mPayScope').value      = 'all';
+    this._refreshModalEntityDropdown('all');
     document.getElementById('payConditionsContainer').innerHTML = '';
-    this._addConditionRow(); // start with one empty row
+    this._addConditionRow();
     document.getElementById('paymentModal').classList.add('active');
   },
 
@@ -244,6 +377,24 @@ App.Pages.Payment = {
     document.getElementById('paymentModalTitle').innerHTML = '<i class="fas fa-edit"></i> Edit Payment Term';
     document.getElementById('mPayLottery').disabled = true;
     document.getElementById('mPayLottery').value    = term.lotteryCategoryName;
+
+    // Determine scope from the term
+    let scope    = 'all';
+    let entityId = '';
+    if (term.seller) {
+      scope    = 'seller';
+      entityId = (typeof term.seller === 'object') ? term.seller._id : term.seller;
+    } else if (term.superVisor) {
+      scope    = 'supervisor';
+      entityId = (typeof term.superVisor === 'object') ? term.superVisor._id : term.superVisor;
+    }
+
+    // Scope select disabled on edit (scope is fixed)
+    document.getElementById('mPayScope').disabled = true;
+    document.getElementById('mPayScope').value    = scope;
+    this._refreshModalEntityDropdown(scope, entityId);
+    document.getElementById('mPayEntitySelect').disabled = true;
+
     document.getElementById('payConditionsContainer').innerHTML = '';
     const conds = Array.isArray(term.conditions) ? term.conditions : [];
     if (conds.length) {
@@ -262,7 +413,9 @@ App.Pages.Payment = {
 
   _closeModal() {
     document.getElementById('paymentModal').classList.remove('active');
-    document.getElementById('mPayLottery').disabled = false;
+    document.getElementById('mPayLottery').disabled     = false;
+    document.getElementById('mPayScope').disabled       = false;
+    document.getElementById('mPayEntitySelect').disabled = false;
   },
 
   _submit() {
@@ -280,17 +433,30 @@ App.Pages.Payment = {
       return;
     }
 
+    // Scope + entity for new terms
+    const scope    = document.getElementById('mPayScope').value;
+    const entityId = document.getElementById('mPayEntitySelect')?.value || '';
+
     const confirmBtn = document.getElementById('confirmPaymentBtn');
     confirmBtn.disabled = true;
 
+    let payload;
+    if (isEdit) {
+      payload = { conditions };
+    } else {
+      payload = { lotteryCategoryName: lottery, conditions };
+      if (scope === 'seller')     payload.seller     = entityId || undefined;
+      if (scope === 'supervisor') payload.superVisor = entityId || undefined;
+    }
+
     const action = isEdit
-      ? App.Api.updatePaymentTerm(this._editingId, { conditions })
-      : App.Api.addPaymentTerm({ lotteryCategoryName: lottery, conditions });
+      ? App.Api.updatePaymentTerm(this._editingId, payload)
+      : App.Api.addPaymentTerm(payload);
 
     action.then(() => {
       this._closeModal();
       App.Utils.toast(`Payment term ${isEdit ? 'updated' : 'added'} successfully.`);
-      return App.Api.getPaymentTerms();
+      return App.Api.getPaymentTerms(this._scope, this._scopeEntity);
     }).then(terms => {
       this._terms = Array.isArray(terms) ? terms : [];
       this._renderTable();
@@ -306,152 +472,12 @@ App.Pages.Payment = {
     App.Api.deletePaymentTerm(this._deletingId).then(() => {
       document.getElementById('deletePaymentModal').classList.remove('active');
       App.Utils.toast('Payment term deleted.');
-      return App.Api.getPaymentTerms();
+      return App.Api.getPaymentTerms(this._scope, this._scopeEntity);
     }).then(terms => {
       this._terms = Array.isArray(terms) ? terms : [];
       this._renderTable();
     }).catch(err => {
       App.Utils.toast(err.message || 'Delete failed.', 'error');
     }).finally(() => { confirmBtn.disabled = false; });
-  },
-};
-
-
-App.Pages.Payment = {
-  _context: 'all',
-  _entity:  null,
-  _positions: ['1st','2nd','3rd','4th','5th','6th','7th','8th'],
-
-  render() {
-    const lotteryOptions = App.Data.lotteries.map(l => `<option value="${App.Utils.escHtml(l)}">${App.Utils.escHtml(l)}</option>`).join('');
-    const sellerOptions  = App.Data.sellers.map(s => `<option value="${App.Utils.escHtml(s.name)}">${App.Utils.escHtml(s.name)}</option>`).join('');
-    const supOptions     = App.Data.supervisors.map(s => `<option value="${App.Utils.escHtml(s.name)}">${App.Utils.escHtml(s.name)}</option>`).join('');
-
-    return `
-      <div class="page-card">
-        <h2><i class="fas fa-dollar-sign"></i> Prize Structure (Positions 1→8)</h2>
-
-        <div class="filter-card">
-          <div class="filter-title"><i class="fas fa-credit-card"></i> Scope & Lottery</div>
-
-          <div class="radio-group">
-            <label><input type="radio" name="paymentScope" value="all" checked> Global</label>
-            <label><input type="radio" name="paymentScope" value="seller"> By Seller</label>
-            <label><input type="radio" name="paymentScope" value="supervisor"> By Supervisor</label>
-          </div>
-
-          <div id="paySellerDiv" style="display:none; margin-bottom:12px;">
-            <div class="filter-field">
-              <label>Seller</label>
-              <select id="paySellerSelect"><option value="">-- Select seller --</option>${sellerOptions}</select>
-            </div>
-          </div>
-          <div id="paySupervisorDiv" style="display:none; margin-bottom:12px;">
-            <div class="filter-field">
-              <label>Supervisor</label>
-              <select id="paySupervisorSelect"><option value="">-- Select supervisor --</option>${supOptions}</select>
-            </div>
-          </div>
-
-          <div class="filter-grid">
-            <div class="filter-field">
-              <label>Lottery</label>
-              <select id="payLotterySelect">${lotteryOptions}</select>
-            </div>
-            <div>
-              <button class="btn btn-gradient btn-sm" id="payShowBtn">
-                <i class="fas fa-eye"></i> Show Prizes
-              </button>
-            </div>
-          </div>
-        </div>
-
-        <div id="payTableContainer"></div>
-      </div>
-    `;
-  },
-
-  init() {
-    this._context = 'all';
-    this._entity  = null;
-    this._bindScopeToggles();
-    document.getElementById('payShowBtn').addEventListener('click', () => this._load());
-    /* Auto-load on open */
-    this._load();
-  },
-
-  _bindScopeToggles() {
-    const radios = document.querySelectorAll('input[name="paymentScope"]');
-    radios.forEach(r => r.addEventListener('change', () => {
-      const val = r.value;
-      document.getElementById('paySellerDiv').style.display    = val === 'seller'     ? 'block' : 'none';
-      document.getElementById('paySupervisorDiv').style.display= val === 'supervisor' ? 'block' : 'none';
-      this._context = val;
-      this._entity  = null;
-    }));
-    document.getElementById('paySellerSelect').addEventListener('change', (e) => {
-      this._entity = e.target.value || null;
-    });
-    document.getElementById('paySupervisorSelect').addEventListener('change', (e) => {
-      this._entity = e.target.value || null;
-    });
-  },
-
-  _load() {
-    const lottery = document.getElementById('payLotterySelect').value;
-    if (!lottery) return;
-
-    if (this._context === 'seller' && !this._entity)     { App.Utils.toast('Please select a seller.', 'error'); return; }
-    if (this._context === 'supervisor' && !this._entity) { App.Utils.toast('Please select a supervisor.', 'error'); return; }
-
-    const container = document.getElementById('payTableContainer');
-    container.innerHTML = `<div class="table-wrapper"><table class="data-table"><tbody>${App.Utils.tableLoadingRow(2)}</tbody></table></div>`;
-
-    App.Api.getPaymentConditions(lottery, this._context, this._entity).then(prizeObj => {
-      this._renderTable(container, lottery, prizeObj);
-    });
-  },
-
-  _renderTable(container, lottery, prizeObj) {
-    const contextLabel = this._context === 'all'
-      ? 'Global'
-      : this._context === 'seller'
-        ? `Seller: ${this._entity}`
-        : `Supervisor: ${this._entity}`;
-
-    const rows = this._positions.map(pos => `
-      <tr>
-        <td style="font-weight:600;">${pos}</td>
-        <td><input type="number" class="prize-input" data-pos="${pos}" value="${prizeObj[pos] || 0}" step="50"></td>
-      </tr>
-    `).join('');
-
-    container.innerHTML = `
-      <div class="current-lottery-badge">
-        <i class="fas fa-trophy"></i> ${App.Utils.escHtml(lottery)} — ${App.Utils.escHtml(contextLabel)}
-      </div>
-      <div class="table-wrapper">
-        <table class="data-table" id="prizeTable">
-          <thead><tr><th>Position</th><th>Prize Amount ($)</th></tr></thead>
-          <tbody>${rows}</tbody>
-        </table>
-      </div>
-      <div style="margin-top:20px;">
-        <button class="btn btn-gradient" id="savePrizesBtn"><i class="fas fa-save"></i> Save Changes</button>
-      </div>
-    `;
-
-    document.getElementById('savePrizesBtn').addEventListener('click', () => {
-      const updated = {};
-      document.querySelectorAll('#prizeTable .prize-input').forEach(inp => {
-        updated[inp.dataset.pos] = parseFloat(inp.value) || 0;
-      });
-      const saveBtn = document.getElementById('savePrizesBtn');
-      saveBtn.disabled = true;
-
-      App.Api.savePaymentConditions(lottery, updated, this._context, this._entity).then(() => {
-        App.Utils.toast('Prize structure saved successfully.');
-      }).finally(() => { saveBtn.disabled = false; });
-    });
   },
 };

@@ -402,16 +402,18 @@ App.Api = {
 
   /* ────────────────────────────────────────────
      SUB-ADMIN — SALES REPORTS
-     GET /subadmin/getsalereports?fromDate=&toDate=&lotteryCategoryName=&seller=
+     GET /subadmin/getsalereports
+       ?fromDate=&toDate=&lotteryCategoryName=comma-separated&seller=id&supervisor=id
      → { success, data: { sellerName: { name, sum, paid } } }
   ──────────────────────────────────────────── */
   getSalesReport(filters = {}) {
     if (App.Config.USE_DUMMY_DATA) return this._dummy({});
     const q = new URLSearchParams({
-      fromDate:            filters.fromDate || '',
-      toDate:              filters.toDate   || '',
-      lotteryCategoryName: filters.lottery  || '',
-      seller:              filters.seller   || '',
+      fromDate:            filters.fromDate    || '',
+      toDate:              filters.toDate      || '',
+      lotteryCategoryName: filters.lotteries   || '',  // comma-separated lottery names
+      seller:              filters.seller      || '',
+      supervisor:          filters.supervisor  || '',
     }).toString();
     return this._get(`/subadmin/getsalereports?${q}`)
       .then(resp => (resp && resp.data) ? resp.data : {});
@@ -419,14 +421,17 @@ App.Api = {
 
   /* ────────────────────────────────────────────
      SUB-ADMIN — PAYMENT TERMS
-     GET    /subadmin/getpaymentterm         → [{ _id, lotteryCategoryName, conditions }]
-     POST   /subadmin/addpaymentterm         { lotteryCategoryName, conditions: [{gameCategory,position,condition}] }
-     PATCH  /subadmin/updatepaymentterm/:id  { conditions: [...] }
+     GET    /subadmin/getpaymentterm?scope=all|seller|supervisor&seller=id&supervisor=id
+     POST   /subadmin/addpaymentterm  { lotteryCategoryName, conditions, seller?, superVisor? }
+     PATCH  /subadmin/updatepaymentterm/:id  { conditions }  (backend creates new version)
      DELETE /subadmin/deletepaymentterm/:id
   ──────────────────────────────────────────── */
-  getPaymentTerms() {
+  getPaymentTerms(scope = 'all', entity = '') {
     if (App.Config.USE_DUMMY_DATA) return this._dummy([]);
-    return this._get('/subadmin/getpaymentterm')
+    const params = new URLSearchParams({ scope });
+    if (scope === 'seller'     && entity) params.set('seller',     entity);
+    if (scope === 'supervisor' && entity) params.set('supervisor', entity);
+    return this._get(`/subadmin/getpaymentterm?${params.toString()}`)
       .then(resp => Array.isArray(resp) ? resp : []);
   },
 
@@ -563,5 +568,45 @@ App.Api = {
       return this._dummy(data);
     }
     return this.getWinningNumbers(filters);
+  },
+
+  /* ────────────────────────────────────────────
+     SUB-ADMIN — PERCENTAGE LIMITS
+     GET    /subadmin/getPercentageLimitbButAll          (scope = all)
+     GET    /subadmin/getPercentageLimitButSeller        ?seller=&lotteryCategoryName=
+     GET    /subadmin/getPercentageLimitButSuperVisor    ?superVisor=&lotteryCategoryName=
+     POST   /subadmin/addPercentageLimit   { lotteryCategoryName, limits:[{gameCategory,limitPercent}], seller?, superVisor? }
+     PATCH  /subadmin/updatePercentageLimit/:id
+     DELETE /subadmin/deletePercentageLimit/:id
+  ──────────────────────────────────────────── */
+  getPercentageLimits(scope = 'all', entity = '', lottery = '') {
+    if (App.Config.USE_DUMMY_DATA) return this._dummy([]);
+    if (scope === 'seller') {
+      const q = new URLSearchParams({ seller: entity || '', lotteryCategoryName: lottery }).toString();
+      return this._get(`/subadmin/getPercentageLimitButSeller?${q}`)
+        .then(resp => Array.isArray(resp) ? resp : []);
+    }
+    if (scope === 'supervisor') {
+      const q = new URLSearchParams({ superVisor: entity || '', lotteryCategoryName: lottery }).toString();
+      return this._get(`/subadmin/getPercentageLimitButSuperVisor?${q}`)
+        .then(resp => Array.isArray(resp) ? resp : []);
+    }
+    return this._get('/subadmin/getPercentageLimitbButAll')
+      .then(resp => Array.isArray(resp) ? resp : []);
+  },
+
+  addPercentageLimit(payload) {
+    if (App.Config.USE_DUMMY_DATA) return this._dummy({ ...payload, _id: 'pl_' + Date.now() });
+    return this._post('/subadmin/addPercentageLimit', payload);
+  },
+
+  updatePercentageLimit(id, payload) {
+    if (App.Config.USE_DUMMY_DATA) return this._dummy({ _id: id });
+    return this._patch(`/subadmin/updatePercentageLimit/${id}`, payload);
+  },
+
+  deletePercentageLimit(id) {
+    if (App.Config.USE_DUMMY_DATA) return this._dummy({ success: true });
+    return this._delete(`/subadmin/deletePercentageLimit/${id}`);
   },
 };

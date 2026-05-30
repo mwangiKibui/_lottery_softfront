@@ -12,11 +12,10 @@
   const isAdmin = user && user.role === 'admin';
 
   /* ── Role-based navigation visibility ── */
-  document.querySelectorAll('.nav-admin').forEach(el => {
-    el.hidden = !isAdmin;
-  });
-  document.querySelectorAll('.nav-subadmin').forEach(el => {
-    el.hidden = isAdmin;
+  const role = user ? user.role : '';
+  document.querySelectorAll('.nav-item[data-roles]').forEach(el => {
+    const allowed = el.dataset.roles.split(',');
+    el.hidden = !allowed.includes(role);
   });
 
   /* ── Sub-admin company branding (topbar left — replaces brand) ── */
@@ -57,6 +56,7 @@
     wintickets:        App.Pages.WinTickets,
     numbers:           App.Pages.Numbers,
     limit:             App.Pages.Limit,
+    percentagelimit:   App.Pages.PercentageLimit,
     statistics:        App.Pages.Statistics,
     // Admin-only pages
     gamecategories:    App.Pages.GameCategories,
